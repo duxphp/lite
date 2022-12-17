@@ -1,0 +1,36 @@
+{
+	"name": "duxphp/lite",
+	"type": "framework",
+	"description": "The lightweight framework based on slim php",
+	"keywords": ["PHP framework", "PHP", "slim", "duxphp"],
+	"homepage": "https://github.com/duxphp",
+	"license": "MIT",
+	"support": {
+		"issues": "https://github.com/duxphp/lite/issues",
+		"source": "https://github.com/duxphp/lite"
+	},
+	"authors": [
+		{"name": "duxphp", "email": "admin@duxphp.com"}
+	],
+	"require": {
+		"php": ">=7.4",
+		"slim/slim": "^4.11",
+		"slim/psr7": "^1.6",
+		"monolog/monolog": "^3.2",
+		"php-di/php-di": "^6.4.0",
+		"hassankhan/config": "^3.0",
+		"symfony/yaml": "^6.2",
+		"catfan/medoo": "^2.1",
+		"phpfastcache/phpfastcache": "^9.1",
+		"nette/utils": "^3.2",
+		"enqueue/redis": "^0.10.9",
+		"symfony/console": "^6.2",
+		"ext-pcntl": "*",
+		"ext-json": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Dux\\": "src/"
+		}
+	}
+}
