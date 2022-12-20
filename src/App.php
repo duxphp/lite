@@ -7,6 +7,7 @@ namespace Dux;
 
 use DI\Container;
 use Dux\Database\Db;
+use Dux\Storage\Storage;
 use Dux\View\View;
 use Psr\Http\Message\ServerRequestInterface;
 use \Slim\App as SlimApp;
@@ -27,6 +28,7 @@ class App {
     static string $basePath;
     static string $configPath;
     static string $dataPath;
+    static string $publicPath;
     static Bootstrap $bootstrap;
     static array $registerApp = [];
     static array $registerRoute = [];
@@ -37,9 +39,12 @@ class App {
      * @return Bootstrap
      */
     static function create($basePath): Bootstrap {
+
         self::$basePath = $basePath;
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
+        self::$publicPath = $basePath . '/public';
+
         $app = new Bootstrap();
         $app->loadFunc();
         $app->loadWeb();
@@ -206,6 +211,27 @@ class App {
             );
         }
         return self::$bootstrap->container->get("view." . $name);
+    }
+
+    /**
+     * storage
+     * @param string $type
+     * @return mixed
+     */
+    static function storage(string $type = "") {
+        if (!$type) {
+            $type = self::config("storage")->get("type");
+        }
+        if (!self::$bootstrap->container->has("storage." . $type)) {
+            $config = self::config("storage")->get("drivers." . $type);
+            $storageType = $config["type"];
+            unset($config["type"]);
+            self::$bootstrap->container->set(
+                "storage." . $type,
+                Storage::init($storageType, $config)
+            );
+        }
+        return self::$bootstrap->container->get("storage." . $type);
     }
 
 

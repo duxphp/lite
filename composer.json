@@ -15,7 +15,7 @@
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"require": {
-		"php": ">=7.4",
+		"php": ">=8.0.2",
 		"slim/slim": "^4.11",
 		"slim/psr7": "^1.6",
 		"monolog/monolog": "^3.2",
@@ -29,7 +29,11 @@
 		"symfony/console": "^6.2",
 		"ext-pcntl": "*",
 		"ext-json": "*",
-		"twig/twig": "^3.4"
+		"twig/twig": "^3.4",
+		"league/flysystem": "^3.11",
+		"overtrue/flysystem-qiniu": "^3.2",
+		"overtrue/flysystem-cos": "^5.1",
+		"iidestiny/flysystem-oss": "^4"
 	},
 	"autoload": {
 		"psr-4": {
