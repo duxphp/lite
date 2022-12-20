@@ -7,9 +7,11 @@ namespace Dux;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Queue\QueueCommand;
+use Dux\Route\Register;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
+use Evenement\EventEmitter;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -32,6 +34,9 @@ class Bootstrap {
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
     public string $exceptionBack = "go back";
     public \Twig\Environment $view;
+    public Register $route;
+
+    public EventEmitter $event;
 
     /**
      * init
@@ -53,6 +58,7 @@ class Bootstrap {
     public function loadWeb(): void {
         AppFactory::setContainer($this->container);
         $this->web = AppFactory::create();
+        $this->route = new Register();
     }
 
     /**
@@ -101,6 +107,7 @@ class Bootstrap {
     public function loadView() {
         $this->view = View::init("app", __DIR__ . "/Tpl");
     }
+
     /**
      * loadRoute
      * @return void
@@ -131,7 +138,11 @@ class Bootstrap {
         });
     }
 
-    /**
+    public function loadEvent(): void {
+        $this->event = new EventEmitter();
+    }
+
+        /**
      * 载入应用
      * @return void
      */
@@ -141,44 +152,40 @@ class Bootstrap {
         foreach ($appList as $vo) {
             App::$registerApp[] = $vo;
         }
-
-        $list = [];
-        $beforeList = [];
-        $afterList = [];
-        foreach (App::$registerApp as $vo) {
-            if (method_exists($vo, "register")) {
-                $list[] = $vo;
-            }
-            if (method_exists($vo, "boot")) {
-                $beforeList[] = $vo;
-            }
-            if (method_exists($vo, "after")) {
-                $afterList[] = $vo;
-            }
+        // 事件注册
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "event"], [$this->event]);
         }
-        foreach ($beforeList as $vo) {
-            call_user_func([new $vo, "register"], [$this->web, $this->container]);
+        // 应用注册
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "register"], [$this]);
         }
-        foreach ($list as $vo) {
-            call_user_func([new $vo, "boot"], [$this->web, $this->container]);
+        // 应用路由
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "appRoute"], [$this->route]);
         }
-        foreach ($afterList as $vo) {
-            call_user_func([new $vo, "after"], [$this->web, $this->container]);
+        // 普通路由
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "route"], [$this->route]);
         }
-
+        // 路由注册
+        foreach ($this->route->app as $route) {
+            $route->run($this->web);
+        }
+        // 公共路由
+        $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
+            throw new HttpNotFoundException($request);
+        });
+        // 应用启动
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "boot"], [$this]);
+        }
     }
 
     public function run(): void {
-        $this->loadApp();
         if ($this->command) {
             $this->command->run();
         } else {
-            foreach (App::$registerRoute as $route) {
-                $route->run($this->web);
-            }
-            $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
-                throw new HttpNotFoundException($request);
-            });
             $this->web->run();
         }
     }

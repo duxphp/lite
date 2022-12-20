@@ -33,7 +33,8 @@
 		"league/flysystem": "^3.11",
 		"overtrue/flysystem-qiniu": "^3.2",
 		"overtrue/flysystem-cos": "^5.1",
-		"iidestiny/flysystem-oss": "^4"
+		"iidestiny/flysystem-oss": "^4",
+		"evenement/evenement": "^3.0"
 	},
 	"autoload": {
 		"psr-4": {

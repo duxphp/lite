@@ -6,9 +6,12 @@ declare(strict_types=1);
 namespace Dux;
 
 use DI\Container;
+use Dux\App\AppExtend;
 use Dux\Database\Db;
+use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
+use Evenement\EventEmitter;
 use Psr\Http\Message\ServerRequestInterface;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
@@ -31,7 +34,6 @@ class App {
     static string $publicPath;
     static Bootstrap $bootstrap;
     static array $registerApp = [];
-    static array $registerRoute = [];
 
     /**
      * create
@@ -52,6 +54,8 @@ class App {
         $app->loadCache();
         $app->loadView();
         $app->loadRoute();
+        $app->loadEvent();
+        $app->loadApp();
         self::$bootstrap = $app;
         return $app;
     }
@@ -59,7 +63,6 @@ class App {
     static function createCli($basePath): Bootstrap {
         $app = self::create($basePath);
         $app->loadCommand();
-        self::$bootstrap = $app;
         return $app;
     }
 
@@ -77,6 +80,9 @@ class App {
      */
     static function registerApp(array $class): void {
         foreach ($class as $vo) {
+            if (!$vo instanceof AppExtend) {
+                throw new Exception("The application $vo could not be registered");
+            }
             self::$registerApp[] = $vo;
         }
     }
@@ -98,6 +104,14 @@ class App {
      */
     static function cache(): Psr16Adapter {
         return self::$bootstrap->cache;
+    }
+
+    /**
+     * event
+     * @return EventEmitter
+     */
+    static function event(): EventEmitter {
+        return self::$bootstrap->event;
     }
 
     /**
