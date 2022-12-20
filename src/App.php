@@ -22,7 +22,6 @@ use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
 
 class App {
-
     static string $basePath;
     static string $configPath;
     static string $dataPath;

@@ -7,5 +7,8 @@ use Throwable;
 
 class ErrorHtmlRenderer extends HtmlErrorRenderer
 {
+    protected function getErrorTitle(Throwable $exception): string {
+        return parent::getErrorTitle($exception);
+    }
 
 }

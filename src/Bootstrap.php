@@ -23,6 +23,7 @@ use \Symfony\Component\Console\Application;
 
 class Bootstrap {
 
+    static bool $debug = true;
     public Container $container;
     public ?slimApp $web = null;
     public ?Application $command = null;
@@ -141,6 +142,7 @@ class Bootstrap {
         if ($this->command) {
             $this->command->run();
         } else {
+            $this->debug = (bool)$this->config["app"]->get("debug");
             foreach (App::$registerRoute as $route) {
                 $route->run($this->web);
             }
