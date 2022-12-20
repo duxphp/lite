@@ -91,18 +91,9 @@ class Bootstrap {
         $this->web->addRoutingMiddleware();
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware(true, true, true);
-        $errorMiddleware->setDefaultErrorHandler(new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory()));
-
-
-//        $this->web->get('/', function (Request $request, Response $response) {
-//            $response->getBody()->write('<a href="/hello/world">Try /hello/world</a>');
-//            return $response;
-//        });
-//        $this->web->get('/hello/{name}', function (Request $request, Response $response, $args) {
-//            $name = $args['name'];
-//            $response->getBody()->write("Hello, $name");
-//            return $response;
-//        });
+        $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
+        $errorMiddleware->setDefaultErrorHandler($errorHandler);
+        $errorHandler->registerErrorRenderer("application/json", \Dux\Handlers\ErrorJsonRenderer::class);
     }
 
     /**
