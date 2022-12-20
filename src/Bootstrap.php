@@ -110,8 +110,9 @@ class Bootstrap {
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $response = $handler->handle($request);
             $response = $response->withHeader('Access-Control-Allow-Origin', '*');
-            $response = $response->withHeader('Access-Control-Allow-Methods', '*');
+            $response = $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
             $response = $response->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, X-CSRF-Token, AccessKey, X-Dux-Platform, Content-MD5, Content-Date');
+            $response = $response->withHeader('Access-Control-Expose-Methods', '*');
         });
         $this->web->addRoutingMiddleware();
         // 注册异常处理
