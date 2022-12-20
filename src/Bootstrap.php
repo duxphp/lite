@@ -32,6 +32,7 @@ class Bootstrap {
     public array $config;
     public string $exceptionTitle = "Application Error";
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
+    public string $exceptionBack = "go back";
     public \Twig\Environment $view;
 
     /**
@@ -70,8 +71,9 @@ class Bootstrap {
             $this->config[$path['filename']] = new Config($vo);
         }
         $this->debug = (bool)$this->config["app"]->get("app.debug");
-        $this->exceptionTitle = $this->config["app"]->get("app.exceptionTitle", $this->exceptionTitle);
-        $this->exceptionDesc = $this->config["app"]->get("app.exceptionDesc", $this->exceptionDesc);
+        $this->exceptionTitle = $this->config["app"]->get("app.exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = $this->config["app"]->get("app.exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = $this->config["app"]->get("app.exception.back", $this->exceptionBack);
     }
 
     /**
