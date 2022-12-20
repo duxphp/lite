@@ -14,13 +14,14 @@ use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App as slimApp;
 use Slim\Factory\AppFactory;
 use Medoo\Medoo;
 use Dux\Handlers\ErrorHandler;
 use Dux\Database\Db;
 use \Symfony\Component\Console\Application;
+use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Routing\RouteContext;
 
 class Bootstrap {
 
@@ -109,6 +110,19 @@ class Bootstrap {
      */
     public function loadRoute(): void {
         // 初始化中件
+        $this->web->addBodyParsingMiddleware();
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $routeContext = RouteContext::fromRequest($request);
+            $routingResults = $routeContext->getRoutingResults();
+            $methods = $routingResults->getAllowedMethods();
+            $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+
+            $response = $handler->handle($request);
+
+            $response = $response->withHeader('Access-Control-Allow-Origin', '*');
+            $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+            $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
+        });
         $this->web->addRoutingMiddleware();
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
