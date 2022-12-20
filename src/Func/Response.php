@@ -27,6 +27,6 @@ function send(ResponseInterface $response, string $message, array $data = [], in
  * @return mixed
  * @throws Exception
  */
-function error(string $message, int $code = 200): mixed {
+function error(string $message, int $code = 500): mixed {
     throw new Exception($message, $code);
 }
