@@ -71,9 +71,9 @@ class Bootstrap {
             $this->config[$path['filename']] = new Config($vo);
         }
         $this->debug = (bool)$this->config["app"]->get("app.debug");
-        $this->exceptionTitle = $this->config["app"]->get("app.exception.title", $this->exceptionTitle);
-        $this->exceptionDesc = $this->config["app"]->get("app.exception.desc", $this->exceptionDesc);
-        $this->exceptionBack = $this->config["app"]->get("app.exception.back", $this->exceptionBack);
+        $this->exceptionTitle = $this->config["app"]->get("exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = $this->config["app"]->get("exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = $this->config["app"]->get("exception.back", $this->exceptionBack);
     }
 
     /**
