@@ -11,7 +11,7 @@ class View {
     static function init(string $name, string $path): Environment {
         $loader = new \Twig\Loader\FilesystemLoader($path);
         return new \Twig\Environment($loader, [
-            'cache' => App::$dataPath . '/cache.' . $name,
+            'cache' => App::$dataPath . '/tpl/cache.' . $name,
         ]);
     }
 }
