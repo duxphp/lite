@@ -142,7 +142,7 @@ class Bootstrap {
         $this->event = new EventEmitter();
     }
 
-        /**
+    /**
      * 载入应用
      * @return void
      */
@@ -154,19 +154,19 @@ class Bootstrap {
         }
         // 事件注册
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "event"], [$this->event]);
+            call_user_func([new $vo, "event"], $this->event);
         }
         // 应用注册
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "register"], [$this]);
+            call_user_func([new $vo, "register"], $this);
         }
         // 应用路由
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "appRoute"], [$this->route]);
+            call_user_func([new $vo, "appRoute"], $this->route);
         }
         // 普通路由
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "route"], [$this->route]);
+            call_user_func([new $vo, "route"], $this->route);
         }
         // 路由注册
         foreach ($this->route->app as $route) {
@@ -178,7 +178,7 @@ class Bootstrap {
         });
         // 应用启动
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "boot"], [$this]);
+            call_user_func([new $vo, "boot"], $this);
         }
     }
 
