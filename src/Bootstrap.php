@@ -9,6 +9,7 @@ use Dux\Command\Command;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use DI\Container;
+use Dux\View\View;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -98,7 +99,7 @@ class Bootstrap {
      * @return void
      */
     public function loadView() {
-        $this->view = App::view('app', __DIR__ . "/Tpl");
+        $this->view = View::init("app", __DIR__ . "/Tpl");
     }
     /**
      * loadRoute
