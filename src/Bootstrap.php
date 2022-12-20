@@ -29,6 +29,8 @@ class Bootstrap {
     public ?Application $command = null;
     public Psr16Adapter $cache;
     public array $config;
+    public string $exceptionTitle = "Application Error";
+    public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
 
     /**
      * init
@@ -56,12 +58,18 @@ class Bootstrap {
      * loadConfig
      * @return void
      */
+    /**
+     * loadConfig
+     * @return void
+     */
     public function loadConfig(): void {
         foreach (glob(App::$configPath . "/*.yaml") as $vo) {
             $path = pathinfo($vo);
             $this->config[$path['filename']] = new Config($vo);
         }
-        $this->debug = $this->config["app"]->get("debug", true);
+        $this->debug = (bool)$this->config["app"]->get("app.debug");
+        $this->exceptionTitle = $this->config["app"]->get("app.exceptionTitle", $this->exceptionTitle);
+        $this->exceptionDesc = $this->config["app"]->get("app.exceptionDesc", $this->exceptionDesc);
     }
 
     /**
@@ -92,7 +100,7 @@ class Bootstrap {
         // 初始化中件
         $this->web->addRoutingMiddleware();
         // 注册异常处理
-        $errorMiddleware = $this->web->addErrorMiddleware($this->config["app"]->get("debug", true), true, true);
+        $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
         $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
         $errorMiddleware->setDefaultErrorHandler($errorHandler);
         $errorHandler->registerErrorRenderer("application/json", \Dux\Handlers\ErrorJsonRenderer::class);

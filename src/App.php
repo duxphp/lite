@@ -27,7 +27,6 @@ class App {
     static string $dataPath;
     static Bootstrap $bootstrap;
     static array $registerApp = [];
-
     static array $registerRoute = [];
 
     /**
