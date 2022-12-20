@@ -27,7 +27,7 @@ class ErrorHandler extends slimErrorHandler
         if (
             $this->statusCode == 404 ||
             $this->exception instanceof HttpSpecializedException ||
-            $this->exception instanceof ExceptionBusiness
+            $this->exception instanceof Exception
         ) {
             return;
         }
