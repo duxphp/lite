@@ -93,6 +93,10 @@ class App {
         return self::$bootstrap->cache;
     }
 
+    /**
+     * di
+     * @return Container
+     */
     static function di(): Container {
         return self::$bootstrap->container;
     }
@@ -103,6 +107,14 @@ class App {
      */
     static function command(): Application {
         return self::$bootstrap->command;
+    }
+
+    /**
+     * getDebug
+     * @return bool
+     */
+    static function getDebug(): bool {
+        return self::$bootstrap->debug;
     }
 
     /**
@@ -173,5 +185,6 @@ class App {
         }
         return self::$bootstrap->container->get("queue." . $type);
     }
+
 
 }

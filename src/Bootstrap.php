@@ -23,7 +23,7 @@ use \Symfony\Component\Console\Application;
 
 class Bootstrap {
 
-    static bool $debug = true;
+    public bool $debug = true;
     public Container $container;
     public ?slimApp $web = null;
     public ?Application $command = null;
@@ -61,6 +61,7 @@ class Bootstrap {
             $path = pathinfo($vo);
             $this->config[$path['filename']] = new Config($vo);
         }
+        $this->debug = $this->config["app"]->get("debug", true);
     }
 
     /**
@@ -91,7 +92,7 @@ class Bootstrap {
         // 初始化中件
         $this->web->addRoutingMiddleware();
         // 注册异常处理
-        $errorMiddleware = $this->web->addErrorMiddleware(true, true, true);
+        $errorMiddleware = $this->web->addErrorMiddleware($this->config["app"]->get("debug", true), true, true);
         $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
         $errorMiddleware->setDefaultErrorHandler($errorHandler);
         $errorHandler->registerErrorRenderer("application/json", \Dux\Handlers\ErrorJsonRenderer::class);
@@ -142,7 +143,6 @@ class Bootstrap {
         if ($this->command) {
             $this->command->run();
         } else {
-            $this->debug = (bool)$this->config["app"]->get("debug");
             foreach (App::$registerRoute as $route) {
                 $route->run($this->web);
             }
