@@ -18,6 +18,7 @@ use Dux\Handlers\ErrorHandler;
 use \Symfony\Component\Console\Application;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Exception\HttpNotFoundException;
 
 class Bootstrap {
 
@@ -107,13 +108,6 @@ class Bootstrap {
     public function loadRoute(): void {
         // 初始化中件
         $this->web->addBodyParsingMiddleware();
-        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-            $response = $handler->handle($request);
-            $response = $response->withHeader('Access-Control-Allow-Origin', '*');
-            $response = $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-            $response = $response->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, X-CSRF-Token, AccessKey, X-Dux-Platform, Content-MD5, Content-Date');
-            $response = $response->withHeader('Access-Control-Expose-Methods', '*');
-        });
         $this->web->addRoutingMiddleware();
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
@@ -124,6 +118,17 @@ class Bootstrap {
         $errorHandler->registerErrorRenderer("text/xml", \Dux\Handlers\ErrorXmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/html", \Dux\Handlers\ErrorHtmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/plain", \Dux\Handlers\ErrorPlainRenderer::class);
+
+        $this->web->options('/{routes:.+}', function ($request, $response, $args) {
+            return $response;
+        });
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $response = $handler->handle($request);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, X-CSRF-Token, AccessKey, X-Dux-Platform, Content-MD5, Content-Date')
+                ->withHeader('Access-Control-Expose-Methods', '*');
+        });
     }
 
     /**
@@ -160,6 +165,7 @@ class Bootstrap {
         foreach ($afterList as $vo) {
             call_user_func([new $vo, "after"], [$this->web, $this->container]);
         }
+
     }
 
     public function run(): void {
@@ -170,6 +176,9 @@ class Bootstrap {
             foreach (App::$registerRoute as $route) {
                 $route->run($this->web);
             }
+            $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
+                throw new HttpNotFoundException($request);
+            });
             $this->web->run();
         }
     }
