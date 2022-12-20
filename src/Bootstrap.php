@@ -12,6 +12,7 @@ use DI\Container;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App as slimApp;
 use Slim\Factory\AppFactory;
@@ -35,6 +36,10 @@ class Bootstrap {
         error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
         $container = new Container();
         $this->container = $container;
+    }
+
+    public function loadFunc() {
+        require_once "Func/Response.php";
     }
 
     /**
@@ -87,6 +92,7 @@ class Bootstrap {
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware(true, true, true);
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory()));
+
 
 //        $this->web->get('/', function (Request $request, Response $response) {
 //            $response->getBody()->write('<a href="/hello/world">Try /hello/world</a>');
@@ -146,4 +152,5 @@ class Bootstrap {
             $this->web->run();
         }
     }
+
 }

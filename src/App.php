@@ -5,7 +5,9 @@ declare(strict_types=1);
 
 namespace Dux;
 
+use DI\Container;
 use Dux\Database\Db;
+use Psr\Http\Message\ServerRequestInterface;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -39,6 +41,7 @@ class App {
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
         $app = new Bootstrap();
+        $app->loadFunc();
         $app->loadWeb();
         $app->loadConfig();
         $app->loadCache();
@@ -91,6 +94,9 @@ class App {
         return self::$bootstrap->cache;
     }
 
+    static function di(): Container {
+        return self::$bootstrap->container;
+    }
 
     /**
      * command
@@ -168,4 +174,5 @@ class App {
         }
         return self::$bootstrap->container->get("queue." . $type);
     }
+
 }
