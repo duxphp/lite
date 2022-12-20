@@ -28,7 +28,8 @@
 		"enqueue/redis": "^0.10.9",
 		"symfony/console": "^6.2",
 		"ext-pcntl": "*",
-		"ext-json": "*"
+		"ext-json": "*",
+		"twig/twig": "^3.4"
 	},
 	"autoload": {
 		"psr-4": {

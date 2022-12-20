@@ -16,4 +16,19 @@ class ErrorHtmlRenderer extends HtmlErrorRenderer
         $this->defaultErrorTitle = App::$bootstrap->exceptionTitle;
         $this->defaultErrorDescription = App::$bootstrap->exceptionDesc;
     }
+
+    public function __invoke(Throwable $exception, bool $displayErrorDetails): string
+    {
+        if ($displayErrorDetails) {
+            return parent::__invoke($exception, true);
+        } else {
+
+            return App::$bootstrap->view->render("error.html", [
+                "code" => $exception->getCode(),
+                "title" => $this->getErrorTitle($exception),
+                "desc" => $this->getErrorDescription($exception),
+            ]);
+
+        }
+    }
 }

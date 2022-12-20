@@ -7,6 +7,7 @@ namespace Dux;
 
 use DI\Container;
 use Dux\Database\Db;
+use Dux\View\View;
 use Psr\Http\Message\ServerRequestInterface;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
@@ -20,6 +21,7 @@ use Monolog\Logger;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
+use Twig\Environment;
 
 class App {
     static string $basePath;
@@ -43,6 +45,7 @@ class App {
         $app->loadWeb();
         $app->loadConfig();
         $app->loadCache();
+        $app->loadView();
         $app->loadRoute();
         self::$bootstrap = $app;
         return $app;
@@ -158,7 +161,8 @@ class App {
         if (!self::$bootstrap->container->has("logger." . $app)) {
             self::$bootstrap->container->set(
                 "logger." . $app,
-                LogHandler::init($app, Level::Debug));
+                LogHandler::init($app, Level::Debug)
+            );
         }
         return self::$bootstrap->container->get("logger." . $app);
     }
@@ -180,9 +184,28 @@ class App {
             unset($config["type"]);
             self::$bootstrap->container->set(
                 "queue." . $type,
-                new Queue($queueType, $config));
+                new Queue($queueType, $config)
+            );
         }
         return self::$bootstrap->container->get("queue." . $type);
+    }
+
+    /**
+     * view
+     * @param string $name
+     * @param string $path
+     * @return Environment
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    static function view(string $name, string $path): Environment {
+        if (!self::$bootstrap->container->has("view." . $name)) {
+            self::$bootstrap->container->set(
+                "view." . $name,
+                View::init($name, $path)
+            );
+        }
+        return self::$bootstrap->container->get("view." . $name);
     }
 
 

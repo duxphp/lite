@@ -31,6 +31,7 @@ class Bootstrap {
     public array $config;
     public string $exceptionTitle = "Application Error";
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
+    public \Twig\Environment $view;
 
     /**
      * init
@@ -92,6 +93,13 @@ class Bootstrap {
         $this->command = Command::init($commands);
     }
 
+    /**
+     * loadView
+     * @return void
+     */
+    public function loadView() {
+        $this->view = App::view('app', __DIR__ . "/Tpl");
+    }
     /**
      * loadRoute
      * @return void
