@@ -51,7 +51,7 @@ class Bootstrap {
      * @return void
      */
     public function loadConfig(): void {
-        foreach (glob(__DIR__ . "/../config/*.yaml") as $vo) {
+        foreach (glob(App::$configPath . "/*.yaml") as $vo) {
             $path = pathinfo($vo);
             $this->config[$path['filename']] = new Config($vo);
         }

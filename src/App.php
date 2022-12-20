@@ -21,6 +21,9 @@ use Symfony\Component\Console\Application;
 
 class App {
 
+    static string $basePath;
+    static string $configPath;
+    static string $dataPath;
     static Bootstrap $bootstrap;
     static array $registerApp = [];
 
@@ -28,9 +31,13 @@ class App {
 
     /**
      * create
+     * @param $basePath
      * @return Bootstrap
      */
-    static function create(): Bootstrap {
+    static function create($basePath): Bootstrap {
+        self::$basePath = $basePath;
+        self::$configPath = $basePath . '/config';
+        self::$dataPath = $basePath . '/data';
         $app = new Bootstrap();
         $app->loadWeb();
         $app->loadConfig();
@@ -40,13 +47,8 @@ class App {
         return $app;
     }
 
-    static function createCli(): Bootstrap {
-        self::create();
-        $app = new Bootstrap();
-        $app->loadWeb();
-        $app->loadConfig();
-        $app->loadCache();
-        $app->loadRoute();
+    static function createCli($basePath): Bootstrap {
+        $app = self::create($basePath);
         $app->loadCommand();
         self::$bootstrap = $app;
         return $app;
