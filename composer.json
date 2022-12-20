@@ -12,6 +12,8 @@
 	"authors": [
 		{"name": "duxphp", "email": "admin@duxphp.com"}
 	],
+	"minimum-stability": "dev",
+	"prefer-stable": true,
 	"require": {
 		"php": ">=7.4",
 		"slim/slim": "^4.11",
