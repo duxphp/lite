@@ -12,16 +12,12 @@ use DI\Container;
 use Dux\View\View;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as slimApp;
 use Slim\Factory\AppFactory;
-use Medoo\Medoo;
 use Dux\Handlers\ErrorHandler;
-use Dux\Database\Db;
 use \Symfony\Component\Console\Application;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Routing\RouteContext;
 
 class Bootstrap {
 
@@ -112,16 +108,10 @@ class Bootstrap {
         // 初始化中件
         $this->web->addBodyParsingMiddleware();
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-            $routeContext = RouteContext::fromRequest($request);
-            $routingResults = $routeContext->getRoutingResults();
-            $methods = $routingResults->getAllowedMethods();
-            $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
-
             $response = $handler->handle($request);
-
             $response = $response->withHeader('Access-Control-Allow-Origin', '*');
-            $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
-            $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
+            $response = $response->withHeader('Access-Control-Allow-Methods', '*');
+            $response = $response->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, X-CSRF-Token, AccessKey, X-Dux-Platform, Content-MD5, Content-Date');
         });
         $this->web->addRoutingMiddleware();
         // 注册异常处理
