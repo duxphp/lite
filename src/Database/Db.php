@@ -3,16 +3,14 @@ declare(strict_types=1);
 
 namespace Dux\Database;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Capsule\Manager;
 
 class Db {
 
-    static function init(array $config): Capsule {
-        $capsule = new Capsule;
+    static function init(array $config): Manager {
+        $capsule = new Manager;
         $capsule->addConnection($config);
+        $capsule->setAsGlobal();
         $capsule->bootEloquent();
         return $capsule;
     }

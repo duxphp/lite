@@ -2,6 +2,7 @@
 
 namespace Dux\Database;
 
+use Dux\App;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
@@ -48,7 +49,7 @@ class Migrate {
             $name = $modelObject->getTable();
             $struct = $modelObject->struct;
             $rules = $this->migrateRule($struct);
-            if (!$this->capsule->schema()->hasTable($name)) {
+            if (!$this->capsule->schema()->hasTable(App::db()->connection()->getTablePrefix() . $name)) {
                 // 创建表
                 $this->capsule->schema()->create($name, function (Blueprint $table) use ($rules) {
                     foreach ($rules as $field => $rule) {
@@ -84,14 +85,19 @@ class Migrate {
     private function createField(Blueprint $table, string $field, array $rule): ColumnDefinition {
         // 创建字段
         $type = array_key_first($rule);
-        $fieldObject = call_user_func($table, $type, $field);
+        $fieldObject = $table->$type($field);
         // 设置字段
         $i = 0;
         foreach ($rule as $method => $params) {
             if ($i == 0) {
                 continue;
             }
-            $fieldObject = call_user_func($fieldObject, $method, ...$params);
+            if ($params) {
+                $fieldObject = call_user_func($fieldObject, $method, ...$params);
+            }else {
+                $fieldObject = call_user_func($fieldObject, $method);
+            }
+
             $i++;
         }
         return $fieldObject;
@@ -103,7 +109,9 @@ class Migrate {
             $ruleMaps = [];
             $rules = explode('|', $rule);
             foreach ($rules as $vo) {
-                [$method, $params] = explode(':', $vo, 2);
+                $tmp = explode(':', $vo, 2);
+                $method = $tmp[0];
+                $params = isset($tmp[1]) ? $tmp[1] : "";
                 $ruleMaps[$method] = explode(',', $params);
             }
             $map[$field] = $ruleMaps;
