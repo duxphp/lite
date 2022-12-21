@@ -15,6 +15,8 @@ use Dux\View\View;
 use Evenement\EventEmitter;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
+use Latte\Engine;
+use League\Flysystem\Filesystem;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -233,16 +235,15 @@ class App {
     /**
      * view
      * @param string $name
-     * @param string $path
-     * @return Environment
+     * @return Engine
      * @throws DependencyException
      * @throws NotFoundException
      */
-    static function view(string $name, string $path): Environment {
+    static function view(string $name): Engine {
         if (!self::$di->has("view." . $name)) {
             self::$di->set(
                 "view." . $name,
-                View::init($name, $path)
+                View::init($name)
             );
         }
         return self::$di->get("view." . $name);
@@ -251,9 +252,9 @@ class App {
     /**
      * storage
      * @param string $type
-     * @return mixed
+     * @return Filesystem
      */
-    static function storage(string $type = "") {
+    static function storage(string $type = ""): Filesystem {
         if (!$type) {
             $type = self::config("storage")->get("type");
         }
