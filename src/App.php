@@ -54,6 +54,7 @@ class App {
 
         $app = new Bootstrap();
         $app->loadFunc();
+        $app->loadConfig();
         $app->loadWeb(self::$di);
         $app->loadCache();
         $app->loadView();
