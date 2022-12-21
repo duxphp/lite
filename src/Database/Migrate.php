@@ -23,7 +23,7 @@ class Migrate {
         foreach ($this->migrate as $model) {
             $modelObject = new $model;
             $name = $modelObject->getTable();
-            $tableName = $pre . "." . $name;
+            $tableName = $pre . $name;
             $hasTable = $this->db->schema()->hasTable($name);
             $schema = $modelObject->getSchema();
             $rules = $this->migrateRule($schema);
@@ -34,7 +34,7 @@ class Migrate {
                     $sqls[] = implode(" ", [$field, ...$this->generateCol($rule, false)]);
                 }
                 $fields = implode(",", $sqls);
-                $this->db->connection()->statement("create table $name ($fields)");
+                $this->db->connection()->statement("create table $tableName ($fields)");
             } else {
                 $lastField = "";
                 foreach ($rules as $field => $rule) {
@@ -46,10 +46,10 @@ class Migrate {
                     $string = implode(" ", $sql);
                     if ($hasColumn) {
                         //修改字段
-                        $this->db->connection()->statement("alter table $name modify column $string");
+                        $this->db->connection()->statement("alter table $tableName modify column $string");
                     } else {
                         //新增字段
-                        $this->db->connection()->statement("alter table $name add column $string");
+                        $this->db->connection()->statement("alter table $tableName add column $string");
                     }
                     $lastField = $field;
                 }
