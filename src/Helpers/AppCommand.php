@@ -52,12 +52,12 @@ class AppCommand extends Command {
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
         file_put_contents($dir . "/App.php", $content);
 
-        $output->writeln("<info>Generate application successfully</info>");
+        $output->write("<info>Generate application successfully</info>");
         return Command::SUCCESS;
     }
 
     public function error(OutputInterface $output, string $message): int {
-        $output->writeln("<error>$$message</error>");
+        $output->write("<error>$$message</error>");
         return Command::FAILURE;
     }
 
