@@ -20,7 +20,7 @@ class EventCommand extends Command {
         $list = App::event()->listeners();
         $data = [];
         foreach ($list as $name => $vo) {
-            $data[$name] = count($vo);
+            $data[] = [$name, count($vo)];
         }
 
         $table = new Table($output);
