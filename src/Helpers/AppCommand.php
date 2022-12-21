@@ -52,7 +52,7 @@ class AppCommand extends Command {
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
         file_put_contents($dir . "/App.php", $content);
 
-        $output->writeln("<success>Generate application successfully</success>");
+        $output->writeln("<info>Generate application successfully</info>");
         return Command::SUCCESS;
     }
 
