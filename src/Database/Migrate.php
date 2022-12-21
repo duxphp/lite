@@ -38,7 +38,7 @@ class Migrate {
         $this->capsule = $capsule;
     }
 
-    public function register(Model $model): void {
+    public function register(string $model): void {
         $this->migrate[] = $model;
     }
 
