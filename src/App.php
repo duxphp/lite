@@ -158,7 +158,7 @@ class App {
      * @param string $type
      * @return Capsule
      */
-    static function db(string $type = "default"): Capsule {
+    static function db(string $type = ""): Capsule {
         if (!$type) {
             $type = self::config("database")->get("db.type");
         }
@@ -176,7 +176,7 @@ class App {
      * @param string $type
      * @return Migrate
      */
-    static function dbMigrate(string $type = "default"): Migrate {
+    static function dbMigrate(string $type = ""): Migrate {
         if (!$type) {
             $type = self::config("database")->get("db.type");
         }
