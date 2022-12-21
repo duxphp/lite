@@ -42,7 +42,7 @@ class AppCommand extends Command {
 
         $namespace = $file->addNamespace("App\\" . $name);
 
-        $class = $namespace->addClass($name);
+        $class = $namespace->addClass("App");
         $class->setExtends(App\AppExtend::class);
         $class->addComment("Application Registration");
 
