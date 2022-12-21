@@ -159,21 +159,16 @@ class App {
     /**
      * database
      * @source illuminate/database
-     * @param string $type
-     * @return Manager | Connection
+     * @return Manager
      */
-    static function db(string $type = ""): Manager | Connection {
-        if (!$type) {
-            $type = self::config("database")->get("db.type", "default");
-        }
+    static function db(): Manager {
         if (!self::$di->has("db")) {
             self::$di->set(
                 "db",
                 Db::init(self::config("database")->get("db.drivers"))
             );
         }
-        $db = self::$di->get("db");
-        return $type ? $db->connection($type) : $db;
+        return self::$di->get("db");
     }
 
     /**
