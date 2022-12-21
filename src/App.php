@@ -160,7 +160,7 @@ class App {
      */
     static function db(string $type = ""): Capsule {
         if (!$type) {
-            $type = self::config("database")->get("db.type");
+            $type = self::config("database")->get("db.type", "default");
         }
         if (!self::$bootstrap->container->has("db." . $type)) {
             self::$bootstrap->container->set(
@@ -178,7 +178,7 @@ class App {
      */
     static function dbMigrate(string $type = ""): Migrate {
         if (!$type) {
-            $type = self::config("database")->get("db.type");
+            $type = self::config("database")->get("db.type", "default");
         }
         if (!self::$bootstrap->container->has("migrate." . $type)) {
             self::$bootstrap->container->set(
