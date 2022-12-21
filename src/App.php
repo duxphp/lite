@@ -8,14 +8,12 @@ namespace Dux;
 use DI\Container;
 use Dux\App\AppExtend;
 use Dux\Database\Db;
-use Dux\Database\MedooExtend;
 use Dux\Database\Migrate;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
-use Illuminate\Database\Capsule\Manager;
-use Medoo\Medoo;
+use Illuminate\Database\Connection;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -161,9 +159,9 @@ class App {
      * database
      * @source illuminate/database
      * @param string $type
-     * @return Manager
+     * @return Connection
      */
-    static function db(string $type = ""): Manager {
+    static function db(string $type = ""): Connection {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
