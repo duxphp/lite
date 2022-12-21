@@ -31,3 +31,12 @@ function send(ResponseInterface $response, string $message, array $data = [], in
 function error(string $message, int $code = 500): mixed {
     throw new Exception($message, $code);
 }
+
+/**
+ * @param string $name
+ * @param array $params
+ * @return string
+ */
+function url(string $name, array $params): string {
+    return \Dux\App::app()->getRouteCollector()->getRouteParser()->urlFor($name, $params);
+}
