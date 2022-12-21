@@ -3,40 +3,14 @@
 namespace Dux\Database;
 
 use Dux\App;
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Support\Facades\Schema;
 
 class Migrate {
     public array $migrate = [];
 
-    public array $updateFields = [
-        "bigInteger",
-        "binary",
-        "boolean",
-        "char",
-        "date",
-        "dateTime",
-        "dateTimeTz",
-        "decimal",
-        "integer",
-        "json",
-        "longText",
-        "mediumText",
-        "smallInteger",
-        "string",
-        "text",
-        "time",
-        "unsignedBigInteger",
-        "unsignedInteger",
-        "unsignedSmallInteger",
-        "uuid",
-    ];
-    private Capsule $capsule;
+    private MedooExtend $db;
 
-    public function __construct(Capsule $capsule) {
-        $this->capsule = $capsule;
+    public function __construct(MedooExtend $db) {
+        $this->db = $db;
     }
 
     public function register(string $model): void {
@@ -47,7 +21,10 @@ class Migrate {
         foreach ($this->migrate as $model) {
             $modelObject = new $model;
             $name = $modelObject->getTable();
-            $pre = App::db()->connection()->getTablePrefix();
+            //$pre = $this->db->getConfig("prefix");
+
+            $data = $this->db->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE table_name = <$name>")->fetchAll();
+
             $struct = $modelObject->struct;
             $rules = $this->migrateRule($struct);
             if (!$this->capsule->schema()->hasTable($name)) {

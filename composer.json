@@ -34,8 +34,7 @@
 		"overtrue/flysystem-cos": "^5.1",
 		"iidestiny/flysystem-oss": "^4",
 		"evenement/evenement": "^3.0",
-		"illuminate/database": "^9.45",
-		"doctrine/dbal": "^3.5"
+		"catfan/medoo": "^2.1"
 	},
 	"autoload": {
 		"psr-4": {

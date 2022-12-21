@@ -8,11 +8,13 @@ namespace Dux;
 use DI\Container;
 use Dux\App\AppExtend;
 use Dux\Database\Db;
+use Dux\Database\MedooExtend;
 use Dux\Database\Migrate;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
+use Medoo\Medoo;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -25,7 +27,6 @@ use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
 use Twig\Environment;
-use Illuminate\Database\Capsule\Manager as Capsule;
 
 class App {
     static string $basePath;
@@ -159,9 +160,9 @@ class App {
      * database
      * @source illuminate/database
      * @param string $type
-     * @return Capsule
+     * @return MedooExtend
      */
-    static function db(string $type = ""): Capsule {
+    static function db(string $type = ""): MedooExtend {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
