@@ -70,7 +70,7 @@ abstract class Model
      * 配置
      * @var array
      */
-    private array $config;
+    private array $config = [];
 
 
     public function __construct() {
