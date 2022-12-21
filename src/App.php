@@ -18,7 +18,6 @@ use Dux\Queue\Queue;
 use Dux\Validator\Validator;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Medoo\Medoo;
 use Monolog\Level;
 use Monolog\Logger;
 use Noodlehaus\Config;

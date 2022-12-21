@@ -22,7 +22,6 @@
 		"php-di/php-di": "^6.4.0",
 		"hassankhan/config": "^3.0",
 		"symfony/yaml": "^6.2",
-		"catfan/medoo": "^2.1",
 		"phpfastcache/phpfastcache": "^9.1",
 		"nette/utils": "^3.2",
 		"enqueue/redis": "^0.10.9",
