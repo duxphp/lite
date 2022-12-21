@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Dux\Helper;
+namespace Dux\Helpers;
 
 use Dux\App;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +25,7 @@ class AppCommand extends Command {
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $name = $input->getArgument('app');
+        $name = $input->getArgument('name');
         $name = ucfirst($name);
         $dir = App::$appPath . "/$name";
         if (is_dir($dir)) {
