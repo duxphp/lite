@@ -12,7 +12,6 @@ use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
-use Psr\Http\Message\ServerRequestInterface;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -26,6 +25,7 @@ use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
 use Twig\Environment;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class App {
     static string $basePath;
@@ -151,11 +151,11 @@ class App {
 
     /**
      * database
-     * @source catfan/Medoo
+     * @source illuminate/database
      * @param string $type
-     * @return Medoo
+     * @return Capsule
      */
-    static function db(string $type = ""): Medoo {
+    static function db(string $type = ""): Capsule {
         if (!$type) {
             $type = self::config("database")->get("db.type");
         }
