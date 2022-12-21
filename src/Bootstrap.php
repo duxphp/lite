@@ -13,6 +13,7 @@ use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
 use Evenement\EventEmitter;
+use Latte\Engine;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -33,7 +34,7 @@ class Bootstrap {
     public string $exceptionTitle = "Application Error";
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
     public string $exceptionBack = "go back";
-    public \Twig\Environment $view;
+    public Engine $view;
     public Register $route;
 
     public EventEmitter $event;
@@ -100,7 +101,7 @@ class Bootstrap {
      * @return void
      */
     public function loadView() {
-        $this->view = View::init("app", __DIR__ . "/Tpl");
+        $this->view = View::init("app");
     }
 
     /**
