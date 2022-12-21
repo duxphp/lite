@@ -13,4 +13,11 @@ class Model extends \Illuminate\Database\Eloquent\Model
     protected $fillable = [];
     protected $guarded = [];
 
+    public array $struct = [
+        'id' => 'bigIncrements',
+        'name' => 'char:100',
+        'price' => 'float:8,2',
+        'time' => 'time|after:name|comment:dsdsd',
+    ];
+
 }

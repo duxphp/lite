@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Dux\Database;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\ColumnDefinition;
+use Illuminate\Support\Facades\Schema;
 
 class Db {
 
@@ -13,4 +16,5 @@ class Db {
         $capsule->bootEloquent();
         return $capsule;
     }
+
 }

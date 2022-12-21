@@ -8,6 +8,7 @@ namespace Dux;
 use DI\Container;
 use Dux\App\AppExtend;
 use Dux\Database\Db;
+use Dux\Database\Migrate;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
@@ -33,6 +34,9 @@ class App {
     static string $publicPath;
     static Bootstrap $bootstrap;
     static array $registerApp = [];
+
+
+    static Migrate $dbMigrate;
 
     /**
      * create
@@ -154,7 +158,7 @@ class App {
      * @param string $type
      * @return Capsule
      */
-    static function db(string $type = ""): Capsule {
+    static function db(string $type = "default"): Capsule {
         if (!$type) {
             $type = self::config("database")->get("db.type");
         }
@@ -165,6 +169,24 @@ class App {
             );
         }
         return self::$bootstrap->container->get("db." . $type);
+    }
+
+    /**
+     * dbMigrate
+     * @param string $type
+     * @return Migrate
+     */
+    static function dbMigrate(string $type = "default"): Migrate {
+        if (!$type) {
+            $type = self::config("database")->get("db.type");
+        }
+        if (!self::$bootstrap->container->has("migrate." . $type)) {
+            self::$bootstrap->container->set(
+                "migrate." . $type,
+                new Migrate(self::db($type))
+            );
+        }
+        return self::$bootstrap->container->get("migrate." . $type);
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Dux;
 
 use Dux\Cache\Cache;
 use Dux\Command\Command;
+use Dux\Database\MigrateCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\Register;
 use Dux\Route\RouteCommand;
@@ -97,6 +98,7 @@ class Bootstrap {
         $commands = $this->config["command"]->get("registers", []);
         $commands[] = QueueCommand::class;
         $commands[] = RouteCommand::class;
+        $commands[] = MigrateCommand::class;
         $this->command = Command::init($commands);
     }
 
@@ -159,6 +161,10 @@ class Bootstrap {
         // 应用注册
         foreach ($appList as $vo) {
             call_user_func([new $vo, "register"], $this);
+        }
+        // 模型注册
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "model"], App::dbMigrate());
         }
         // 应用路由
         foreach ($appList as $vo) {
