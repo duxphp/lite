@@ -35,6 +35,7 @@ class App {
     static string $configPath;
     static string $dataPath;
     static string $publicPath;
+    static string $appPath;
     static Bootstrap $bootstrap;
     static Container $di;
     static array $config;
@@ -50,6 +51,7 @@ class App {
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
         self::$publicPath = $basePath . '/public';
+        self::$appPath = $basePath . '/app';
         self::$di = new Container();
 
         $app = new Bootstrap();

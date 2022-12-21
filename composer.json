@@ -34,7 +34,8 @@
 		"iidestiny/flysystem-oss": "^4",
 		"evenement/evenement": "^3.0",
 		"illuminate/database": "^9.45",
-		"latte/latte": "^3.0"
+		"latte/latte": "^3.0",
+		"nette/php-generator": "^4.0"
 	},
 	"autoload": {
 		"psr-4": {

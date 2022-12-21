@@ -14,6 +14,8 @@ class AppExtend {
 
     public string $name = "";
 
+    public string $description = "";
+
     /**
      * @param Bootstrap $app
      * @return void
