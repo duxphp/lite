@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\App;
 
 use Dux\Bootstrap;
+use Dux\Database\MedooExtend;
 use Dux\Database\Migrate;
 use Dux\Route\Register as Route;
 use Evenement\EventEmitter;
@@ -41,7 +42,7 @@ class AppExtend {
     public function route(Route $app): void {
     }
 
-    public function model(Migrate $migrate, Capsule $db): void {
+    public function model(Migrate $migrate, MedooExtend $db): void {
     }
 
     public function event(EventEmitter $event): void {
