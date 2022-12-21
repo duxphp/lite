@@ -8,6 +8,7 @@ use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Database\MigrateCommand;
 use Dux\Event\EventCommand;
+use Dux\Helper\AppCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\Register;
 use Dux\Route\RouteCommand;
@@ -95,6 +96,7 @@ class Bootstrap {
         $commands[] = RouteCommand::class;
         $commands[] = MigrateCommand::class;
         $commands[] = EventCommand::class;
+        $commands[] = AppCommand::class;
         $this->command = Command::init($commands);
     }
 
