@@ -23,11 +23,11 @@ class Migrate {
             $rules = $this->migrateRule($schema);
             if (!$hasTable) {
                 // 创建表
-                $sqls = [];
+                $sql = [];
                 foreach ($rules as $field => $rule) {
-                    $sqls[] = implode(" ", [$field, ...$this->generateCol($rule, false)]);
+                    $sql[] = implode(" ", [$field, ...$this->generateCol($rule, false)]);
                 }
-                $fields = implode(",", $sqls);
+                $fields = implode(",", $sql);
                 App::db()->connection()->statement("create table $tableName ($fields)");
             } else {
                 $lastField = "";
