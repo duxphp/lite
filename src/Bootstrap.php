@@ -79,8 +79,8 @@ class Bootstrap {
      * @return void
      */
     public function loadCache(): void {
-        $type = $this->config["cache"]->get("type");
-        $this->cache = Cache::init($type, (array)$this->config["cache"]->get("drivers." . $type));
+        $type = App::config("cache")->get("type");
+        $this->cache = Cache::init($type, (array)App::config("cache")->get("drivers." . $type));
     }
 
     /**
@@ -88,7 +88,7 @@ class Bootstrap {
      * @return void
      */
     public function loadCommand(): void {
-        $commands = $this->config["command"]->get("registers", []);
+        $commands = App::config("command")->get("registers", []);
         $commands[] = QueueCommand::class;
         $commands[] = RouteCommand::class;
         $commands[] = MigrateCommand::class;
