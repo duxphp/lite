@@ -14,6 +14,7 @@ use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Connection;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -159,9 +160,9 @@ class App {
      * database
      * @source illuminate/database
      * @param string $type
-     * @return Manager
+     * @return Manager | Connection
      */
-    static function db(string $type = ""): Manager {
+    static function db(string $type = ""): Manager | Connection {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
@@ -171,7 +172,8 @@ class App {
                 Db::init(self::config("database")->get("db.drivers"))
             );
         }
-        return self::$di->get("db");
+        $db = self::$di->get("db");
+        return $type ? $db->connection($type) : $db;
     }
 
     /**
