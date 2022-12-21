@@ -3,13 +3,14 @@
 namespace Dux\Database;
 
 use Dux\App;
+use Illuminate\Database\Capsule\Manager;
 
 class Migrate {
     public array $migrate = [];
 
-    private MedooExtend $db;
+    private Manager $db;
 
-    public function __construct(MedooExtend $db) {
+    public function __construct(Manager $db) {
         $this->db = $db;
     }
 
@@ -18,88 +19,45 @@ class Migrate {
     }
 
     public function migrate(): void {
+        $pre = $this->db->connection()->getTablePrefix();
         foreach ($this->migrate as $model) {
             $modelObject = new $model;
             $name = $modelObject->getTable();
-            $dataname = $this->db->getConfig("database");
-            $data = $this->db->query("SELECT COUNT(*) as num FROM information_schema.TABLES WHERE table_schema = '$dataname' AND table_name = '$name'")->fetch();
-            $hasTable = (bool)$data["num"];
+            $tableName = $pre . "." . $name;
+            $hasTable = $this->db->schema()->hasTable($name);
             $schema = $modelObject->getSchema();
             $rules = $this->migrateRule($schema);
             if (!$hasTable) {
                 // 创建表
-                $fieldArray = [];
+                $sqls = [];
                 foreach ($rules as $field => $rule) {
-                    $row = [$field];
-                    $i = 0;
-                    foreach ($rule as $method => $params) {
-                        switch ($method) {
-                            case "primarykey":
-                                $row[] = "unsigned AUTO_INCREMENT PRIMARY KEY NOT NULL ";
-                                break;
-                            case "comment":
-                            case "default":
-                                $row[] = "$method '$params'";
-                                break;
-                            case "null":
-                                $row[] = "DEFAULT NULL";
-                                break;
-                            case "notnull":
-                                $row[] = "NOT NULL";
-                                break;
-                            default:
-                                if ($i == 0) {
-                                    if ($params) {
-                                        $method = "$method($params)";
-                                    }
-                                }
-                                $row[] = $method;
-                        }
-                        $i++;
-                    }
-                    $fieldArray[] = implode(" ", $row);
+                    $sqls[] = implode(" ", [$field, ...$this->generateCol($rule, false)]);
                 }
-                $fieldSql = implode(",", $fieldArray);
-                $this->db->query("create table $name ($fieldSql)");
+                $fields = implode(",", $sqls);
+                $this->db->connection()->statement("create table $name ($fields)");
             } else {
-                $result = $this->db->query("select count(*) as num
-                        from information_schema.columns
-                        where table_schema = '$dataname'
-                        and table_name = '$name'
-                        and column_name = '$field'")->fetch();
-                $hasColumn = (bool)$result["num"];
-
-                // 更新字段
                 $lastField = "";
                 foreach ($rules as $field => $rule) {
-                    $row = [$field];
-                    $i = 0;
-
+                    $hasColumn = $this->db->schema()->hasColumn($name, $field);
+                    $sql = [$field, ...$this->generateCol($rule, $hasColumn)];
                     if ($lastField) {
-                        $row[] = "after $lastField";
+                        $sql[] = "after $lastField";
                     }
-                    $sql = implode(" ", $row);
-
-
+                    $string = implode(" ", $sql);
                     if ($hasColumn) {
                         //修改字段
-                        $this->db->query("alter table $name modify column $sql");
+                        $this->db->connection()->statement("alter table $name modify column $string");
                     } else {
                         //新增字段
-                        $this->db->query("alter table $name add column $sql");
-
-
+                        $this->db->connection()->statement("alter table $name add column $string");
                     }
                     $lastField = $field;
                 }
-
-
             }
-
         }
     }
 
-    private function generateCol(array $rule, bool $update = false): array {
+    private function generateCol(array $rule, bool $update): array {
         $i = 0;
         foreach ($rule as $method => $params) {
             switch ($method) {

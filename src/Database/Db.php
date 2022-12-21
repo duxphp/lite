@@ -3,13 +3,16 @@ declare(strict_types=1);
 
 namespace Dux\Database;
 
-use Medoo\Medoo;
+use Illuminate\Database\Capsule\Manager;
 
 class Db {
 
 
-    static function init(array $config): MedooExtend {
-        $database = new MedooExtend($config);
-        return $database;
+    static function init(array $config): Manager {
+        $capsule = new Manager;
+        $capsule->addConnection($config);
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
+        return $capsule;
     }
 }

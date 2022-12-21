@@ -14,6 +14,7 @@ use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
+use Illuminate\Database\Capsule\Manager;
 use Medoo\Medoo;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
@@ -160,9 +161,9 @@ class App {
      * database
      * @source illuminate/database
      * @param string $type
-     * @return MedooExtend
+     * @return Manager
      */
-    static function db(string $type = ""): MedooExtend {
+    static function db(string $type = ""): Manager {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
