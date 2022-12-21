@@ -47,9 +47,10 @@ class Migrate {
         foreach ($this->migrate as $model) {
             $modelObject = new $model;
             $name = $modelObject->getTable();
+            $pre = App::db()->connection()->getTablePrefix();
             $struct = $modelObject->struct;
             $rules = $this->migrateRule($struct);
-            if (!$this->capsule->schema()->hasTable(App::db()->connection()->getTablePrefix() . $name)) {
+            if (!$this->capsule->schema()->hasTable($name)) {
                 // 创建表
                 $this->capsule->schema()->create($name, function (Blueprint $table) use ($rules) {
                     foreach ($rules as $field => $rule) {
@@ -58,7 +59,7 @@ class Migrate {
                 });
             } else {
                 // 更新表
-                $this->capsule->schema()->table($name, function (Blueprint $table) use ($name, $rules) {
+                $this->capsule->schema()->table($name, function (Blueprint $table) use ($pre, $name, $rules) {
                     $table->string('name', 50)->change();
                     foreach ($rules as $field => $rule) {
                         // 创建字段
@@ -67,7 +68,7 @@ class Migrate {
                             continue;
                         }
                         // 跳过无法更新字段
-                        if (in_array($this->capsule->schema()->getColumnType($name, $name), $this->updateFields)) {
+                        if (!in_array($this->capsule->schema()->getColumnType($name, $field), $this->updateFields)) {
                             continue;
                         }
                         // 更新字段
@@ -85,7 +86,7 @@ class Migrate {
     private function createField(Blueprint $table, string $field, array $rule): ColumnDefinition {
         // 创建字段
         $type = array_key_first($rule);
-        $fieldObject = $table->$type($field);
+        $fieldObject = $table->$type($field, ...$rule[$type]);
         // 设置字段
         $i = 0;
         foreach ($rule as $method => $params) {
@@ -94,7 +95,7 @@ class Migrate {
             }
             if ($params) {
                 $fieldObject = call_user_func($fieldObject, $method, ...$params);
-            }else {
+            } else {
                 $fieldObject = call_user_func($fieldObject, $method);
             }
 
