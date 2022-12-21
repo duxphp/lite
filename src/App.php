@@ -165,13 +165,13 @@ class App {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
-        if (!self::$di->has("db." . $type)) {
+        if (!self::$di->has("db")) {
             self::$di->set(
-                "db." . $type,
-                Db::init(self::config("database")->get("db.drivers.". $type))
+                "db",
+                Db::init(self::config("database")->get("db.drivers"))
             );
         }
-        return self::$di->get("db." . $type);
+        return self::$di->get("db");
     }
 
     /**

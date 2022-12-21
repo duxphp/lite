@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace Dux\Database;
 
 use Illuminate\Database\Capsule\Manager;
-use \Illuminate\Database\Connection;
 
 class Db {
 
 
-    static function init(string $name, array $config): Connection {
+    static function init(array $configs): Manager {
         $capsule = new Manager;
-        $capsule->addConnection($config, $name);
+        foreach ($configs as $key => $config) {
+            $capsule->addConnection($config, $key);
+        }
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
-        return $capsule->getConnection($name);
+        return $capsule;
     }
 }
