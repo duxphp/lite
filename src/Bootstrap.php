@@ -157,7 +157,7 @@ class Bootstrap {
         }
         // 模型注册
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "model"], App::dbMigrate());
+            call_user_func([new $vo, "model"], App::dbMigrate(), App::db());
         }
         // 应用路由
         foreach ($appList as $vo) {
