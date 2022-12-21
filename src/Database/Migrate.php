@@ -13,7 +13,7 @@ class Migrate {
     }
 
     public function migrate(): void {
-        $pre = App::db()->getTablePrefix();
+        $pre = App::db()->connection()->getTablePrefix();
         foreach ($this->migrate as $model) {
             $modelObject = new $model;
             $name = $modelObject->getTable();
