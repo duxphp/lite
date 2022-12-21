@@ -13,7 +13,7 @@ use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
-use Illuminate\Database\Connection;
+use Illuminate\Database\Capsule\Manager;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -159,9 +159,9 @@ class App {
      * database
      * @source illuminate/database
      * @param string $type
-     * @return Connection
+     * @return Manager
      */
-    static function db(string $type = ""): Connection {
+    static function db(string $type = ""): Manager {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
