@@ -26,7 +26,6 @@ use Slim\Exception\HttpNotFoundException;
 class Bootstrap {
 
     public bool $debug = true;
-    public Container $container;
     public ?slimApp $web = null;
     public ?Application $command = null;
     public Psr16Adapter $cache;
@@ -44,8 +43,6 @@ class Bootstrap {
      */
     public function __construct() {
         error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
-        $container = new Container();
-        $this->container = $container;
     }
 
     public function loadFunc() {
@@ -56,8 +53,8 @@ class Bootstrap {
      * loadWeb
      * @return void
      */
-    public function loadWeb(): void {
-        AppFactory::setContainer($this->container);
+    public function loadWeb(Container $di): void {
+        AppFactory::setContainer($di);
         $this->web = AppFactory::create();
         $this->route = new Register();
     }
@@ -71,14 +68,10 @@ class Bootstrap {
      * @return void
      */
     public function loadConfig(): void {
-        foreach (glob(App::$configPath . "/*.yaml") as $vo) {
-            $path = pathinfo($vo);
-            $this->config[$path['filename']] = new Config($vo);
-        }
-        $this->debug = (bool)$this->config["app"]->get("app.debug");
-        $this->exceptionTitle = $this->config["app"]->get("exception.title", $this->exceptionTitle);
-        $this->exceptionDesc = $this->config["app"]->get("exception.desc", $this->exceptionDesc);
-        $this->exceptionBack = $this->config["app"]->get("exception.back", $this->exceptionBack);
+        $this->debug = (bool)App::config("app")->get("app.debug");
+        $this->exceptionTitle = App::config("app")->get("exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = App::config("app")->get("exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = App::config("app")->get("exception.back", $this->exceptionBack);
     }
 
     /**
@@ -150,7 +143,7 @@ class Bootstrap {
      */
     public function loadApp(): void {
 
-        $appList = $this->config["app"]->get("registers", []);
+        $appList = App::config("app")->get("registers", []);
         foreach ($appList as $vo) {
             App::$registerApp[] = $vo;
         }

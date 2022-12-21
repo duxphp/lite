@@ -33,10 +33,9 @@ class App {
     static string $dataPath;
     static string $publicPath;
     static Bootstrap $bootstrap;
+    static Container $di;
+    static array $config;
     static array $registerApp = [];
-
-
-    static Migrate $dbMigrate;
 
     /**
      * create
@@ -44,16 +43,15 @@ class App {
      * @return Bootstrap
      */
     static function create($basePath): Bootstrap {
-
         self::$basePath = $basePath;
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
         self::$publicPath = $basePath . '/public';
+        self::$di = new Container();
 
         $app = new Bootstrap();
         $app->loadFunc();
-        $app->loadWeb();
-        $app->loadConfig();
+        $app->loadWeb(self::$di);
         $app->loadCache();
         $app->loadView();
         $app->loadRoute();
@@ -96,8 +94,13 @@ class App {
      * @param string $app
      * @return Config
      */
-    static function config(string $app): Config {
-        return self::$bootstrap->config[$app];
+    static function config(string $name): Config {
+        if (self::$di->has("config.".$name)) {
+            return self::$di->get("config.".$name);
+        }
+        $config = new Config(App::$configPath . "/$name.yaml");
+        self::$di->set("config.".$name, $config);
+        return $config;
     }
 
     /**
@@ -122,7 +125,7 @@ class App {
      * @return Container
      */
     static function di(): Container {
-        return self::$bootstrap->container;
+        return self::$di;
     }
 
     /**
@@ -162,13 +165,13 @@ class App {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
-        if (!self::$bootstrap->container->has("db." . $type)) {
-            self::$bootstrap->container->set(
+        if (!self::$di->has("db." . $type)) {
+            self::$di->set(
                 "db." . $type,
                 Db::init(self::config("database")->get("db.drivers.". $type))
             );
         }
-        return self::$bootstrap->container->get("db." . $type);
+        return self::$di->get("db." . $type);
     }
 
     /**
@@ -180,13 +183,13 @@ class App {
         if (!$type) {
             $type = self::config("database")->get("db.type", "default");
         }
-        if (!self::$bootstrap->container->has("migrate." . $type)) {
-            self::$bootstrap->container->set(
+        if (!self::$di->has("migrate." . $type)) {
+            self::$di->set(
                 "migrate." . $type,
                 new Migrate(self::db($type))
             );
         }
-        return self::$bootstrap->container->get("migrate." . $type);
+        return self::$di->get("migrate." . $type);
     }
 
     /**
@@ -198,13 +201,13 @@ class App {
      * @throws NotFoundException
      */
     static function log(string $app = "default"): Logger {
-        if (!self::$bootstrap->container->has("logger." . $app)) {
-            self::$bootstrap->container->set(
+        if (!self::$di->has("logger." . $app)) {
+            self::$di->set(
                 "logger." . $app,
                 LogHandler::init($app, Level::Debug)
             );
         }
-        return self::$bootstrap->container->get("logger." . $app);
+        return self::$di->get("logger." . $app);
     }
 
     /**
@@ -218,16 +221,16 @@ class App {
         if (!$type) {
             $type = self::config("queue")->get("type");
         }
-        if (!self::$bootstrap->container->has("queue." . $type)) {
+        if (!self::$di->has("queue." . $type)) {
             $config = self::config("queue")->get("drivers." . $type);
             $queueType = $config["type"];
             unset($config["type"]);
-            self::$bootstrap->container->set(
+            self::$di->set(
                 "queue." . $type,
                 new Queue($queueType, $config)
             );
         }
-        return self::$bootstrap->container->get("queue." . $type);
+        return self::$di->get("queue." . $type);
     }
 
     /**
@@ -239,13 +242,13 @@ class App {
      * @throws NotFoundException
      */
     static function view(string $name, string $path): Environment {
-        if (!self::$bootstrap->container->has("view." . $name)) {
-            self::$bootstrap->container->set(
+        if (!self::$di->has("view." . $name)) {
+            self::$di->set(
                 "view." . $name,
                 View::init($name, $path)
             );
         }
-        return self::$bootstrap->container->get("view." . $name);
+        return self::$di->get("view." . $name);
     }
 
     /**
@@ -257,16 +260,16 @@ class App {
         if (!$type) {
             $type = self::config("storage")->get("type");
         }
-        if (!self::$bootstrap->container->has("storage." . $type)) {
+        if (!self::$di->has("storage." . $type)) {
             $config = self::config("storage")->get("drivers." . $type);
             $storageType = $config["type"];
             unset($config["type"]);
-            self::$bootstrap->container->set(
+            self::$di->set(
                 "storage." . $type,
                 Storage::init($storageType, $config)
             );
         }
-        return self::$bootstrap->container->get("storage." . $type);
+        return self::$di->get("storage." . $type);
     }
 
 
