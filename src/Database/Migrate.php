@@ -37,6 +37,7 @@ class Migrate {
                     if ($lastField) {
                         $sql[] = "after $lastField";
                     }
+                    print_r($sql);
                     $string = implode(" ", $sql);
                     if ($hasColumn) {
                         //修改字段
@@ -53,12 +54,11 @@ class Migrate {
 
     private function generateCol(array $rule, bool $update): array {
         $i = 0;
+        $row = [];
         foreach ($rule as $method => $params) {
             switch ($method) {
                 case "primarykey":
-                    if (!$update) {
-                        $row[] = "unsigned AUTO_INCREMENT PRIMARY KEY NOT NULL ";
-                    }
+                    $row[] = "unsigned AUTO_INCREMENT " . ($update ? "" : "PRIMARY KEY") . " NOT NULL ";
                     break;
                 case "comment":
                 case "default":
