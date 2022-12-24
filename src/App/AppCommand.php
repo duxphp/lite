@@ -21,7 +21,7 @@ class AppCommand extends Command {
         $data = [];
         foreach (App::$registerApp as $vo) {
             $class = new $vo;
-            $data[] = [$class->name, $class->description, $vo];
+            $data[] = [$class->name, $class->description, $class::class];
         }
 
         $table = new Table($output);
