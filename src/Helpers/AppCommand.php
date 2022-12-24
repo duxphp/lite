@@ -15,7 +15,6 @@ class AppCommand extends Command {
 
     protected static $defaultName = 'make:app';
     protected static $defaultDescription = 'Create an application module';
-    public array $retryData = [];
 
     protected function configure(): void {
         $this->addArgument(
