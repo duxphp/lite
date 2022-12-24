@@ -97,6 +97,7 @@ class Bootstrap {
         $commands[] = MigrateCommand::class;
         $commands[] = EventCommand::class;
         $commands[] = AppCommand::class;
+        $commands[] = \Dux\App\AppCommand::class;
         $this->command = Command::init($commands);
     }
 
