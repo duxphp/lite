@@ -9,8 +9,8 @@ use Doctrine\DBAL\Schema\Comparator;
 class Migrate {
     public array $migrate = [];
 
-    public function register(string $model): void {
-        $this->migrate[] = $model;
+    public function register(string ...$model): void {
+        $this->migrate = [...$this->migrate, ...$model];
     }
 
     public function migrate(): void {
