@@ -56,7 +56,9 @@ class AppCommand extends Command {
 
         $configFile = App::$configPath . "/app.yaml";
         $conf = Config::load($configFile);
-        $conf["registers"][] = "\\App\\$name\\App";
+        $registers = $conf->get("registers", []);
+        $registers[] = "\\App\\$name\\App";
+        $conf->set("registers", $registers);
         $conf->toFile($configFile);
 
         $output->write("<info>Generate application successfully</info>");
