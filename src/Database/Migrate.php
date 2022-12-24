@@ -37,7 +37,6 @@ class Migrate {
                     if ($lastField) {
                         $sql[] = "after $lastField";
                     }
-                    print_r($sql);
                     $string = implode(" ", $sql);
                     if ($hasColumn) {
                         //修改字段
@@ -73,6 +72,10 @@ class Migrate {
                 case "unsigned":
                     $row[] = "unsigned";
                     break;
+                case "primary":
+                case "index":
+                case "fulltext":
+
                 default:
                     if ($i == 0) {
                         if ($params) {
