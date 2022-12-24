@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Illuminate\Support\Collection;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -39,4 +40,28 @@ function error(string $message, int $code = 500): mixed {
  */
 function url(string $name, array $params): string {
     return \Dux\App::app()->getRouteCollector()->getRouteParser()->urlFor($name, $params);
+}
+
+/**
+ * @param Collection $data
+ * @param callable|string $callback
+ * @return array
+ */
+function collection(Collection $data, callable|string $callback): array {
+    if (!isset($data[0])) {
+        if($callback instanceof \Closure) {
+            return $callback($data);
+        }else {
+            return call_user_func(new $callback, "__invoke", $data);
+        }
+    }
+    $list = [];
+    foreach ($data as $item) {
+        if ($callback instanceof \Closure) {
+            $list[] = $callback($item);
+        } else {
+            call_user_func(new $callback, "__invoke", $item);
+        }
+    }
+    return $list;
 }
