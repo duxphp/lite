@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Helpers;
 
 use Dux\App;
+use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,6 +52,12 @@ class AppCommand extends Command {
 
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
         file_put_contents($dir . "/App.php", $content);
+
+
+        $configFile = App::$configPath . "/app.yaml";
+        $conf = Config::load($configFile);
+        $conf["registers"][] = "\\App\\$name\\App";
+        $conf->toFile($configFile);
 
         $output->write("<info>Generate application successfully</info>");
         return Command::SUCCESS;
