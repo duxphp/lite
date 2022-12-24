@@ -16,6 +16,9 @@ class Migrate {
     public function migrate(): void {
 
         foreach ($this->migrate as $model) {
+            if (!method_exists($model, 'migration')) {
+                continue;
+            }
             $this->migrateTable(new $model);
         }
     }
