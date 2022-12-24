@@ -50,6 +50,7 @@ class Bootstrap {
 
     public function loadFunc() {
         require_once "Func/Response.php";
+        require_once "Func/Common.php";
     }
 
     /**
