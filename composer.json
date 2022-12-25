@@ -36,7 +36,8 @@
 		"illuminate/database": "^9.45",
 		"latte/latte": "^3.0",
 		"nette/php-generator": "^4.0",
-		"doctrine/dbal": "^3.5"
+		"doctrine/dbal": "^3.5",
+		"illuminate/pagination": "^9.45"
 	},
 	"autoload": {
 		"psr-4": {
