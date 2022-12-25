@@ -44,11 +44,11 @@ function url(string $name, array $params): string {
 }
 
 /**
- * @param Collection $data
+ * @param $data
  * @param callable|string $callback
  * @return array
  */
-function collection(Collection $data, callable|string $callback): array {
+function collection( $data, callable|string $callback): array {
     if (!isset($data[0])) {
         if($callback instanceof \Closure) {
             return $callback($data);
@@ -64,5 +64,15 @@ function collection(Collection $data, callable|string $callback): array {
             call_user_func(new $callback, "__invoke", $item);
         }
     }
-    return $list;
+
+    $resfult = [
+        'list' => $list,
+    ];
+
+    if (method_exists($data, 'total')) {
+        $resfult['total'] = $data->total();
+        $resfult['page'] = $data->currentPage();
+    }
+
+    return $resfult;
 }
