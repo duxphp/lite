@@ -65,14 +65,14 @@ function collection( $data, callable|string $callback): array {
         }
     }
 
-    $resfult = [
+    $result = [
         'list' => $list,
     ];
 
     if (method_exists($data, 'total')) {
-        $resfult['total'] = $data->total();
-        $resfult['page'] = $data->currentPage();
+        $result['total'] = $data->total();
+        $result['page'] = $data->currentPage();
     }
 
-    return $resfult;
+    return $result;
 }
