@@ -11,28 +11,32 @@ class Validator {
     /**
      * parser
      * @param array $data data array
-     * @param array $rules ["name", "rule", "message"]
+     * @param array $rules ["name" => ["rule", "message"]]
      * @return array
      */
     static function parser(array $data, array $rules): array {
 //        $role = [
-//            ["name", "rule", "message"],
+//            "name" => ["rule", "message"]
 //        ];
 
         $result = [];
-        foreach ($rules as $item) {
+        foreach ($rules as $key => $item) {
+            if (!$item) {
+                $result[$key] = $data[$key];
+                continue;
+            }
             $status = true;
-            if (is_callable($item[1])) {
-                if (!call_user_func($item[1], $data[$item[0]])) {
+            if (is_callable($item[0])) {
+                if (!call_user_func($item[0], $data[$key])) {
                     $status = false;
                 }
             } else {
-                $status = Validators::is($data[$item[0]], $item[1]);
+                $status = Validators::is($data[$key], $item[0]);
             }
             if (!$status) {
-                throw new InvalidArgumentException($item[3] ?: "parameter {$item[0]} passed incorrectly");
+                throw new InvalidArgumentException($item[1] ?: "parameter {$key} passed incorrectly");
             }
-            $result[$item[0]] = $data[$item[0]];
+            $result[$key] = $data[$key];
         }
         return $result;
     }
