@@ -13,9 +13,9 @@ class Validator {
      * parser
      * @param array $data data array
      * @param array $rules ["name" => ["rule", "message"]]
-     * @return array
+     * @return object
      */
-    static function parser(array $data, array $rules): array {
+    static function parser(array $data, array $rules): object {
 //        $role = [
 //            "name" => ["rule", "message"]
 //        ];
@@ -25,10 +25,9 @@ class Validator {
         }
         if(!$v->validate()) {
             $col = collect($v->errors());
-            print_r($v->reset());
             throw new ExceptionBusiness($col->first()[0], 500);
         }
-        return $data;
+        return (object)$data;
     }
 
 }
