@@ -4,8 +4,6 @@ namespace Dux\Validator;
 
 // https://github.com/vlucas/valitron
 use Dux\Handlers\ExceptionBusiness;
-use InvalidArgumentException;
-use Nette\Utils\Validators;
 
 class Validator {
 
