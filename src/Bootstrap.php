@@ -45,7 +45,7 @@ class Bootstrap {
      * init
      */
     public function __construct() {
-        error_reporting(E_ALL &~E_NOTICE &~E_DEPRECATED);
+        error_reporting(E_ALL ^ E_DEPRECATED ^ E_WARNING);
     }
 
     public function loadFunc() {
