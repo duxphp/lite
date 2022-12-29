@@ -19,7 +19,12 @@ class Validator {
 //        ];
         $v = new \Valitron\Validator($data);
         foreach ($rules as $key => $item) {
-            $v->rule($item[0], $key, $item[2] ?? false)->message($item[1]);
+            if (empty($item)) {
+                continue;
+            }
+            $message = last($item);
+            $params = array_slice($item, 1, -1);
+            $v->rule($item[0], $key, ...$params)->message($message);
         }
         if(!$v->validate()) {
             $col = collect($v->errors());
