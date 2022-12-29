@@ -7,12 +7,15 @@ namespace Dux;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Database\MigrateCommand;
+use Dux\Event\EventCommand;
+use Dux\Helpers\AppCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\Register;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
 use Evenement\EventEmitter;
+use Latte\Engine;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -33,7 +36,7 @@ class Bootstrap {
     public string $exceptionTitle = "Application Error";
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
     public string $exceptionBack = "go back";
-    public \Twig\Environment $view;
+    public Engine $view;
     public Register $route;
 
     public EventEmitter $event;
@@ -47,6 +50,7 @@ class Bootstrap {
 
     public function loadFunc() {
         require_once "Func/Response.php";
+        require_once "Func/Common.php";
     }
 
     /**
@@ -92,6 +96,9 @@ class Bootstrap {
         $commands[] = QueueCommand::class;
         $commands[] = RouteCommand::class;
         $commands[] = MigrateCommand::class;
+        $commands[] = EventCommand::class;
+        $commands[] = AppCommand::class;
+        $commands[] = \Dux\App\AppCommand::class;
         $this->command = Command::init($commands);
     }
 
@@ -100,7 +107,7 @@ class Bootstrap {
      * @return void
      */
     public function loadView() {
-        $this->view = View::init("app", __DIR__ . "/Tpl");
+        $this->view = View::init("app");
     }
 
     /**

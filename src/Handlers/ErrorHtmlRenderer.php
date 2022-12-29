@@ -22,7 +22,7 @@ class ErrorHtmlRenderer extends HtmlErrorRenderer
         if ($displayErrorDetails) {
             return parent::__invoke($exception, true);
         } else {
-            return App::$bootstrap->view->render("error.html", [
+            return App::$bootstrap->view->renderToString(dirname(__DIR__) . "/Tpl/error.html", [
                 "code" => $exception->getCode(),
                 "title" => $this->getErrorTitle($exception),
                 "desc" => $this->getErrorDescription($exception),

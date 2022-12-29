@@ -17,6 +17,7 @@ class QueueCommand extends Command {
 
     protected static $defaultName = 'queue';
     protected static $defaultDescription = 'Queue start service';
+    public array $retryData = [];
 
     protected function configure(): void {
         $this->addArgument(
@@ -58,17 +59,19 @@ class QueueCommand extends Command {
         } while (1);
     }
 
+
     public function retry(RedisMessage $message, RedisConsumer $consumer, int $retry) {
-        $retryNum = $message->getHeader("retry", 0);
+        $id = $message->getMessageId();
+        $retryNum = $this->retryData[$id] ?: 0;
         $retryNum++;
-        $data = json_decode($message->getReservedKey(), true);
-        $data["headers"]["retry"] = $retryNum;
-        $message->setReservedKey(json_encode($data));
         $consumer->reject($message, $retryNum <= $retry);
         if ($retryNum > $retry) {
+            unset($this->retryData[$id]);
             $body = $message->getBody();
             [$class, $method] = explode("@", $body, 2);
             App::log("queue")->error("task [{$class}@{$method}] retry failed");
+        }else {
+            $this->retryData[$id] = $retryNum;
         }
     }
 }

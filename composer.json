@@ -28,13 +28,16 @@
 		"symfony/console": "^6.2",
 		"ext-pcntl": "*",
 		"ext-json": "*",
-		"twig/twig": "^3.4",
 		"league/flysystem": "^3.11",
 		"overtrue/flysystem-qiniu": "^3.2",
 		"overtrue/flysystem-cos": "^5.1",
 		"iidestiny/flysystem-oss": "^4",
 		"evenement/evenement": "^3.0",
-		"catfan/medoo": "^2.1"
+		"illuminate/database": "^9.45",
+		"latte/latte": "^3.0",
+		"nette/php-generator": "^4.0",
+		"doctrine/dbal": "^3.5",
+		"illuminate/pagination": "^9.45"
 	},
 	"autoload": {
 		"psr-4": {

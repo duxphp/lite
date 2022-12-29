@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Dux\View;
 
 use Dux\App;
-use Twig\Environment;
+use Latte\Engine;
 
 class View {
 
-    static function init(string $name, string $path): Environment {
-        $loader = new \Twig\Loader\FilesystemLoader($path);
-        return new \Twig\Environment($loader, [
-            'cache' => App::$dataPath . '/tpl/' . $name,
-        ]);
+    static function init(string $name): Engine {
+        $latte = new Engine;
+        $latte->setTempDirectory(App::$dataPath . '/tpl/' . $name);
+        return $latte;
     }
 }

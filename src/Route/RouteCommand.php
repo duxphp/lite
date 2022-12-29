@@ -56,8 +56,4 @@ class RouteCommand extends Command {
 
         return Command::SUCCESS;
     }
-
-    public function test() {
-        throw new \InvalidArgumentException("dsad");
-    }
 }

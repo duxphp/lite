@@ -20,6 +20,7 @@ class MigrateCommand extends Command {
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         App::dbMigrate()->migrate();
+        $output->write("<info>Sync database successfully</info>");
         return Command::SUCCESS;
     }
 

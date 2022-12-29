@@ -8,13 +8,15 @@ namespace Dux;
 use DI\Container;
 use Dux\App\AppExtend;
 use Dux\Database\Db;
-use Dux\Database\MedooExtend;
 use Dux\Database\Migrate;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
 use Evenement\EventEmitter;
-use Medoo\Medoo;
+use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Connection;
+use Latte\Engine;
+use League\Flysystem\Filesystem;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -33,6 +35,7 @@ class App {
     static string $configPath;
     static string $dataPath;
     static string $publicPath;
+    static string $appPath;
     static Bootstrap $bootstrap;
     static Container $di;
     static array $config;
@@ -48,10 +51,12 @@ class App {
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
         self::$publicPath = $basePath . '/public';
+        self::$appPath = $basePath . '/app';
         self::$di = new Container();
 
         $app = new Bootstrap();
         $app->loadFunc();
+        $app->loadConfig();
         $app->loadWeb(self::$di);
         $app->loadCache();
         $app->loadView();
@@ -159,20 +164,16 @@ class App {
     /**
      * database
      * @source illuminate/database
-     * @param string $type
-     * @return MedooExtend
+     * @return Manager
      */
-    static function db(string $type = ""): MedooExtend {
-        if (!$type) {
-            $type = self::config("database")->get("db.type", "default");
-        }
-        if (!self::$di->has("db." . $type)) {
+    static function db(): Manager {
+        if (!self::$di->has("db")) {
             self::$di->set(
-                "db." . $type,
-                Db::init(self::config("database")->get("db.drivers.". $type))
+                "db",
+                Db::init(self::config("database")->get("db.drivers"))
             );
         }
-        return self::$di->get("db." . $type);
+        return self::$di->get("db");
     }
 
     /**
@@ -237,16 +238,15 @@ class App {
     /**
      * view
      * @param string $name
-     * @param string $path
-     * @return Environment
+     * @return Engine
      * @throws DependencyException
      * @throws NotFoundException
      */
-    static function view(string $name, string $path): Environment {
+    static function view(string $name): Engine {
         if (!self::$di->has("view." . $name)) {
             self::$di->set(
                 "view." . $name,
-                View::init($name, $path)
+                View::init($name)
             );
         }
         return self::$di->get("view." . $name);
@@ -255,9 +255,9 @@ class App {
     /**
      * storage
      * @param string $type
-     * @return mixed
+     * @return Filesystem
      */
-    static function storage(string $type = "") {
+    static function storage(string $type = ""): Filesystem {
         if (!$type) {
             $type = self::config("storage")->get("type");
         }
