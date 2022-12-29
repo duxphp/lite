@@ -19,7 +19,7 @@ class ErrorJsonRenderer extends JsonErrorRenderer
 
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
-        $error = ['code' => $exception->getCode(), 'message' => $this->getErrorTitle($exception), 'data' => []];
+        $error = ['code' => $exception->getCode() ?: 500, 'message' => $this->getErrorTitle($exception), 'data' => []];
 
         if ($displayErrorDetails) {
             do {
