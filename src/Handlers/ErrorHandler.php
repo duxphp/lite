@@ -16,7 +16,7 @@ class ErrorHandler extends slimErrorHandler
             return 200;
         }
         if ($this->exception instanceof HttpException || $this->exception instanceof Exception) {
-            return $this->exception->getCode();
+            return $this->exception->getCode() ?: 500;
         }
         return 500;
     }

@@ -3,6 +3,7 @@
 namespace Dux\Validator;
 
 // https://doc.nette.org/en/utils/validators
+use Dux\Handlers\ExceptionBusiness;
 use InvalidArgumentException;
 use Nette\Utils\Validators;
 
@@ -34,7 +35,7 @@ class Validator {
                 $status = Validators::is($data[$key], $item[0]);
             }
             if (!$status) {
-                throw new InvalidArgumentException($item[1] ?: "parameter {$key} passed incorrectly");
+                throw new ExceptionBusiness($item[1] ?: "parameter {$key} passed incorrectly");
             }
             $result[$key] = $data[$key];
         }
