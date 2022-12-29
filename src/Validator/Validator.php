@@ -2,7 +2,7 @@
 
 namespace Dux\Validator;
 
-// https://doc.nette.org/en/utils/validators
+// https://github.com/vlucas/valitron
 use Dux\Handlers\ExceptionBusiness;
 use InvalidArgumentException;
 use Nette\Utils\Validators;
@@ -19,27 +19,16 @@ class Validator {
 //        $role = [
 //            "name" => ["rule", "message"]
 //        ];
-
-        $result = [];
+        $v = new \Valitron\Validator($data);
         foreach ($rules as $key => $item) {
-            if (!$item) {
-                $result[$key] = $data[$key];
-                continue;
-            }
-            $status = true;
-            if (is_callable($item[0])) {
-                if (!call_user_func($item[0], $data[$key])) {
-                    $status = false;
-                }
-            } else {
-                $status = Validators::is($data[$key], $item[0]);
-            }
-            if (!$status) {
-                throw new ExceptionBusiness($item[1] ?: "parameter {$key} passed incorrectly");
-            }
-            $result[$key] = $data[$key];
+            $v->rule($item[0], $key, $item[2] ?? false)->message($item[1]);
         }
-        return $result;
+        if(!$v->validate()) {
+            $col = collect($v->errors());
+            print_r($v->reset());
+            throw new ExceptionBusiness($col->first()[0], 500);
+        }
+        return $data;
     }
 
 }
