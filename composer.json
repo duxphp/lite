@@ -38,7 +38,8 @@
 		"nette/php-generator": "^4.0",
 		"doctrine/dbal": "^3.5",
 		"illuminate/pagination": "^9.45",
-		"vlucas/valitron": "^1.4"
+		"vlucas/valitron": "^1.4",
+		"bluem/tree": "^3.2"
 	},
 	"autoload": {
 		"psr-4": {
