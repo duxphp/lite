@@ -16,7 +16,6 @@ use DI\Container;
 use Dux\View\View;
 use Evenement\EventEmitter;
 use Latte\Engine;
-use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
 use Slim\Factory\AppFactory;
@@ -131,7 +130,6 @@ class Bootstrap {
         $this->web->options('/{routes:.+}', function ($request, $response, $args) {
             return $response;
         });
-        $this->web->add(new \Clockwork\Support\Slim\ClockworkMiddleware($this->web, APP::$dataPath  . '/clockwork'));
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $response = $handler->handle($request);
             return $response->withHeader('Access-Control-Allow-Origin', '*')

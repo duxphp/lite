@@ -6,3 +6,4 @@ use Carbon\Carbon;
 function now(): Carbon {
     return Carbon::now();
 }
+
