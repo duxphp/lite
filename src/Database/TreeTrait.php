@@ -3,8 +3,8 @@
 namespace Dux\Database;
 
 trait TreeTrait {
-    public function tree(array $fields = []) {
-        $data = $this->select($fields)->get();
+    public static function tree(array $fields = []) {
+        $data = self::select($fields)->get();
         return new \BlueM\Tree($data->toArray(), ['rootId' => 0, 'id' => 'id', 'parent' => 'parent_id']);
     }
 
