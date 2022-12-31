@@ -29,9 +29,9 @@ class RouteCommand extends Command {
 
         $group = $input->getArgument("group");
         if ($group) {
-            $routeList = [$group => App::$registerRoute[$group]];
+            $routeList = [$group => App::$bootstrap->route->get($group)];
         } else {
-            $routeList = App::$registerRoute;
+            $routeList = App::$bootstrap->route->app;
         }
 
         foreach ($routeList as $key => $item) {
