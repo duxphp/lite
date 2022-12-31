@@ -38,7 +38,7 @@ function url(string $name, array $params): string {
  * @param callable $callback
  * @return array
  */
-function transform(Collection|LengthAwarePaginator $data, callable $callback): array {
+function format_data(Collection|LengthAwarePaginator $data, callable $callback): array {
     $pageStatus = false;
     $page = 1;
     $total = 0;
