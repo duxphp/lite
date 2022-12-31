@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use \Illuminate\Database\Eloquent\Model;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -38,7 +39,7 @@ function url(string $name, array $params): string {
  * @param callable $callback
  * @return array
  */
-function format_data(Collection|LengthAwarePaginator $data, callable $callback): array {
+function format_data(Collection|LengthAwarePaginator|Model $data, callable $callback): array {
     $pageStatus = false;
     $page = 1;
     $total = 0;
@@ -49,7 +50,7 @@ function format_data(Collection|LengthAwarePaginator $data, callable $callback):
         $data = $data->getCollection();
     }
 
-    if (!isset($data[0])) {
+    if ($data instanceof Model) {
         return $callback($data);
     }
 
