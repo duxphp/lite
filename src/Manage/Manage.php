@@ -3,18 +3,11 @@
 namespace Dux\Manage;
 
 use Dux\App;
-use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * @string $name
- * @string $model
- * @int $listLimit
- * @array listFields
- * @bool listTree
- * @bool listPage
  * @method listFormat(object $item): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
@@ -23,9 +16,15 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method delBefore($info)
  * @method delAfter($info)
  */
-trait ManageTrait {
+class Manage {
 
     protected string $id = "id";
+    protected string $name = "";
+    protected string $model = "";
+    protected int $listLimit = 20;
+    protected array $listFields = [];
+    protected bool $listTree = false;
+    protected bool $listPage = true;
 
     /**
      * 获取列表
@@ -35,13 +34,12 @@ trait ManageTrait {
      * @return ResponseInterface
      */
     public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $fields = $this->listFields ?? [];
-        $limit = $args["limit"] ?: ($this->listLimit ?? 20);
-        $treeStatus = $this->listTree ?? false;
-        $pageStatus = $this->listPage ?? true;
+        $limit = $args["limit"] ?: $this->listLimit;
+        $treeStatus = $this->listTree;
+        $pageStatus = $this->listPage;
         $query = $this->model::query();
-        if($fields) {
-            $query = $query->select($fields);
+        if($this->listFields) {
+            $query = $query->select($this->listFields);
         }
         if ($treeStatus) {
             $query = $query->where("parent_id", 0)->with(['children']);
