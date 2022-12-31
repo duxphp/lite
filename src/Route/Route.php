@@ -125,6 +125,32 @@ class Route {
     }
 
     /**
+     * @param string $pattern
+     * @param string $class
+     * @param string $name
+     * @param string $title
+     * @param array $ways ["list", "info", "add", "edit", "del"]
+     * @return void
+     */
+    public function manage(string $pattern, string $class, string $name, string $title = "", array $ways = []): void {
+        if (!$ways || in_array("list", $ways)) {
+            $this->get($pattern,  "$class:list", $name, "{$title}列表");
+        }
+        if (!$ways || in_array("info", $ways)) {
+            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情");
+        }
+        if (!$ways || in_array("add", $ways)) {
+            $this->post($pattern, "$class:save", "$name.add", "{$title}添加");
+        }
+        if (!$ways || in_array("edit", $ways)) {
+            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑");
+        }
+        if (!$ways || in_array("del", $ways)) {
+            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除");
+        }
+    }
+
+    /**
      * map
      * @param array $methods [GET, POST, PUT, DELETE, OPTIONS, PATH]
      * @param string $pattern
