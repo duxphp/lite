@@ -3,6 +3,7 @@
 namespace Dux\Manage;
 
 use Dux\App;
+use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,9 +22,9 @@ class Manage {
     protected string $id = "id";
     protected string $name = "";
     protected string $model = "";
+    protected bool $tree = false;
     protected int $listLimit = 20;
     protected array $listFields = [];
-    protected bool $listTree = false;
     protected bool $listPage = true;
 
     /**
@@ -35,7 +36,7 @@ class Manage {
      */
     public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $limit = $args["limit"] ?: $this->listLimit;
-        $treeStatus = $this->listTree;
+        $treeStatus = $this->tree;
         $pageStatus = $this->listPage;
         $query = $this->model::query();
         if($this->listFields) {
@@ -57,6 +58,10 @@ class Manage {
             $assign = format_data($query, function ($item): array {
                 return $this->listFormat($item);
             });
+        }else {
+            $assign = [
+                "list" => $query->toArray()
+            ];
         }
         if (method_exists($this, "listAssign")) {
             $assign = [...$assign, ...$this->listAssign($query, $args)];
@@ -93,9 +98,24 @@ class Manage {
      */
     public function save(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $id = $args["id"] ?? 0;
-        $name = $this->name ?? "";
+        $name = $this->name;
+        $treeStatus = $this->tree;
         $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args) : []);
         App::db()->getConnection()->beginTransaction();
+
+        if ($id && $treeStatus) {
+            $parentId = last($data->parent);
+            if ($data->id == $parentId) {
+                throw new ExceptionBusiness("当前分类不能成为上级分类");
+            }
+            $tree = $this->model::tree();
+            $node = $tree->getNodeById($id);
+            $descendants = array_column($node->getDescendants(), "id");
+            if ($parentId && in_array($parentId, $descendants)) {
+                throw new ExceptionBusiness("上级节点不能为子节点");
+            }
+        }
+
         if (method_exists($this, "saveFormat")) {
             $data = $this->saveFormat($data, $id);
         }else {
@@ -148,7 +168,7 @@ class Manage {
         return send($response, "删除{$name}成功");
     }
 
-    private \BlueM\Tree $treeData;
+    private ?\BlueM\Tree $treeData = null;
 
     /**
      * 转换级别数据
