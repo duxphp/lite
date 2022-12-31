@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,17 +24,6 @@ function send(ResponseInterface $response, string $message, array $data = [], in
         ->withStatus($code);
 }
 
-
-/**
- * @param string $message
- * @param int $code
- * @return mixed
- * @throws Exception
- */
-function error(string $message, int $code = 500): mixed {
-    throw new Exception($message, $code);
-}
-
 /**
  * @param string $name
  * @param array $params
@@ -44,34 +34,33 @@ function url(string $name, array $params): string {
 }
 
 /**
- * @param $data
- * @param callable|string $callback
+ * @param Collection|LengthAwarePaginator $data
+ * @param callable $callback
  * @return array
  */
-function collection( $data, callable|string $callback): array {
-    if (!isset($data[0])) {
-        if($callback instanceof \Closure) {
-            return $callback($data);
-        }else {
-            return call_user_func(new $callback, "__invoke", $data);
-        }
-    }
-    $list = [];
-    foreach ($data as $item) {
-        if ($callback instanceof \Closure) {
-            $list[] = $callback($item);
-        } else {
-            call_user_func(new $callback, "__invoke", $item);
-        }
+function transform(Collection|LengthAwarePaginator $data, callable $callback): array {
+    $pageStatus = false;
+    $page = 1;
+    $total = 0;
+    if ($data instanceof LengthAwarePaginator) {
+        $pageStatus = true;
+        $data->currentPage();
+        $data->total();
+        $data = $data->getCollection();
     }
 
+    if (!isset($data[0])) {
+        return $callback($data);
+    }
+
+    $list = $data->map($callback);
     $result = [
-        'list' => $list,
+        'list' => $list->toArray(),
     ];
 
-    if (method_exists($data, 'total')) {
-        $result['total'] = $data->total();
-        $result['page'] = $data->currentPage();
+    if ($pageStatus) {
+        $result['total'] = $total;
+        $result['page'] = $page;
     }
 
     return $result;
