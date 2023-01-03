@@ -184,6 +184,10 @@ class Bootstrap {
         }
     }
 
+    public function getEvent(): EventEmitter {
+        return $this->event;
+    }
+
     public function getRoute(): Route\Register {
         return $this->route;
     }
