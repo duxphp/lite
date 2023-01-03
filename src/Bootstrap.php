@@ -62,23 +62,6 @@ class Bootstrap {
         $this->web = AppFactory::create();
         $this->route = new \Dux\Route\Register();
     }
-    public function getRoute(): Route\Register {
-        return $this->route;
-    }
-
-    public function getMenu(): Menu\Register {
-        if (!$this->menu) {
-            $this->menu = new \Dux\Menu\Register();
-        }
-        return $this->menu;
-    }
-
-    public function getPermission(): Permission\Register {
-        if (!$this->permission) {
-            $this->permission = new \Dux\Permission\Register();
-        }
-        return $this->permission;
-    }
 
     /**
      * loadConfig
@@ -207,6 +190,24 @@ class Bootstrap {
         } else {
             $this->web->run();
         }
+    }
+
+    public function getRoute(): Route\Register {
+        return $this->route;
+    }
+
+    public function getMenu(): Menu\Register {
+        if (!$this->menu) {
+            $this->menu = new \Dux\Menu\Register();
+        }
+        return $this->menu;
+    }
+
+    public function getPermission(): Permission\Register {
+        if (!$this->permission) {
+            $this->permission = new \Dux\Permission\Register();
+        }
+        return $this->permission;
     }
 
 }
