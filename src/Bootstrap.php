@@ -37,8 +37,9 @@ class Bootstrap {
     public Engine $view;
 
     public EventEmitter $event;
-    private Menu\Register $menu;
     public Route\Register $route;
+    private ?Menu\Register $menu = null;
+    private ?Permission\Register $permission = null;
 
     /**
      * init
@@ -60,7 +61,23 @@ class Bootstrap {
         AppFactory::setContainer($di);
         $this->web = AppFactory::create();
         $this->route = new \Dux\Route\Register();
-        $this->menu = new \Dux\Menu\Register();
+    }
+    public function getRoute(): Route\Register {
+        return $this->route;
+    }
+
+    public function getMenu(): Menu\Register {
+        if (!$this->menu) {
+            $this->menu = new \Dux\Menu\Register();
+        }
+        return $this->menu;
+    }
+
+    public function getPermission(): Permission\Register {
+        if (!$this->permission) {
+            $this->permission = new \Dux\Permission\Register();
+        }
+        return $this->permission;
     }
 
     /**
