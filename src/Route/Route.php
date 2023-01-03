@@ -144,16 +144,16 @@ class Route {
             $this->get($pattern,  "$class:list", $name, "{$title}列表", $auth);
         }
         if (!$ways || in_array("info", $ways)) {
-            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情", $auth);
+            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情", "$name.info");
         }
         if (!$ways || in_array("add", $ways)) {
-            $this->post($pattern, "$class:save", "$name.add", "{$title}添加", $auth);
+            $this->post($pattern, "$class:save", "$name.add", "{$title}添加", "$name.add");
         }
         if (!$ways || in_array("edit", $ways)) {
-            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", $auth);
+            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", "$class:save");
         }
         if (!$ways || in_array("del", $ways)) {
-            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除", $auth);
+            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除", "$class:del");
         }
     }
 
