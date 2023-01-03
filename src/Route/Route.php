@@ -224,6 +224,7 @@ class Route {
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
+                "auth" => $route["auth"],
                 "middleware" => $middleware
             ];
         }
