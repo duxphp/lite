@@ -46,9 +46,10 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+    public function get(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
         $this->map(["GET"], $pattern, $callable, $name, $title);
     }
 
@@ -58,9 +59,10 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+    public function post(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
         $this->map(["POST"], $pattern, $callable, $name, $title);
     }
 
@@ -70,10 +72,11 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
-        $this->map(["PUT"], $pattern, $callable, $name, $title);
+    public function put(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+        $this->map(["PUT"], $pattern, $callable, $name, $title, $auth);
     }
 
     /**
@@ -82,10 +85,11 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
-        $this->map(["DELETE"], $pattern, $callable, $name, $title);
+    public function delete(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+        $this->map(["DELETE"], $pattern, $callable, $name, $title, $auth);
     }
 
     /**
@@ -94,10 +98,11 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
-        $this->map(["OPTIONS"], $pattern, $callable, $name, $title);
+    public function options(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+        $this->map(["OPTIONS"], $pattern, $callable, $name, $title, $auth);
     }
 
     /**
@@ -106,10 +111,11 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
-        $this->map(["PATH"], $pattern, $callable, $name, $title);
+    public function path(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+        $this->map(["PATH"], $pattern, $callable, $name, $title, $auth);
     }
 
     /**
@@ -118,10 +124,11 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
+     * @param string $auth
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
-        $this->map(["ANY"], $pattern, $callable, $name, $title);
+    public function any(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+        $this->map(["ANY"], $pattern, $callable, $name, $title, $auth);
     }
 
     /**
@@ -132,7 +139,7 @@ class Route {
      * @param array $ways ["list", "info", "add", "edit", "del"]
      * @return void
      */
-    public function manage(string $pattern, string $class, string $name, string $title = "", array $ways = []): void {
+    public function manage(string $pattern, string $class, string $name = "", string $title = "", array $ways = []): void {
         if (!$ways || in_array("list", $ways)) {
             $this->get($pattern,  "$class:list", $name, "{$title}列表");
         }
@@ -159,13 +166,14 @@ class Route {
      * @param string $title
      * @return void
      */
-    public function map(array $methods, string $pattern, $callable, string $name, string $title = ""): void {
+    public function map(array $methods, string $pattern, $callable, string $name, string $title = "", $auth = ""): void {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,
             "callable" => $callable,
             "name" => $name,
-            "title" => $title
+            "title" => $title,
+            "auth" => $auth,
         ];
     }
 
