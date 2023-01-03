@@ -12,14 +12,16 @@ class Menu {
 
     private array $data;
     private array $push;
+    private string $pattern;
 
 
-    public function __construct() {
+    public function __construct(string $pattern = "") {
+        $this->pattern = $pattern;
     }
 
     public function add(string $app, array $config): MenuApp {
         $config["app"] = $app;
-        $menuApp = new MenuApp($config);
+        $menuApp = new MenuApp($config, $this->pattern);
         $this->data[$app] = $menuApp;
         return $menuApp;
     }

@@ -8,11 +8,13 @@ class MenuItem {
     private string $url;
     private mixed $order;
     private string $auth;
+    private string $pattern;
 
-    public function __construct(string $name, string $url, $order = 0) {
+    public function __construct(string $name, string $url, $order = 0, string $pattern = "") {
         $this->name = $name;
         $this->url = $url;
         $this->order = $order;
+        $this->pattern = $pattern;
     }
 
     public function auth(string $label): self {
@@ -23,7 +25,7 @@ class MenuItem {
     public function get(): array {
         return [
             "name" => $this->name,
-            "url" => $this->url,
+            "url" => $this->pattern . $this->url,
             "order" => $this->order,
             "auth" => $this->auth
         ];
