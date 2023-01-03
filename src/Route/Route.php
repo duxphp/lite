@@ -191,7 +191,8 @@ class Route {
                 "title" => $route["title"],
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
-                "methods" => $route["methods"]
+                "methods" => $route["methods"],
+                "auth" => $route["auth"],
             ];
         }
         foreach ($this->group as $group) {
