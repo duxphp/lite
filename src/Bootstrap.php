@@ -156,19 +156,11 @@ class Bootstrap {
         }
         // 事件注册
         foreach ($appList as $vo) {
-            call_user_func([new $vo, "event"], $this->event);
+            call_user_func([new $vo, "init"], $this);
         }
         // 应用注册
         foreach ($appList as $vo) {
             call_user_func([new $vo, "register"], $this);
-        }
-        // 模型注册
-        foreach ($appList as $vo) {
-            call_user_func([new $vo, "model"], App::dbMigrate(), App::db());
-        }
-        // 普通路由
-        foreach ($appList as $vo) {
-            call_user_func([new $vo, "route"], $this->route);
         }
         // 路由注册
         foreach ($this->route->app as $route) {

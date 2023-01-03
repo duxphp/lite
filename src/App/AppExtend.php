@@ -20,6 +20,13 @@ class AppExtend {
      * @param Bootstrap $app
      * @return void
      */
+    public function init(Bootstrap $app): void {
+    }
+
+    /**
+     * @param Bootstrap $app
+     * @return void
+     */
     public function register(Bootstrap $app): void {
     }
 
@@ -28,19 +35,6 @@ class AppExtend {
      * @return void
      */
     public function boot(Bootstrap $app): void {
-    }
-
-    /**
-     * @param Route $app
-     * @return void
-     */
-    public function route(Route $app): void {
-    }
-
-    public function model(Migrate $migrate, Manager $db): void {
-    }
-
-    public function event(EventEmitter $event): void {
     }
 
 }
