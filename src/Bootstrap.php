@@ -165,10 +165,6 @@ class Bootstrap {
         foreach ($appList as $vo) {
             call_user_func([new $vo, "model"], App::dbMigrate(), App::db());
         }
-        // 应用路由
-        foreach ($appList as $vo) {
-            call_user_func([new $vo, "appRoute"], $this->route);
-        }
         // 普通路由
         foreach ($appList as $vo) {
             call_user_func([new $vo, "route"], $this->route);

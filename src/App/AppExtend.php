@@ -34,13 +34,6 @@ class AppExtend {
      * @param Route $app
      * @return void
      */
-    public function appRoute(Route $app): void {
-    }
-
-    /**
-     * @param Route $app
-     * @return void
-     */
     public function route(Route $app): void {
     }
 
