@@ -10,7 +10,6 @@ use Dux\Database\MigrateCommand;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
 use Dux\Queue\QueueCommand;
-use Dux\Route\Register;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
@@ -36,9 +35,10 @@ class Bootstrap {
     public string $exceptionDesc = "A website error has occurred. Sorry for the temporary inconvenience.";
     public string $exceptionBack = "go back";
     public Engine $view;
-    public Register $route;
 
     public EventEmitter $event;
+    private Menu\Register $menu;
+    public Route\Register $route;
 
     /**
      * init
@@ -59,7 +59,8 @@ class Bootstrap {
     public function loadWeb(Container $di): void {
         AppFactory::setContainer($di);
         $this->web = AppFactory::create();
-        $this->route = new Register();
+        $this->route = new \Dux\Route\Register();
+        $this->menu = new \Dux\Menu\Register();
     }
 
     /**
