@@ -150,7 +150,7 @@ class Route {
             $this->post($pattern, "$class:save", "$name.add", "{$title}添加", "$name.add");
         }
         if (!$ways || in_array("edit", $ways)) {
-            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", "$class.save");
+            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", "$class.edit");
         }
         if (!$ways || in_array("del", $ways)) {
             $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除", "$class.del");
