@@ -1,12 +1,14 @@
 <?php
 
+namespace Dux\Auth;
+
 use Firebase\JWT\JWT;
 
 class Auth {
 
     static public function middleware(string $app, int $renewal = 43200): \Tuupola\Middleware\JwtAuthentication {
         $secret = \Dux\App::config("app")->get("app.secret");
-        return new Tuupola\Middleware\JwtAuthentication([
+        return new \Tuupola\Middleware\JwtAuthentication([
             "secret" => $secret,
             "after" => function ($response, $arguments) use ($renewal, $secret, $app) {
                 if ($app != $arguments["sub"]) {
