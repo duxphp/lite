@@ -277,7 +277,7 @@ class App {
      * menu
      * @return Menu\Register
      */
-    public function menu(): Menu\Register {
+    static function menu(): Menu\Register {
         return self::$bootstrap->getMenu();
     }
 
@@ -285,7 +285,7 @@ class App {
      * permission
      * @return Permission\Register
      */
-    public function permission(): Permission\Register {
+    static function permission(): Permission\Register {
         return self::$bootstrap->getPermission();
     }
 
