@@ -273,5 +273,21 @@ class App {
         return self::$di->get("storage." . $type);
     }
 
+    /**
+     * menu
+     * @return Menu\Register
+     */
+    public function menu(): Menu\Register {
+        return self::$bootstrap->getMenu();
+    }
+
+    /**
+     * permission
+     * @return Permission\Register
+     */
+    public function permission(): Permission\Register {
+        return self::$bootstrap->getPermission();
+    }
+
 
 }
