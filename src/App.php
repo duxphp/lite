@@ -275,18 +275,20 @@ class App {
 
     /**
      * menu
-     * @return Menu\Register
+     * @param string $name
+     * @return Menu\Menu
      */
-    static function menu(): Menu\Register {
-        return self::$bootstrap->getMenu();
+    static function menu(string $name): Menu\Menu {
+        return self::$bootstrap->getMenu()->get($name);
     }
 
     /**
      * permission
-     * @return Permission\Register
+     * @param string $name
+     * @return Permission\Permission
      */
-    static function permission(): Permission\Register {
-        return self::$bootstrap->getPermission();
+    static function permission(string $name): Permission\Permission {
+        return self::$bootstrap->getPermission()->get($name);
     }
 
 
