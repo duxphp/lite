@@ -12,10 +12,10 @@ class Auth {
             "secret" => $secret,
             "secure" => false,
             "after" => function ($response, $arguments) use ($renewal, $secret, $app) {
+                $token = $arguments["decoded"];
                 if ($app != $arguments["sub"]) {
                     throw new \Dux\Handlers\ExceptionBusiness("Authorization app error", 401);
                 }
-                $token = $arguments["token"];
                 $renewalTime = $token["iat"] + $renewal;
                 $time = time();
                 if ($renewalTime <= $time) {
