@@ -10,6 +10,7 @@ class Auth {
         $secret = \Dux\App::config("app")->get("app.secret");
         return new \Tuupola\Middleware\JwtAuthentication([
             "secret" => $secret,
+            "secure" => false,
             "after" => function ($response, $arguments) use ($renewal, $secret, $app) {
                 if ($app != $arguments["sub"]) {
                     throw new \Dux\Handlers\ExceptionBusiness("Authorization app error", 401);
