@@ -10,8 +10,8 @@ use Slim\Routing\RouteCollectorProxy;
 
 class Permission {
 
-    private array $data;
-    private string $pattern;
+    private array $data = [];
+    private string $pattern = "";
 
 
     public function __construct(string $pattern = "") {

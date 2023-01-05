@@ -3,10 +3,10 @@
 namespace Dux\Permission;
 
 class PermissionGroup {
-    private int $order;
-    private string $name;
-    private array $data;
-    private string $pattern;
+    private int $order = 0;
+    private string $name = "";
+    private array $data = [];
+    private string $pattern = "";
 
     public function __construct(string $name, int $order, string $pattern = "") {
         $this->name = $name;
