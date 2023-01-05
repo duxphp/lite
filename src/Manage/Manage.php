@@ -10,7 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @method listFormat(object $item): array
- * @method infoData(object $info): array
+ * @method listAssign($query, $args): array
+ * @method infoAssign(object $info): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
  * @method saveFormat(object $data, int $id): array
@@ -92,8 +93,8 @@ class Manage {
         $data = format_data($info, function ($item): array {
             return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
         });
-        if (method_exists($this, "infoData")) {
-            $data = [...$data, $this->infoData($info)];
+        if (method_exists($this, "infoAssign")) {
+            $data = [...$data, $this->infoAssign($info)];
         }
         return send($response, "ok", $data);
     }
