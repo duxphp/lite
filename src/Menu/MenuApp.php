@@ -28,7 +28,7 @@ class MenuApp {
             "name" => $this->config["name"],
             "icon" => $this->config["icon"],
             "url" => $this->config["url"] ? $this->pattern . $this->config["url"] : "",
-            "order" => $this->config["order"],
+            "order" => $this->config["order"] ?: 0,
             "children" => $group,
         ];
     }
