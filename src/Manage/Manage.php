@@ -94,6 +94,7 @@ class Manage {
         } else {
             $data = [];
         }
+
         if (method_exists($this, "infoAssign")) {
             $data = [...$data, $this->infoAssign($info)];
         }
