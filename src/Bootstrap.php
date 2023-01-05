@@ -192,18 +192,4 @@ class Bootstrap {
         return $this->route;
     }
 
-    public function getMenu(): Menu\Register {
-        if (!$this->menu) {
-            $this->menu = new \Dux\Menu\Register();
-        }
-        return $this->menu;
-    }
-
-    public function getPermission(): Permission\Register {
-        if (!$this->permission) {
-            $this->permission = new \Dux\Permission\Register();
-        }
-        return $this->permission;
-    }
-
 }

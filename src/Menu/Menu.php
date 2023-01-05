@@ -10,9 +10,9 @@ use Slim\Routing\RouteCollectorProxy;
 
 class Menu {
 
-    private array $data;
-    private array $push;
-    private string $pattern;
+    private array $data = [];
+    private array $push = [];
+    private string $pattern = "";
 
 
     public function __construct(string $pattern = "") {

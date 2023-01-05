@@ -6,11 +6,11 @@ class MenuItem {
 
     private string $name;
     private string $url;
-    private mixed $order;
-    private string $auth;
+    private int $order = 0;
+    private string $auth = "";
     private string $pattern;
 
-    public function __construct(string $name, string $url, $order = 0, string $pattern = "") {
+    public function __construct(string $name, string $url, int $order = 0, string $pattern = "") {
         $this->name = $name;
         $this->url = $url;
         $this->order = $order;

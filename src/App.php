@@ -273,23 +273,5 @@ class App {
         return self::$di->get("storage." . $type);
     }
 
-    /**
-     * menu
-     * @param string $name
-     * @return Menu\Menu
-     */
-    static function menu(string $name): Menu\Menu {
-        return self::$bootstrap->getMenu()->get($name);
-    }
-
-    /**
-     * permission
-     * @param string $name
-     * @return Permission\Permission
-     */
-    static function permission(string $name): Permission\Permission {
-        return self::$bootstrap->getPermission()->get($name);
-    }
-
 
 }

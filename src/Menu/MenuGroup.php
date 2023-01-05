@@ -5,8 +5,8 @@ namespace Dux\Menu;
 class MenuGroup {
 
     private string $name;
-    private int $order;
-    private array $data;
+    private int $order = 0;
+    private array $data = [];
     private string $pattern;
 
     public function __construct(string $name, int $order = 0, string $pattern = "") {
