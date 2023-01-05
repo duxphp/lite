@@ -24,7 +24,11 @@ class Permission {
     }
 
     public function get(): array {
-        return collect($this->data)->sortBy("order")->toArray();
+        $data = [];
+        foreach ($this->data as $vo) {
+            $data[] = $vo->get();
+        }
+        return collect($data)->sortBy("order")->toArray();
     }
 
 }
