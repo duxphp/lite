@@ -13,7 +13,6 @@ class Permission {
     private array $data = [];
     private string $pattern = "";
 
-
     public function __construct(string $pattern = "") {
         $this->pattern = $pattern;
     }
