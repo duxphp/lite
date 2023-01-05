@@ -7,6 +7,7 @@ use Dux\Handlers\Exception;
 
 class Register {
 
+
     public array $app = [];
 
     /**
