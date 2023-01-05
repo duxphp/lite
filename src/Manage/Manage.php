@@ -79,7 +79,8 @@ class Manage {
      * @return ResponseInterface
      */
     public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $id = $args["id"] ?? 0;
+        $id = $args["id"] ?: 0;
+        $info = collect();
         if ($id) {
             $query = $this->model::query();
             if (method_exists($this, "infoWhere")) {
@@ -87,12 +88,12 @@ class Manage {
             } else {
                 $info = $query->find($id);
             }
+            $data = format_data($info, function ($item): array {
+                return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
+            });
         } else {
-            $info = collect();
+            $data = [];
         }
-        $data = format_data($info, function ($item): array {
-            return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
-        });
         if (method_exists($this, "infoAssign")) {
             $data = [...$data, $this->infoAssign($info)];
         }
@@ -107,7 +108,7 @@ class Manage {
      * @return ResponseInterface
      */
     public function save(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $id = $args["id"] ?? 0;
+        $id = $args["id"] ?: 0;
         $name = $this->name;
         $treeStatus = $this->tree;
         $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args) : []);
@@ -158,7 +159,7 @@ class Manage {
      * @return ResponseInterface
      */
     public function del(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $id = $args["id"] ?? 0;
+        $id = $args["id"] ?: 0;
         $name = $this->name ?? "";
         $query = $this->model::query();
         if (method_exists($this, "delWhere")) {
