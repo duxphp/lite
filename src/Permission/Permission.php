@@ -31,4 +31,12 @@ class Permission {
         return collect($data)->sortBy("order")->toArray();
     }
 
+    public function getData(): array {
+        $data = [];
+        foreach ($this->data as $vo) {
+            $data = [...$data, $vo->getData()];
+        }
+        return $data;
+    }
+
 }

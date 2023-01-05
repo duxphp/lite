@@ -30,4 +30,12 @@ class PermissionGroup {
             "children" => $this->data,
         ];
     }
+
+    public function getData(): array {
+        $data = [];
+        foreach ($this->data as $vo) {
+            $data[] = $vo["label"];
+        }
+        return $data;
+    }
 }
