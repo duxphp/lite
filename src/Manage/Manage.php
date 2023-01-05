@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @method listFormat(object $item): array
+ * @method infoData(object $info): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
  * @method saveFormat(object $data, int $id): array
@@ -39,7 +40,7 @@ class Manage {
         $treeStatus = $this->tree;
         $pageStatus = $this->listPage;
         $query = $this->model::query();
-        if($this->listFields) {
+        if ($this->listFields) {
             $query = $query->select($this->listFields);
         }
         if ($treeStatus) {
@@ -48,9 +49,9 @@ class Manage {
         if (method_exists($this, "listWhere")) {
             $query = $this->listWhere($query, $args);
         }
-        if($pageStatus) {
+        if ($pageStatus) {
             $query = $query->paginate($limit);
-        }else {
+        } else {
             $query = $query->get();
         }
         $assign = [];
@@ -58,7 +59,7 @@ class Manage {
             $assign = format_data($query, function ($item): array {
                 return $this->listFormat($item);
             });
-        }else {
+        } else {
             $assign = [
                 "list" => $query->toArray()
             ];
@@ -78,15 +79,23 @@ class Manage {
      */
     public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $id = $args["id"] ?? 0;
-        $query = $this->model::query();
-        if (method_exists($this, "infoWhere")) {
-            $info = $this->infoWhere($query, $args)->first();
+        if ($id) {
+            $query = $this->model::query();
+            if (method_exists($this, "infoWhere")) {
+                $info = $this->infoWhere($query, $args)->first();
+            } else {
+                $info = $query->find($id);
+            }
         } else {
-            $info = $query->find($id);
+            $info = collect();
         }
-        return send($response, "ok", format_data($info, function ($item): array {
+        $data = format_data($info, function ($item): array {
             return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
-        }));
+        });
+        if (method_exists($this, "infoData")) {
+            $data = [...$data, $this->infoData($info)];
+        }
+        return send($response, "ok", $data);
     }
 
     /**
@@ -118,7 +127,7 @@ class Manage {
 
         if (method_exists($this, "saveFormat")) {
             $data = $this->saveFormat($data, $id);
-        }else {
+        } else {
             $data = (array)$data;
         }
         if ($id) {
@@ -129,7 +138,7 @@ class Manage {
             }
             App::db()->getConnection()->commit();
             return send($response, "编辑{$name}成功");
-        }else {
+        } else {
             // 添加
             $info = $this->model::query()->create($data);
             if (method_exists($this, "saveAfter")) {
@@ -179,7 +188,7 @@ class Manage {
         if (!$this->treeData) {
             $tree = $this->model::tree();
             $this->treeData = $tree;
-        }else {
+        } else {
             $tree = $this->treeData;
         }
         $node = $tree->getNodeById($id);
