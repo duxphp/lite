@@ -135,7 +135,8 @@ class Manage {
         }
         if ($id) {
             // 编辑
-            $info = $this->model::query()->where($this->id, $id)->update($modelData);
+            $this->model::query()->where($this->id, $id)->update($modelData);
+            $info = $this->model::find($id);
             if (method_exists($this, "saveAfter")) {
                 $this->saveAfter($info, $data);
             }
