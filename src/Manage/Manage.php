@@ -96,7 +96,7 @@ class Manage {
         }
 
         if (method_exists($this, "infoAssign")) {
-            $data = [...$data, $this->infoAssign($info)];
+            $data = [...$data, ...$this->infoAssign($info)];
         }
         return send($response, "ok", $data);
     }
