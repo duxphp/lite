@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
  * @method saveFormat(object $data, int $id): array
- * @method saveAfter($info)
+ * @method saveAfter(object $info, object $data)
  * @method delBefore($info)
  * @method delAfter($info)
  */
@@ -129,23 +129,23 @@ class Manage {
         }
 
         if (method_exists($this, "saveFormat")) {
-            $data = $this->saveFormat($data, $id);
+            $modelData = $this->saveFormat($data, $id);
         } else {
-            $data = (array)$data;
+            $modelData = (array)$data;
         }
         if ($id) {
             // 编辑
-            $info = $this->model::query()->where($this->id, $id)->update($data);
+            $info = $this->model::query()->where($this->id, $id)->update($modelData);
             if (method_exists($this, "saveAfter")) {
-                $this->saveAfter($info);
+                $this->saveAfter($info, $data);
             }
             App::db()->getConnection()->commit();
             return send($response, "编辑{$name}成功");
         } else {
             // 添加
-            $info = $this->model::query()->create($data);
+            $info = $this->model::query()->create($modelData);
             if (method_exists($this, "saveAfter")) {
-                $this->saveAfter($info);
+                $this->saveAfter($info, $data);
             }
             App::db()->getConnection()->commit();
             return send($response, "添加{$name}成功");
