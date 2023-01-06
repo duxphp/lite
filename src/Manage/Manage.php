@@ -5,12 +5,15 @@ namespace Dux\Manage;
 use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Validator;
+use Illuminate\Database\Query\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
+ * @method listWhere(Builder $item, array $args): array
  * @method listFormat(object $item): array
  * @method listAssign($query, $args): array
+ * @method infoWhere(Builder $item, array $args): array
  * @method infoAssign(object $info): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
