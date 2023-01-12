@@ -49,7 +49,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+    public function get(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
         $this->map(["GET"], $pattern, $callable, $name, $title);
     }
 
@@ -62,7 +62,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
+    public function post(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
         $this->map(["POST"], $pattern, $callable, $name, $title);
     }
 
@@ -75,8 +75,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
-        $this->map(["PUT"], $pattern, $callable, $name, $title, $auth);
+    public function put(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+        $this->map(["PUT"], $pattern, $callable, $name, $title);
     }
 
     /**
@@ -88,8 +88,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
-        $this->map(["DELETE"], $pattern, $callable, $name, $title, $auth);
+    public function delete(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+        $this->map(["DELETE"], $pattern, $callable, $name, $title);
     }
 
     /**
@@ -101,8 +101,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
-        $this->map(["OPTIONS"], $pattern, $callable, $name, $title, $auth);
+    public function options(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+        $this->map(["OPTIONS"], $pattern, $callable, $name, $title);
     }
 
     /**
@@ -114,8 +114,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
-        $this->map(["PATH"], $pattern, $callable, $name, $title, $auth);
+    public function path(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+        $this->map(["PATH"], $pattern, $callable, $name, $title);
     }
 
     /**
@@ -127,8 +127,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name = "", string $title = "", string $auth = ""): void {
-        $this->map(["ANY"], $pattern, $callable, $name, $title, $auth);
+    public function any(string $pattern, callable|object|string $callable, string $name, string $title = ""): void {
+        $this->map(["ANY"], $pattern, $callable, $name, $title);
     }
 
     /**
@@ -139,21 +139,21 @@ class Route {
      * @param array $ways ["list", "info", "add", "edit", "del"]
      * @return void
      */
-    public function manage(string $pattern, string $class, string $name = "", string $title = "", array $ways = [], string $auth = ""): void {
+    public function manage(string $pattern, string $class, string $name, string $title = "", array $ways = []): void {
         if (!$ways || in_array("list", $ways)) {
-            $this->get($pattern,  "$class:list", $name, "{$title}列表", $auth);
+            $this->get($pattern,  "$class:list", "$name.list", "{$title}列表");
         }
         if (!$ways || in_array("info", $ways)) {
-            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情", "$name.info");
+            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情");
         }
         if (!$ways || in_array("add", $ways)) {
-            $this->post($pattern, "$class:save", "$name.add", "{$title}添加", "$name.add");
+            $this->post($pattern, "$class:save", "$name.add", "{$title}添加");
         }
         if (!$ways || in_array("edit", $ways)) {
-            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", "$class.edit");
+            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑");
         }
         if (!$ways || in_array("del", $ways)) {
-            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除", "$class.del");
+            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除");
         }
     }
 
@@ -166,14 +166,13 @@ class Route {
      * @param string $title
      * @return void
      */
-    public function map(array $methods, string $pattern, $callable, string $name, string $title = "", $auth = ""): void {
+    public function map(array $methods, string $pattern, $callable, string $name, string $title = ""): void {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,
             "callable" => $callable,
             "name" => $name,
             "title" => $title,
-            "auth" => $auth,
         ];
     }
 
@@ -247,10 +246,8 @@ class Route {
         $groupList = $this->group;
         $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList) {
             foreach ($dataList as $item) {
-                $groupApp = $group->map($item["methods"], $item["pattern"], $item["callable"]);
-                if ($item["name"]) {
-                    $groupApp->setName($item["name"]);
-                }
+                $groupApp = $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"]);
+
             }
             foreach ($groupList as $item) {
                 $item->run($group);

@@ -2,7 +2,11 @@
 
 namespace Dux\Auth;
 
+use Dux\Handlers\ExceptionBusiness;
 use Firebase\JWT\JWT;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Routing\RouteContext;
 
 class Auth {
 
@@ -33,6 +37,19 @@ class Auth {
                 throw new \Dux\Handlers\ExceptionBusiness($arguments["message"], 401);
             }
         ]);
+    }
+
+    static public function permission(string $model): \Closure {
+        return function (Request $request, RequestHandler $handler) use ($model) {
+            $auth = $request->getAttribute("auth");
+            $userInfo = $model::query()->with("roles")->find($auth["id"]);
+            $permission = (array)$userInfo->permission;
+            $routeName = RouteContext::fromRequest($request)->getRoute()->getName();
+            if ($permission && !in_array($routeName, $permission)) {
+                throw new ExceptionBusiness("Forbidden", 403);
+            }
+            return $handler->handle($request);
+        };
     }
 
     static public function token(string $app, $params = [], int $expire = 86400): string {

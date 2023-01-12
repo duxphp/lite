@@ -32,7 +32,7 @@ class Menu {
         return $menuApp;
     }
 
-    public function get() {
+    public function get(array $auth = []): array {
         $menuData = [];
         foreach ($this->data as $name => $app) {
             $appData = $app->get();
@@ -47,10 +47,25 @@ class Menu {
         foreach ($menuData as $appData) {
             $groupsMenu = [];
             foreach ($appData["children"] as $groupData) {
-                $groupData["children"] = collect($groupData["children"])->sortBy('order')->toArray();
+                $list = [];
+                foreach ($groupData["children"] as $vo) {
+                    if ($auth && $vo["auth"] && !in_array($vo["auth"], $auth)) {
+                        continue;
+                    }
+                    $list[] = $vo;
+                }
+                $list = collect($list)->sortBy('order')->toArray();
+                if (!$list) {
+                    continue;
+                }
+                $groupData["children"] = $list;
                 $groupsMenu[] = $groupData;
             }
-            $appData["children"] = collect($groupsMenu)->sortBy('order')->toArray();
+            $groupList = collect($groupsMenu)->sortBy('order')->toArray();
+            if (empty($groupList)) {
+                continue;
+            }
+            $appData["children"] = $groupList;
             $restData[] = $appData;
         }
         return collect($restData)->sortBy('order')->toArray();
