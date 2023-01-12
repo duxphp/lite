@@ -19,7 +19,7 @@ class PermissionGroup {
 
     public function add(string $label, string $name): self {
         $this->data[] = [
-            "label" => $this->pattern . "." . $this->label . "." . $label,
+            "label" => $this->pattern .$this->label . "." . $label,
             "name" => $name,
         ];
         return $this;
@@ -28,7 +28,7 @@ class PermissionGroup {
     public function get(): array {
         return [
             "name" => $this->name,
-            "label" => $this->pattern . "." . $this->label,
+            "label" => $this->pattern . $this->label,
             "order" => $this->order,
             "children" => $this->data,
         ];
