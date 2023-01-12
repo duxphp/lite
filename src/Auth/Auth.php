@@ -44,8 +44,10 @@ class Auth {
             $auth = $request->getAttribute("auth");
             $userInfo = $model::query()->with("roles")->find($auth["id"]);
             $permission = (array)$userInfo->permission;
-            $routeName = RouteContext::fromRequest($request)->getRoute()->getName();
-            if ($permission && !in_array($routeName, $permission)) {
+            $route = RouteContext::fromRequest($request)->getRoute();
+            $routeName = $route->getName();
+            $status = $route->getArgument("route:permission");
+            if ($status && $permission && !in_array($routeName, $permission)) {
                 throw new ExceptionBusiness("Forbidden", 403);
             }
             return $handler->handle($request);
