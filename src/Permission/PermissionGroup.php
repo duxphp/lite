@@ -19,7 +19,7 @@ class PermissionGroup {
 
     public function add(string $label, string $name): self {
         $this->data[] = [
-            "label" => $this->pattern . $label,
+            "label" => $this->pattern .".". $this->label . "." . $label,
             "name" => $name,
         ];
         return $this;
