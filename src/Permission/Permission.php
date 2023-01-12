@@ -26,7 +26,7 @@ class Permission {
     public function manage(string $name, string $label, int $order = 0): PermissionGroup {
         $group = $this->group($name, $label, $order);
         $group->add("list", "列表");
-        $group->add("info", "详情");
+        $group->add("info", "信息");
         $group->add("add", "添加");
         $group->add("edit", "编辑");
         $group->add("del", "删除");
