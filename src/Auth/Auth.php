@@ -11,6 +11,10 @@ class Auth {
         return new \Tuupola\Middleware\JwtAuthentication([
             "secret" => $secret,
             "secure" => false,
+            "before" => function ($request, $arguments) {
+                $token = $arguments["decoded"];
+                return $request->withAttribute('auth', $token);
+            },
             "after" => function ($response, $arguments) use ($renewal, $secret, $app) {
                 $token = $arguments["decoded"];
                 if ($app != $token["sub"]) {
@@ -31,7 +35,7 @@ class Auth {
         ]);
     }
 
-    static public function token(string $app, int $expire = 86400, array $params = []): string {
+    static public function token(string $app, $params = [], int $expire = 86400): string {
         $time = time();
         $payload = [
             'sub' => $app,
