@@ -23,6 +23,15 @@ class Permission {
         return $group;
     }
 
+    public function manage(string $name, string $label, int $order = 0): PermissionGroup {
+        $group = $this->group($name, $label, $order);
+        $group->add("list", "列表");
+        $group->add("add", "添加");
+        $group->add("edit", "编辑");
+        $group->add("del", "删除");
+        return $group;
+    }
+
     public function get(): array {
         $data = [];
         foreach ($this->data as $vo) {
