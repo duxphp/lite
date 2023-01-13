@@ -16,7 +16,6 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.1",
-    "ext-redis": "*",
     "ext-pcntl": "*",
     "ext-json": "*",
     "slim/slim": "^4.11",
