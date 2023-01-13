@@ -24,6 +24,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpNotFoundException;
 
+use Slim\Routing\RouteContext;
+
 class Bootstrap {
 
     public bool $debug = true;
@@ -109,12 +111,13 @@ class Bootstrap {
     public function loadView() {
         $this->view = View::init("app");
     }
-
     /**
      * loadRoute
      * @return void
      */
     public function loadRoute(): void {
+        // 解析内容
+        $this->web->addBodyParsingMiddleware();
         // 跨域处理
         $this->web->options('/{routes:.+}', function ($request, $response, $args) {
             return $response;
@@ -126,9 +129,7 @@ class Bootstrap {
                 ->withHeader('Access-Control-Allow-Headers', '*')
                 ->withHeader('Access-Control-Expose-Methods', '*');
         });
-
-        // 初始化中件
-        $this->web->addBodyParsingMiddleware();
+        // 注册路由中间件
         $this->web->addRoutingMiddleware();
 
         // 注册异常处理
