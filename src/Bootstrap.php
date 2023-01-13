@@ -115,9 +115,22 @@ class Bootstrap {
      * @return void
      */
     public function loadRoute(): void {
+        // 跨域处理
+        $this->web->options('/{routes:.+}', function ($request, $response, $args) {
+            return $response;
+        });
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $response = $handler->handle($request);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Methods', '*')
+                ->withHeader('Access-Control-Allow-Headers', '*')
+                ->withHeader('Access-Control-Expose-Methods', '*');
+        });
+
         // 初始化中件
         $this->web->addBodyParsingMiddleware();
         $this->web->addRoutingMiddleware();
+
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
         $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
@@ -128,16 +141,8 @@ class Bootstrap {
         $errorHandler->registerErrorRenderer("text/html", \Dux\Handlers\ErrorHtmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/plain", \Dux\Handlers\ErrorPlainRenderer::class);
 
-        $this->web->options('/{routes:.+}', function ($request, $response, $args) {
-            return $response;
-        });
-        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-            $response = $handler->handle($request);
-            return $response->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, X-CSRF-Token, AccessKey, X-Dux-Platform, Content-MD5, Content-Date')
-                ->withHeader('Access-Control-Expose-Methods', '*');
-        });
+
+
     }
 
     public function loadEvent(): void {
