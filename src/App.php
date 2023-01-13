@@ -305,7 +305,9 @@ class App {
                 $redis
             );
         }
-        return self::$di->get("redis." . $name)->select($database);
+        $redis = self::$di->get("redis." . $name);
+        $redis->select($database);
+        return $redis;
     }
 
 
