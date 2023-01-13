@@ -16,6 +16,9 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.1",
+    "ext-redis": "*",
+    "ext-pcntl": "*",
+    "ext-json": "*",
     "slim/slim": "^4.11",
     "slim/psr7": "^1.6",
     "monolog/monolog": "^3.2",
@@ -26,8 +29,6 @@
     "nette/utils": "^3.2",
     "enqueue/redis": "^0.10.9",
     "symfony/console": "^6.2",
-    "ext-pcntl": "*",
-    "ext-json": "*",
     "league/flysystem": "^3.11",
     "overtrue/flysystem-qiniu": "^3.2",
     "overtrue/flysystem-cos": "^5.1",

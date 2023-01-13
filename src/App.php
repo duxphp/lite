@@ -17,6 +17,7 @@ use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
+use Redis;
 use \Slim\App as SlimApp;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
@@ -289,6 +290,22 @@ class App {
      */
     static function permission(string $name): Permission\Permission {
         return self::$bootstrap->getPermission()->get($name);
+    }
+
+    /**
+     * redis
+     * @param string $name
+     * @return Redis
+     */
+    static function redis(string $name = "default"): Redis {
+        if (!self::$di->has("redis." . $name)) {
+            $config = self::config("database")->get("redis.drivers." . $name);
+            self::$di->set(
+                "redis." . $name,
+                new Redis($config)
+            );
+        }
+        return self::$di->get("redis." . $name);
     }
 
 
