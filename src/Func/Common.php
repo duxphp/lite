@@ -5,13 +5,13 @@ use Carbon\Carbon;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\VarDumper\VarDumper;
 
-if (! function_exists('now')) {
+if (!function_exists('now')) {
     function now(): Carbon {
         return Carbon::now();
     }
 }
 
-if (! function_exists('dux_debug')) {
+if (!function_exists('dux_debug')) {
     function dux_debug(...$args): void {
 
         if (!in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
@@ -28,3 +28,23 @@ if (! function_exists('dux_debug')) {
     }
 }
 
+
+if (!function_exists('get_ip')) {
+    function get_ip() {
+        if (getenv('HTTP_CLIENT_IP')) {
+            $ip = getenv('HTTP_CLIENT_IP');
+        }
+        if (getenv('HTTP_X_REAL_IP')) {
+            $ip = getenv('HTTP_X_REAL_IP');
+        } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
+            $ip = getenv('HTTP_X_FORWARDED_FOR');
+            $ips = explode(',', $ip);
+            $ip = $ips[0];
+        } elseif (getenv('REMOTE_ADDR')) {
+            $ip = getenv('REMOTE_ADDR');
+        } else {
+            $ip = '0.0.0.0';
+        }
+        return $ip;
+    }
+}
