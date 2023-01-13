@@ -299,8 +299,7 @@ class App {
     static function redis($database = 0, string $name = "default"): Redis {
         if (!self::$di->has("redis." . $name)) {
             $config = self::config("database")->get("redis.drivers." . $name);
-            $redis = new \Dux\Database\Redis($config);
-            $redis->connect();
+            $redis = (new \Dux\Database\Redis($config))->connect();
             self::$di->set(
                 "redis." . $name,
                 $redis
