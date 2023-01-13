@@ -127,7 +127,8 @@ class Bootstrap {
             return $response->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', '*')
                 ->withHeader('Access-Control-Allow-Headers', '*')
-                ->withHeader('Access-Control-Expose-Methods', '*');
+                ->withHeader('Access-Control-Expose-Methods', '*')
+                ->withHeader('Access-Control-Allow-Credentials', 'true');
         });
         // 注册路由中间件
         $this->web->addRoutingMiddleware();
