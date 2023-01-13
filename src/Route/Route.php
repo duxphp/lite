@@ -247,8 +247,7 @@ class Route {
         $groupList = $this->group;
         $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList) {
             foreach ($dataList as $item) {
-                $groupApp = $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("route:permission", (string)$item["permission"])->setArgument("route:title", (string)$item["title"]);
-
+                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("route:permission", (string)$item["permission"])->setArgument("route:title", (string)$item["title"]);
             }
             foreach ($groupList as $item) {
                 $item->run($group);

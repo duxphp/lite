@@ -116,20 +116,9 @@ class Bootstrap {
      * @return void
      */
     public function loadRoute(): void {
+
         // 解析内容
         $this->web->addBodyParsingMiddleware();
-        // 跨域处理
-        $this->web->options('/{routes:.+}', function ($request, $response, $args) {
-            return $response;
-        });
-        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-            $response = $handler->handle($request);
-            return $response->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('Access-Control-Allow-Methods', '*')
-                ->withHeader('Access-Control-Allow-Headers', '*')
-                ->withHeader('Access-Control-Expose-Methods', '*')
-                ->withHeader('Access-Control-Allow-Credentials', 'true');
-        });
         // 注册路由中间件
         $this->web->addRoutingMiddleware();
 
@@ -143,7 +132,18 @@ class Bootstrap {
         $errorHandler->registerErrorRenderer("text/html", \Dux\Handlers\ErrorHtmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/plain", \Dux\Handlers\ErrorPlainRenderer::class);
 
-
+        // 跨域处理
+        $this->web->options('/{routes:.+}', function ($request, $response, $args) {
+            return $response;
+        });
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $response = $handler->handle($request);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Methods', '*')
+                ->withHeader('Access-Control-Allow-Headers', '*')
+                ->withHeader('Access-Control-Expose-Methods', '*')
+                ->withHeader('Access-Control-Allow-Credentials', 'true');
+        });
 
     }
 

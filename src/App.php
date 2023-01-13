@@ -29,7 +29,6 @@ use Monolog\Logger;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
-use Twig\Environment;
 
 class App {
     static string $basePath;
@@ -297,15 +296,17 @@ class App {
      * @param string $name
      * @return Redis
      */
-    static function redis(string $name = "default"): Redis {
+    static function redis($database = 0, string $name = "default"): Redis {
         if (!self::$di->has("redis." . $name)) {
             $config = self::config("database")->get("redis.drivers." . $name);
+            $redis = new \Dux\Database\Redis($config);
+            $redis->connect();
             self::$di->set(
                 "redis." . $name,
-                new Redis($config)
+                $redis
             );
         }
-        return self::$di->get("redis." . $name);
+        return self::$di->get("redis." . $name)->select($database);
     }
 
 
