@@ -40,7 +40,8 @@
     "illuminate/pagination": "^9.45",
     "vlucas/valitron": "^1.4",
     "bluem/tree": "^3.2",
-    "tuupola/slim-jwt-auth": "^3.7"
+    "tuupola/slim-jwt-auth": "^3.7",
+    "symfony/var-dumper": "^6.2"
   },
   "autoload": {
     "psr-4": {
