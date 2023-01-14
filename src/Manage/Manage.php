@@ -177,8 +177,8 @@ class Manage {
         }
         $this->model::query()->where($this->id, $id)->update($updateData);
         $info = $this->model::find($id);
-        if (method_exists($this, "saveAfter")) {
-            $this->saveAfter($info, $updateData, $data);
+        if (method_exists($this, "storeAfter")) {
+            $this->storeAfter($info, $updateData, $data);
         }
         App::db()->getConnection()->commit();
         return send($response, "更改成功");
