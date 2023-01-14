@@ -10,10 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * @method listWhere(Builder $query, array $args): array
+ * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method listFormat(object $item): array
  * @method listAssign($query, $args): array
- * @method infoWhere(Builder $query, array $args): array
+ * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method infoAssign(object $info): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args): array
@@ -53,7 +53,7 @@ class Manage {
             $query = $query->where("parent_id", 0)->with(['children']);
         }
         if (method_exists($this, "listWhere")) {
-            $query = $this->listWhere($query, $args);
+            $query = $this->listWhere($query, $args, $request);
         }
         if ($pageStatus) {
             $query = $query->paginate($limit);
@@ -89,7 +89,7 @@ class Manage {
         if ($id) {
             $query = $this->model::query();
             if (method_exists($this, "infoWhere")) {
-                $info = $this->infoWhere($query, $args)->first();
+                $info = $this->infoWhere($query, $args, $request)->first();
             } else {
                 $info = $query->find($id);
             }
