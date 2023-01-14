@@ -45,7 +45,7 @@ class Permission {
     public function getData(): array {
         $data = [];
         foreach ($this->data as $vo) {
-            $data = [...$data, $vo->getData()];
+            $data = [...$data, ...$vo->getData()];
         }
         return $data;
     }
