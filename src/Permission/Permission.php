@@ -29,6 +29,7 @@ class Permission {
         $group->add("info", "信息");
         $group->add("add", "添加");
         $group->add("edit", "编辑");
+        $group->add("store", "存储");
         $group->add("del", "删除");
         return $group;
     }

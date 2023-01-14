@@ -19,6 +19,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method saveValidator(array $args): array
  * @method saveFormat(object $data, int $id): array
  * @method saveAfter(object $info, object $data)
+ * @method storeBefore(array $updateData, int $id, $data)
+ * @method storeAfter(object $info, array $updateData, $data)
  * @method delBefore($info)
  * @method delAfter($info)
  */
@@ -154,6 +156,32 @@ class Manage {
             App::db()->getConnection()->commit();
             return send($response, "添加{$name}成功");
         }
+    }
+
+    /**
+     * 保存单个数据
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     */
+    public function store(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $id = $args["id"] ?: 0;
+        $data = $request->getParsedBody();
+        App::db()->getConnection()->beginTransaction();
+        $updateData = [
+            $data["key"] => $data["value"]
+        ];
+        if (method_exists($this, "storeBefore")) {
+            $updateData = $this->storeBefore($updateData, $id, $data);
+        }
+        $this->model::query()->where($this->id, $id)->update($updateData);
+        $info = $this->model::find($id);
+        if (method_exists($this, "saveAfter")) {
+            $this->saveAfter($info, $updateData, $data);
+        }
+        App::db()->getConnection()->commit();
+        return send($response, "更改成功");
     }
 
     /**

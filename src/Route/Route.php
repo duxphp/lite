@@ -136,7 +136,7 @@ class Route {
      * @param string $class
      * @param string $name
      * @param string $title
-     * @param array $ways ["list", "info", "add", "edit", "del"]
+     * @param array $ways ["list", "info", "add", "edit", "store", "del"]
      * @return void
      */
     public function manage(string $pattern, string $class, string $name, string $title = "", array $ways = [], bool $permission = true): void {
@@ -151,6 +151,9 @@ class Route {
         }
         if (!$ways || in_array("edit", $ways)) {
             $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑", $permission);
+        }
+        if (!$ways || in_array("store", $ways)) {
+            $this->post("$pattern/{id}/store", "$class:store", "$name.store", "{$title}存储", $permission);
         }
         if (!$ways || in_array("del", $ways)) {
             $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除", $permission);
