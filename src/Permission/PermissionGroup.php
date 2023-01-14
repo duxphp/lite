@@ -28,7 +28,7 @@ class PermissionGroup {
     public function get(): array {
         return [
             "name" => $this->name,
-            "label" => $this->pattern . $this->label,
+            "label" => "group:" . $this->pattern . $this->label,
             "order" => $this->order,
             "children" => $this->data,
         ];
