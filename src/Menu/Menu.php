@@ -54,21 +54,21 @@ class Menu {
                     }
                     $list[] = $vo;
                 }
-                $list = collect($list)->sortBy('order')->toArray();
+                $list = collect($list)->sortBy('order')->values()->toArray();
                 if (!$list) {
                     continue;
                 }
                 $groupData["children"] = $list;
                 $groupsMenu[] = $groupData;
             }
-            $groupList = collect($groupsMenu)->sortBy('order')->toArray();
+            $groupList = collect($groupsMenu)->sortBy('order')->values()->toArray();
             if (empty($groupList)) {
                 continue;
             }
             $appData["children"] = $groupList;
             $restData[] = $appData;
         }
-        return collect($restData)->sortBy('order')->toArray();
+        return collect($restData)->sortBy('order')->values()->toArray();
 
     }
 
