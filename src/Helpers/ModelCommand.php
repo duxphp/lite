@@ -1,0 +1,100 @@
+<?php
+declare(strict_types=1);
+
+namespace Dux\Helpers;
+
+use Dux\App;
+use Illuminate\Database\Schema\Blueprint;
+use Noodlehaus\Config;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Nette\Utils\FileSystem;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+
+class ModelCommand extends Command {
+
+    protected static $defaultName = 'generate:model';
+    protected static $defaultDescription = 'Create an application model';
+
+    protected function configure(): void {
+        $this->addArgument(
+            'name',
+            InputArgument::REQUIRED,
+            'please enter the application name'
+        );
+    }
+
+    public function execute(InputInterface $input, OutputInterface $output): int {
+        $name = $input->getArgument('name');
+        $name = ucfirst($name);
+        $dir = App::$appPath . "/$name";
+        if (!is_dir($dir)) {
+            return $this->error($output, 'The application does not exist');
+        }
+        $helper = $this->getHelper('question');
+
+        $question = new ConfirmationQuestion('Please enter a model name?', false);
+
+        $modelName = $helper->ask($input, $output, $question);
+        if (!$modelName) {
+            return $this->error($output, "The model name is not entered");
+        }
+        $modelName = ucwords($modelName);
+        $modelDir = "$dir/Models";
+        if (is_file("$modelDir/$modelName")) {
+            return $this->error($output, "The model already exists");
+
+        }
+        try {
+            if (!is_dir($modelDir)) {
+                FileSystem::createDir($dir);
+            }
+        } catch (\Exception $exception) {
+            return $this->error($output, 'Failed to create the model directory');
+        }
+
+        $file = new \Nette\PhpGenerator\PhpFile;
+        $file->setStrictTypes();
+
+        $namespace = $file->addNamespace("App\\$name\\Models");
+        $class = $namespace->addClass($modelName);
+        $class->setExtends(\Dux\Database\Model::class);
+        $class->addProperty("table", $this->ccFormat($modelName))->setType("string");
+        $method = $class->addMethod("migration")->setBody(implode("\n", [
+            '$table->id();',
+            '$table->timestamps();',
+        ]));
+        $method->addParameter("table")->setType(Blueprint::class);
+
+        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
+        file_put_contents($modelDir . "/$modelName.php", $content);
+
+        $output->write("<info>Generate model successfully</info>");
+        return Command::SUCCESS;
+    }
+
+    public function error(OutputInterface $output, string $message): int {
+        $output->write("<error>$$message</error>");
+        return Command::FAILURE;
+    }
+
+    private function ccFormat($name){
+        $temp_array = array();
+        for($i=0;$i<strlen($name);$i++){
+            $ascii_code = ord($name[$i]);
+            if($ascii_code >= 65 && $ascii_code <= 90){
+                if($i == 0){
+                    $temp_array[] = chr($ascii_code + 32);
+                }else{
+                    $temp_array[] = '_'.chr($ascii_code + 32);
+                }
+            }else{
+                $temp_array[] = $name[$i];
+            }
+        }
+        return implode('',$temp_array);
+    }
+
+}

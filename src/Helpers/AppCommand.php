@@ -13,7 +13,7 @@ use Nette\Utils\FileSystem;
 
 class AppCommand extends Command {
 
-    protected static $defaultName = 'make:app';
+    protected static $defaultName = 'generate:app';
     protected static $defaultDescription = 'Create an application module';
 
     protected function configure(): void {
