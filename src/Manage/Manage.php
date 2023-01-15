@@ -42,8 +42,8 @@ class Manage {
      * @return ResponseInterface
      */
     public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $params = $request->getQueryParams();
-        $limit = $params["limit"] ?: $this->listLimit;
+        $queryParams = $request->getQueryParams();
+        $limit = $queryParams["limit"] ?: $this->listLimit;
         $treeStatus = $this->tree;
         $pageStatus = $this->listPage;
         $query = $this->model::query();
