@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method infoAssign(object $info): array
  * @method infoFormat(object $info): array
- * @method saveValidator(array $args): array
+ * @method saveValidator(array $args, ServerRequestInterface $request): array
  * @method saveFormat(object $data, int $id): array
  * @method saveAfter(object $info, object $data)
  * @method storeBefore(array $updateData, int $id, $data)
@@ -118,7 +118,7 @@ class Manage {
         $id = $args["id"] ?: 0;
         $name = $this->name;
         $treeStatus = $this->tree;
-        $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args) : []);
+        $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args, $request) : []);
         App::db()->getConnection()->beginTransaction();
 
         if ($id && $treeStatus) {
