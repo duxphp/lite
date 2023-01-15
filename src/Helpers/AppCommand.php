@@ -39,19 +39,14 @@ class AppCommand extends Command {
 
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
-
         $namespace = $file->addNamespace("App\\" . $name);
-
         $class = $namespace->addClass("App");
         $class->setExtends(App\AppExtend::class);
         $class->addComment("Application Registration");
-
         $class->addProperty("name", "App Name")->setType("string");
         $class->addProperty("description", "App Desc")->setType("string");
-
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        file_put_contents($dir . "/App.php", $content);
-
+        FileSystem::write($dir . "/App.php", $content);
 
         $configFile = App::$configPath . "/app.yaml";
         $conf = Config::load($configFile);

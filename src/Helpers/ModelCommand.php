@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Nette\Utils\FileSystem;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
 class ModelCommand extends Command {
 
@@ -35,7 +36,7 @@ class ModelCommand extends Command {
         }
         $helper = $this->getHelper('question');
 
-        $question = new ConfirmationQuestion("Please enter a model name?\n", false);
+        $question = new Question("Please enter a model name？\n", false);
 
         $modelName = $helper->ask($input, $output, $question);
         if (!$modelName) {
@@ -49,7 +50,7 @@ class ModelCommand extends Command {
         }
         try {
             if (!is_dir($modelDir)) {
-                FileSystem::createDir($dir);
+                FileSystem::createDir($modelDir);
             }
         } catch (\Exception $exception) {
             return $this->error($output, 'Failed to create the model directory');
@@ -57,19 +58,17 @@ class ModelCommand extends Command {
 
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
-
         $namespace = $file->addNamespace("App\\$name\\Models");
         $class = $namespace->addClass($modelName);
         $class->setExtends(\Dux\Database\Model::class);
-        $class->addProperty("table", $this->ccFormat($modelName))->setType("string");
+        $class->addProperty("table", $this->ccFormat($modelName));
         $method = $class->addMethod("migration")->setBody(implode("\n", [
             '$table->id();',
             '$table->timestamps();',
         ]));
         $method->addParameter("table")->setType(Blueprint::class);
-
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        file_put_contents($modelDir . "/$modelName.php", $content);
+        FileSystem::write("$modelDir/$modelName.php", $content);
 
         $output->write("<info>Generate model successfully</info>");
         return Command::SUCCESS;
