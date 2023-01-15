@@ -35,7 +35,7 @@ class ModelCommand extends Command {
         }
         $helper = $this->getHelper('question');
 
-        $question = new ConfirmationQuestion('Please enter a model name?', false);
+        $question = new ConfirmationQuestion("Please enter a model name?\n", false);
 
         $modelName = $helper->ask($input, $output, $question);
         if (!$modelName) {
