@@ -8,6 +8,7 @@ use Dux\Handlers\Exception;
 class Register {
 
     public array $app = [];
+    public array $path = [];
 
     /**
      * 设置路由应用
@@ -30,7 +31,15 @@ class Register {
             throw new Exception("The routing app [$name] is not registered");
         }
         return $this->app[$name];
+    }
 
+    /**
+     * 注册路由目录
+     * @param string $path
+     * @return void
+     */
+    public function path(string $path): void {
+        $this->path[] = $path;
     }
 
 }
