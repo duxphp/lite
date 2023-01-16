@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 
+namespace Dux\UI;
+
 use Dux\App;
 use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
@@ -18,13 +20,8 @@ class AppCommand extends Command {
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         UI::sync();
-        $output->write("<info>Generate application successfully</info>");
+        $output->write("<info>The UI file is successfully synchronized</info>");
         return Command::SUCCESS;
-    }
-
-    public function error(OutputInterface $output, string $message): int {
-        $output->write("<error>$$message</error>");
-        return Command::FAILURE;
     }
 
 }

@@ -1,32 +1,36 @@
 <?php
 declare(strict_types=1);
 
+namespace Dux\UI;
 
 use Dux\App;
 use Nette\Utils\FileSystem;
 
 class UI {
 
-    static $dirList = [];
+    static array $dirList = [];
 
-    static function register(string $dir) {
-        self::$dirList[] = $dir;
+    static function register(string $dir, string $app): void {
+        self::$dirList[] = [
+            "path" => realpath($dir),
+            "app" => $app
+        ];
     }
 
     static function sync(): void {
         foreach (self::$dirList as $dir) {
             $files = [];
-            self::getFiles($dir, $files);
-            $dirName = lcfirst(dirname($dir));
+            self::getFiles($dir["path"], $files);
+            $dirName = basename($dir["path"]);
+            $uiPath = "{$dir['app']}/$dirName";
+
             foreach ($files as $file) {
-                $uiFile = self::getUiPath("/$dirName/" . str_replace($dir, "", $file));
+                $uiFile = self::getUiPath($uiPath . str_replace($dir, "", $file));
                 if (!is_file($uiFile)) {
                     FileSystem::copy($file, $uiFile);
                     continue;
                 }
-                $info = new DirectoryIterator($file);
-                $uInfo = new DirectoryIterator($uiFile);
-                if ($info->getCTime() <= $uInfo->getCTime()) {
+                if (filemtime($file) <= filemtime($uiFile)) {
                     continue;
                 }
                 FileSystem::copy($file, $uiFile);
@@ -35,17 +39,21 @@ class UI {
 
     }
 
-    static function getUiPath(string $dir): string {
-        return App::$basePath . "/client/app" . $dir;
+    static private function getUiPath(string $dir): string {
+        return App::$basePath . "/client/app/$dir";
     }
 
-    static function getFiles($path, &$data) {
-        $dirIterator = new DirectoryIterator($path);
+    static private function getFiles($path, &$data): void {
+        $dirIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+
         foreach ($dirIterator as $info) {
+            if ($info->getPath() == $path) {
+                continue;
+            }
             if ($info->isDir()) {
                 self::getFiles($info->getPath(), $data);
-            }else {
-                $data[] = $info->getPath();
+            } else {
+                $data[] = $info->getPath() . "/" . $info->getFilename();
             }
         }
     }
