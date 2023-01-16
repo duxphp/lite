@@ -11,7 +11,6 @@ class RouteAttribute {
         public string $app,
         public array  $methods,
         public string $pattern,
-        public        $callable,
         public string $name,
         public string $title = "",
         public bool   $permission = true) {
@@ -22,7 +21,6 @@ class RouteAttribute {
             "app" => $this->app,
             "methods" => $this->methods,
             "pattern" => $this->pattern,
-            "callable" => $this->callable,
             "name" => $this->name,
             "title" => $this->title,
             "permission" => $this->permission,

@@ -11,7 +11,6 @@ class RouteManageAttribute {
     public function __construct(
         public string $app,
         public string $pattern,
-        public string $class,
         public string $name,
         public string $title = "",
         public array $ways = [],
@@ -22,7 +21,6 @@ class RouteManageAttribute {
         return [
             "app" => $this->app,
             "pattern" => $this->pattern,
-            "class" => $this->class,
             "name" => $this->name,
             "title" => $this->title,
             "ways" => $this->ways,
