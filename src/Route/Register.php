@@ -40,23 +40,12 @@ class Register {
      * @param string $path
      * @return void
      */
-    public function attribute(string $namespace, string $path): void {
+    public function load(string $namespace, string $path): void {
         $this->path[$namespace] = $path;
     }
 
 
 
-    public function getAttribute()
-    {
-        foreach ($this->path as $namespace => $path) {
-            $files = Finder::findFiles("$path/*.php");
-            foreach ($files as $file) {
-                $className = $namespace . "\\" . $file->getBasename(".php");
-                $ref = new \ReflectionClass($className);
-                $attribute = $ref[0]->newInstance();
 
-            }
-        }
-    }
 
 }

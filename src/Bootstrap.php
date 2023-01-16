@@ -11,6 +11,7 @@ use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Queue\QueueCommand;
+use Dux\Route\Loader;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
@@ -171,10 +172,13 @@ class Bootstrap {
         foreach ($appList as $vo) {
             call_user_func([new $vo, "register"], $this);
         }
-        // 路由注册
+        // 普通路由注册
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
+        // 注解路由注册
+        Loader::run($this->route->path);
+
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
             throw new HttpNotFoundException($request);

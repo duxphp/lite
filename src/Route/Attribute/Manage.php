@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Dux\Route;
+namespace Dux\Route\Attribute;
 
 use Attribute;
 
 #[Attribute]
-class RouteManageAttribute {
+class Manage {
 
     public function __construct(
         public string $app,

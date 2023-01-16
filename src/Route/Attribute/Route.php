@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Dux\Route;
+namespace Dux\Route\Attribute;
 
 use Attribute;
 
 #[Attribute]
-class RouteAttribute {
+class Route {
 
     public function __construct(
-        public string $app,
         public array  $methods,
         public string $pattern,
         public string $name,
         public string $title = "",
-        public bool   $permission = true) {
+        public bool   $permission = true,
+        public string $app = "") {
     }
 
     public function get(): array {
