@@ -177,7 +177,7 @@ class Bootstrap {
             $route->run($this->web);
         }
         // 注解路由注册
-        Loader::run($this->route->path);
+        Loader::run($this->route);
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {

@@ -3,6 +3,7 @@
 namespace Dux\Route;
 
 use Dux\App;
+use Dux\Route\Register;
 use Dux\Route\Attribute\Route;
 use Dux\Route\Attribute\Group;
 use Dux\Route\Attribute\Manage;
@@ -10,8 +11,8 @@ use Nette\Utils\Finder;
 
 class Loader {
 
-    public static function run($paths): void {
-        foreach ($paths as $namespace => $path) {
+    public static function run(Register $route): void {
+        foreach ($route->path as $namespace => $path) {
             $files = Finder::findFiles("*.php")->in($path);
             foreach ($files as $file) {
                 // file
@@ -34,7 +35,7 @@ class Loader {
                     }
                     // route
                     if ($class instanceof Route) {
-                        App::$bootstrap->getRoute()->get($info["app"])->map(
+                        $route->get($info["app"])->map(
                             methods: $info["methods"],
                             pattern: $info["pattern"],
                             callable: $ref->getName(),
@@ -44,7 +45,7 @@ class Loader {
                     }
                     // manage
                     if ($class instanceof Manage) {
-                        App::$bootstrap->getRoute()->get($info["app"])->manage(
+                        $route->get($info["app"])->manage(
                             pattern: $info["pattern"],
                             class: $ref->getName(),
                             name: $info["name"],
@@ -55,7 +56,7 @@ class Loader {
                     }
                     // group
                     if ($class instanceof Group) {
-                        $group = App::$bootstrap->getRoute()->get($info["app"])->group($info["pattern"], $info["title"], ...$info["middleware"]);
+                        $group = $route->get($info["app"])->group($info["pattern"], $info["title"], ...$info["middleware"]);
                     }
                 }
 
@@ -70,7 +71,7 @@ class Loader {
                         }
                         $info = $class->get();
                         if (!$group) {
-                            $app = App::$bootstrap->getRoute()->get($info["app"]);
+                            $app = $route->get($info["app"]);
                             if (empty($info["app"])) {
                                 throw new \Exception("method [" . $ref->getName() . ":" . $method->getName() . "] attribute parameter missing \"app\" ");
                             }
