@@ -5,7 +5,7 @@ namespace Dux\Route\Attribute;
 
 use Attribute;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_CLASS)]
 class Manage {
 
     public function __construct(

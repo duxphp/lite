@@ -5,7 +5,7 @@ namespace Dux\Route\Attribute;
 
 use Attribute;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class Route {
 
     public function __construct(
