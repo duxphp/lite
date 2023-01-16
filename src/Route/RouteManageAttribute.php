@@ -7,9 +7,9 @@ use Attribute;
 
 #[Attribute]
 class RouteManageAttribute {
+
     public function __construct(
         public string $app,
-        public array  $methods,
         public string $pattern,
         public string $class,
         public string $name,
@@ -21,7 +21,6 @@ class RouteManageAttribute {
     public function get(): array {
         return [
             "app" => $this->app,
-            "methods" => $this->methods,
             "pattern" => $this->pattern,
             "class" => $this->class,
             "name" => $this->name,
