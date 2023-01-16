@@ -40,25 +40,6 @@ class Auth {
         ]);
     }
 
-    static public function permission(string $name, string $model): \Closure {
-        return function (Request $request, RequestHandler $handler) use ($name, $model) {
-            $auth = $request->getAttribute("auth");
-            $route = RouteContext::fromRequest($request)->getRoute();
-            $routeName = $route->getName();
-            $allPermission = App::permission($name)->getData();
-            if (!$allPermission || !in_array($routeName, $allPermission)) {
-                return $handler->handle($request);
-            }
-            $userInfo = $model::query()->find($auth["id"]);
-            $permission = (array)$userInfo->permission;
-            $status = $route->getArgument("route:permission");
-            if ($status && $permission && !in_array($routeName, $permission)) {
-                throw new ExceptionBusiness("Forbidden", 403);
-            }
-            return $handler->handle($request);
-        };
-    }
-
     static public function token(string $app, $params = [], int $expire = 86400): string {
         $time = time();
         $payload = [
