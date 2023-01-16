@@ -30,7 +30,11 @@ class Validator {
             $col = collect($v->errors());
             throw new ExceptionBusiness($col->first()[0], 500);
         }
-        return (object)$data;
+        $dataObj = new Data();
+        foreach ($data as $k => $v) {
+            $dataObj[$k] = $v;
+        }
+        return $dataObj;
     }
 
 }
