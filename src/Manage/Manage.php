@@ -139,24 +139,21 @@ class Manage {
         } else {
             $modelData = (array)$data;
         }
+
         if ($id) {
-            // 编辑
-            $this->model::query()->where($this->id, $id)->update($modelData);
-            $info = $this->model::find($id);
-            if (method_exists($this, "saveAfter")) {
-                $this->saveAfter($info, $data);
-            }
-            App::db()->getConnection()->commit();
-            return send($response, "编辑{$name}成功");
+            $model = $this->model::find($id);
         } else {
-            // 添加
-            $info = $this->model::query()->create($modelData);
-            if (method_exists($this, "saveAfter")) {
-                $this->saveAfter($info, $data);
-            }
-            App::db()->getConnection()->commit();
-            return send($response, "添加{$name}成功");
+            $model = new $this->model;
         }
+        foreach ($modelData as $key => $vo) {
+            $model->$key = $vo;
+        }
+        $model->save();
+        if (method_exists($this, "saveAfter")) {
+            $this->saveAfter($model, $data);
+        }
+        App::db()->getConnection()->commit();
+        return send($response, ($id ? "编辑" : "添加") . "{$name}成功");
     }
 
     /**
