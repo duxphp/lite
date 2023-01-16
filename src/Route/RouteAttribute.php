@@ -7,6 +7,7 @@ use Attribute;
 
 #[Attribute]
 class RouteAttribute {
+
     public function __construct(
         public string $app,
         public array  $methods,
