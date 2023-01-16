@@ -32,7 +32,7 @@ class Validator {
         }
         $dataObj = new Data();
         foreach ($data as $k => $v) {
-            $dataObj[$k] = $v;
+            $dataObj->$k = $v;
         }
         return $dataObj;
     }
