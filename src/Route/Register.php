@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Route;
 
 use Dux\Handlers\Exception;
+use Nette\Utils\Finder;
 
 class Register {
 
@@ -34,12 +35,28 @@ class Register {
     }
 
     /**
-     * 注册路由目录
+     * 注册注解路由
+     * @param string $namespace
      * @param string $path
      * @return void
      */
-    public function path(string $path): void {
-        $this->path[] = $path;
+    public function attribute(string $namespace, string $path): void {
+        $this->path[$namespace] = $path;
+    }
+
+
+
+    public function getAttribute()
+    {
+        foreach ($this->path as $namespace => $path) {
+            $files = Finder::findFiles("$path/*.php");
+            foreach ($files as $file) {
+                $className = $namespace . "\\" . $file->getBasename(".php");
+                $ref = new \ReflectionClass($className);
+                $attribute = $ref[0]->newInstance();
+
+            }
+        }
     }
 
 }

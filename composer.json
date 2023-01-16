@@ -42,7 +42,8 @@
     "bluem/tree": "^3.2",
     "tuupola/slim-jwt-auth": "^3.7",
     "symfony/var-dumper": "^6.2",
-    "donatj/phpuseragentparser": "^1.7"
+    "donatj/phpuseragentparser": "^1.7",
+    "nette/finder": "^2.6"
   },
   "autoload": {
     "psr-4": {

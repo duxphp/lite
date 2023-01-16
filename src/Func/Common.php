@@ -2,8 +2,46 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\VarDumper\VarDumper;
+
+
+if (!function_exists('base_path')) {
+    function base_path(string $path = ""): string {
+        return sys_path(\Dux\App::$basePath, $path);
+    }
+}
+
+if (!function_exists('app_path')) {
+    function app_path(string $path = ""): string {
+        return sys_path(\Dux\App::$appPath, $path);
+    }
+}
+
+if (!function_exists('data_path')) {
+    function data_path(string $path = ""): string {
+        return sys_path(\Dux\App::$dataPath, $path);
+    }
+}
+
+if (!function_exists('public_path')) {
+    function public_path(string $path = ""): string {
+        return sys_path(\Dux\App::$publicPath, $path);
+    }
+}
+
+if (!function_exists('config_path')) {
+    function config_path(string $path = ""): string {
+        return sys_path(\Dux\App::$configPath, $path);
+    }
+}
+
+if (!function_exists('sys_path')) {
+    function sys_path(string $base = "", string $path = ""): string {
+        $base = rtrim("/", str_replace("\\", "/", $base));
+        $path = str_replace("\\", "/", $path ? "/" . trim("/", $path) : "");
+        return $base . $path;
+    }
+}
 
 if (!function_exists('now')) {
     function now(): Carbon {
