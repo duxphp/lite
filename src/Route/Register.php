@@ -56,7 +56,7 @@ class Register {
                 $class = $vo["class"];
                 $classArr = explode("\\", $class);
                 $layout = array_slice($classArr, -3, 1)[0];
-                $name = lcfirst($layout) . "." . lcfirst($classArr);
+                $name = lcfirst($layout) . "." . lcfirst(end($classArr));
                 $pattern = "/" . str_replace(".", "/", $name);
                 // group
                 if ($attribute == RouteGroup::class) {

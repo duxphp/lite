@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Dux\Permission;
 
+use Dux\App;
 use Dux\Handlers\Exception;
 use \Dux\Permission\Attribute\PermissionGroup;
 use \Dux\Permission\Attribute\PermissionManage;
@@ -55,8 +56,7 @@ class Register {
                 $class = $vo["class"];
                 $classArr = explode("\\", $class);
                 $layout = array_slice($classArr, -3, 1)[0];
-                $name = $classArr;
-                $label = lcfirst($layout) . "." . lcfirst($name);
+                $label = lcfirst($layout) . "." . lcfirst(end($classArr));
                 // group
                 if ($attribute == PermissionGroup::class) {
                     $group = $this->get($params["app"])->group(

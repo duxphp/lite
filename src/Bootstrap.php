@@ -11,6 +11,7 @@ use Dux\Database\MigrateCommand;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
 use Dux\Helpers\ModelCommand;
+use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use DI\Container;
@@ -40,8 +41,8 @@ class Bootstrap {
 
     public EventEmitter $event;
     public Route\Register $route;
-    private ?Menu\Register $menu = null;
-    private ?Permission\Register $permission = null;
+    public ?Menu\Register $menu = null;
+    public ?Permission\Register $permission = null;
 
     /**
      * init
@@ -102,6 +103,7 @@ class Bootstrap {
         $commands[] = AppCommand::class;
         $commands[] = ModelCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
+        $commands[] = PermissionCommand::class;
         $this->command = Command::init($commands);
     }
 
