@@ -27,8 +27,7 @@ class PermissionMiddleware {
         }
         $userInfo = $this->model::query()->find($auth["id"]);
         $permission = (array)$userInfo->permission;
-        $status = $route->getArgument("route:permission");
-        if ($status && $permission && !in_array($routeName, $permission)) {
+        if ($permission && !in_array($routeName, $permission)) {
             throw new ExceptionBusiness("Forbidden", 403);
         }
         return $handler->handle($request);

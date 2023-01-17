@@ -13,7 +13,6 @@ class Route {
         string $pattern,
         string $name,
         string $title,
-        bool   $permission = true,
         string $app = "") {
     }
 }

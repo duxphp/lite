@@ -13,6 +13,5 @@ class RouteManage {
         string $pattern,
         string $name,
         string $title,
-        array  $ways = [],
-        bool   $permission = true) {}
+        array  $ways = []) {}
 }

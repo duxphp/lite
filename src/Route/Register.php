@@ -66,8 +66,7 @@ class Register {
                         class: $class,
                         name: $params["name"],
                         title: $params["title"],
-                        ways: $params["ways"] ?? [],
-                        permission: $params["permission"] ?? false
+                        ways: $params["ways"] ?? []
                     );
                 }
                 // route
@@ -92,8 +91,7 @@ class Register {
                         pattern: $params["pattern"],
                         callable: $class,
                         name: $params["name"],
-                        title: $params["title"] ?? "",
-                        permission: $params["permission"] ?? false
+                        title: $params["title"] ?? ""
                     );
                 }
             }
