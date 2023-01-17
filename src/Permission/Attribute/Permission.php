@@ -5,10 +5,11 @@ namespace Dux\Permission\Attribute;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class Permission {
 
     public function __construct(
         string $name,
-        string  $label = "") {}
+        string $label = "") {
+    }
 }
