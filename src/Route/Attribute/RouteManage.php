@@ -6,11 +6,13 @@ namespace Dux\Route\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-class Group {
+class RouteManage {
 
     public function __construct(
         string $app,
         string $pattern,
+        string $name,
         string $title,
-        array $middleware = []) {}
+        array  $ways = [],
+        bool   $permission = true) {}
 }

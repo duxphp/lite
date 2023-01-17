@@ -5,8 +5,8 @@ namespace Dux\Route;
 
 use Dux\App;
 use Dux\Handlers\Exception;
-use Dux\Route\Attribute\Group;
-use Dux\Route\Attribute\Manage;
+use Dux\Route\Attribute\RouteGroup;
+use Dux\Route\Attribute\RouteManage;
 
 class Register {
 
@@ -46,8 +46,8 @@ class Register {
         foreach ($attributes as $attribute => $list) {
             foreach ($list as $vo) {
                 if (
-                    $attribute != Manage::class &&
-                    $attribute != Group::class &&
+                    $attribute != RouteManage::class &&
+                    $attribute != RouteGroup::class &&
                     $attribute != \Dux\Route\Attribute\Route::class
                 ) {
                     continue;
@@ -55,12 +55,12 @@ class Register {
                 $params = $vo["params"];
                 $class = $vo["class"];
                 // group
-                if ($attribute == Group::class) {
+                if ($attribute == RouteGroup::class) {
                     $group = $route->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
                     $groupClass[$class] = $group;
                 }
                 // manage
-                if ($attribute == Manage::class) {
+                if ($attribute == RouteManage::class) {
                     $route->get($params["app"])->manage(
                         pattern: $params["pattern"],
                         class: $class,
