@@ -35,8 +35,8 @@ class Attribute {
                 if (!class_exists($class)) {
                     continue;
                 }
-                $reflection = new \ReflectionClass($class);
-                $attributes = $reflection->getAttributes();
+                $classRef = new \ReflectionClass($class);
+                $attributes = $classRef->getAttributes();
                 foreach ($attributes as $attribute) {
                     if (!isset($data[$attribute->getName()]) && !class_exists($attribute->getName())) {
                         continue;
@@ -46,7 +46,7 @@ class Attribute {
                         "params" => $attribute->getArguments()
                     ];
                 }
-                $methods = $reflection->getMethods();
+                $methods = $classRef->getMethods();
                 foreach ($methods as $method) {
                     $attributes = $method->getAttributes();
                     foreach ($attributes as $attribute) {

@@ -37,16 +37,6 @@ class Register {
     }
 
     /**
-     * 注册注解路由
-     * @param string $namespace
-     * @param string $path
-     * @return void
-     */
-    public function load(string $namespace, string $path): void {
-        $this->path[$namespace] = $path;
-    }
-
-    /**
      * 注解路由运行
      * @return void
      */
@@ -64,6 +54,22 @@ class Register {
                 }
                 $params = $vo["params"];
                 $class = $vo["class"];
+                // group
+                if ($attribute == Group::class) {
+                    $group = $route->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
+                    $groupClass[$class] = $group;
+                }
+                // manage
+                if ($attribute == Manage::class) {
+                    $route->get($params["app"])->manage(
+                        pattern: $params["pattern"],
+                        class: $class,
+                        name: $params["name"],
+                        title: $params["title"],
+                        ways: $params["ways"] ?? [],
+                        permission: $params["permission"] ?? false
+                    );
+                }
                 // route
                 if ($attribute == \Dux\Route\Attribute\Route::class) {
                     $group = null;
@@ -89,22 +95,6 @@ class Register {
                         title: $params["title"] ?? "",
                         permission: $params["permission"] ?? false
                     );
-                }
-                // manage
-                if ($attribute == Manage::class) {
-                    $route->get($params["app"])->manage(
-                        pattern: $params["pattern"],
-                        class: $class,
-                        name: $params["name"],
-                        title: $params["title"],
-                        ways: $params["ways"] ?? [],
-                        permission: $params["permission"] ?? false
-                    );
-                }
-                // group
-                if ($attribute == Group::class) {
-                    $group = $route->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
-                    $groupClass[$class] = $group;
                 }
             }
         }
