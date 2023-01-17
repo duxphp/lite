@@ -7,7 +7,6 @@ use Dux\App;
 use Dux\Handlers\Exception;
 use Dux\Route\Attribute\Group;
 use Dux\Route\Attribute\Manage;
-use Nette\Utils\Finder;
 
 class Register {
 
@@ -53,7 +52,8 @@ class Register {
      */
     public function run(Register $route) {
         $groupClass = [];
-        foreach (App::$attributeApp as $attribute => $list) {
+        $attributes = (array) App::di()->get("attributes");
+        foreach ($attributes as $attribute => $list) {
             foreach ($list as $vo) {
                 if (
                     $attribute != Manage::class &&

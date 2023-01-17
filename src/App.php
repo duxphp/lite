@@ -40,7 +40,6 @@ class App {
     static Container $di;
     static array $config;
     static array $registerApp = [];
-    static array $attributeApp = [];
 
     /**
      * create

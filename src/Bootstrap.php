@@ -164,7 +164,7 @@ class Bootstrap {
         }
 
         // 注解加载
-        App::$attributeApp = Attribute::load(App::$registerApp);
+        App::di()->set("attributes", Attribute::load(App::$registerApp));
 
         // 事件注册
         foreach ($appList as $vo) {
