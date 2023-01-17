@@ -49,7 +49,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function get(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["GET"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -62,7 +62,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function post(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["POST"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -75,7 +75,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function put(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["PUT"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -88,7 +88,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function delete(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["DELETE"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -101,7 +101,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function options(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["OPTIONS"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -114,7 +114,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function path(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["PATH"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -127,7 +127,7 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name, string $title = "", bool $permission = true): void {
+    public function any(string $pattern, callable|object|string $callable, string $name, string $title, bool $permission = true): void {
         $this->map(["ANY"], $pattern, $callable, $name, $title, $permission);
     }
 
@@ -139,7 +139,7 @@ class Route {
      * @param array $ways ["list", "info", "add", "edit", "store", "del"]
      * @return void
      */
-    public function manage(string $pattern, string $class, string $name, string $title = "", array $ways = [], bool $permission = true): void {
+    public function manage(string $pattern, string $class, string $name, string $title, array $ways = [], bool $permission = true): void {
         if (!$ways || in_array("list", $ways)) {
             $this->get($pattern,  "$class:list", "$name.list", "{$title}列表", $permission);
         }
@@ -169,7 +169,7 @@ class Route {
      * @param string $title
      * @return void
      */
-    public function map(array $methods, string $pattern, $callable, string $name, string $title = "", bool $permission = true): void {
+    public function map(array $methods, string $pattern, string|callable $callable, string $name, string $title, bool $permission = true): void {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,

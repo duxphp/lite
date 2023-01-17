@@ -12,7 +12,6 @@ use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Queue\QueueCommand;
-use Dux\Route\Loader;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
@@ -26,8 +25,6 @@ use \Symfony\Component\Console\Application;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpNotFoundException;
-
-use Slim\Routing\RouteContext;
 
 class Bootstrap {
 
@@ -182,7 +179,7 @@ class Bootstrap {
             $route->run($this->web);
         }
         // 注解路由注册
-        Loader::run($this->route);
+        $this->getRoute()->run($this->route);
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {

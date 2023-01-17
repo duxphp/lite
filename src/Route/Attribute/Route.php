@@ -12,7 +12,7 @@ class Route {
         array  $methods,
         string $pattern,
         string $name,
-        string $title = "",
+        string $title,
         bool   $permission = true,
         string $app = "") {
     }

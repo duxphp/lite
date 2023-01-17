@@ -12,7 +12,7 @@ class Manage {
         string $app,
         string $pattern,
         string $name,
-        string $title = "",
+        string $title,
         array  $ways = [],
         bool   $permission = true) {}
 }
