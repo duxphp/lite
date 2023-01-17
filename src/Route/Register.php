@@ -92,7 +92,6 @@ class Register {
                 }
                 // manage
                 if ($attribute == Manage::class) {
-                    print_r($params);
                     $route->get($params["app"])->manage(
                         pattern: $params["pattern"],
                         class: $class,
