@@ -10,7 +10,7 @@ class RouteGroup {
 
     public function __construct(
         string $app,
-        string $pattern,
         string $title,
+        string $pattern = "",
         array $middleware = []) {}
 }

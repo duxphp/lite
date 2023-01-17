@@ -54,23 +54,28 @@ class Register {
                 }
                 $params = $vo["params"];
                 $class = $vo["class"];
+                $classArr = explode("\\", $class);
+                $layout = array_slice($classArr, -3, 1)[0];
+                $name = lcfirst($layout) . "." . lcfirst($classArr);
+                $pattern = "/" . str_replace(".", "/", $name);
                 // group
                 if ($attribute == RouteGroup::class) {
-                    $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
+                    $group = $this->get($params["app"])->group($params["pattern"] ?: $pattern, $params["title"], ...($params["middleware"] ?? []));
                     $groupClass[$class] = $group;
                 }
                 // manage
                 if ($attribute == RouteManage::class) {
                     $this->get($params["app"])->manage(
-                        pattern: $params["pattern"],
+                        pattern: $params["pattern"] ?: $pattern,
                         class: $class,
-                        name: $params["name"],
+                        name: $params["name"] ?: $name,
                         title: $params["title"],
                         ways: $params["ways"] ?? []
                     );
                 }
                 // route
                 if ($attribute == \Dux\Route\Attribute\Route::class) {
+                    $methodName = "";
                     if (str_contains($class, ":")) {
                         // method
                         [$className, $methodName] = explode(":", $class, 2);
@@ -87,9 +92,9 @@ class Register {
                     }
                     $group->map(
                         methods: $params["methods"],
-                        pattern: $params["pattern"],
+                        pattern: $params["pattern"] ?: $pattern . ($methodName ? "/" . lcfirst($methodName) : ""),
                         callable: $class,
-                        name: $params["name"],
+                        name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),
                         title: $params["title"] ?? ""
                     );
                 }
