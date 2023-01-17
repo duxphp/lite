@@ -21,7 +21,7 @@ class RouteCommand extends Command {
         $this->addArgument(
             'group',
             InputArgument::OPTIONAL,
-            'Who do you want to greet (separate multiple names with a space)?'
+            'please enter the route group name'
         );
     }
 

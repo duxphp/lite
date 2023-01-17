@@ -9,8 +9,10 @@ use DI\Container;
 use Dux\App\AppExtend;
 use Dux\Database\Db;
 use Dux\Database\Migrate;
+use Dux\Event\Event;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
+use Dux\Validator\Data;
 use Dux\View\View;
 use Illuminate\Database\Capsule\Manager;
 use JBZoo\Event\EventManager;
@@ -119,9 +121,9 @@ class App {
 
     /**
      * event
-     * @return EventManager
+     * @return Event
      */
-    static function event(): EventManager {
+    static function event(): Event {
         return self::$bootstrap->event;
     }
 
@@ -154,9 +156,9 @@ class App {
      * @source nette/utils
      * @param array $data data array
      * @param array $rules ["name", "rule", "message"]
-     * @return array
+     * @return Data
      */
-    static function validator(array $data, array $rules): array {
+    static function validator(array $data, array $rules): Data {
         return Validator::parser($data, $rules);
     }
 

@@ -18,7 +18,6 @@ use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
-use JBZoo\Event\EventManager;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -41,7 +40,7 @@ class Bootstrap {
     public string $exceptionBack = "go back";
     public Engine $view;
 
-    public EventManager $event;
+    public Event $event;
     public Route\Register $route;
     public ?Menu\Register $menu = null;
     public ?Permission\Register $permission = null;
@@ -157,7 +156,7 @@ class Bootstrap {
     }
 
     public function loadEvent(): void {
-        $this->event = new EventManager();
+        $this->event = new Event();
     }
 
     /**
@@ -183,8 +182,7 @@ class Bootstrap {
             call_user_func([new $vo, "register"], $this);
         }
 
-        // 事件注册
-        Event::registerAttribute($this->event);
+        $this->event->registerAttribute();
 
         // 普通路由注册
         foreach ($this->route->app as $route) {

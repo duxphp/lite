@@ -16,8 +16,17 @@ class EventCommand extends Command {
     protected static $defaultName = 'event';
     protected static $defaultDescription = 'show event list';
 
+    protected function configure(): void {
+        $this->addArgument(
+            'name',
+            InputArgument::REQUIRED,
+            'please enter the event name'
+        );
+    }
+
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $list = App::event()->listeners();
+        $name = $input->getArgument("name");
+        $list = App::event()->getList($name);
         $data = [];
         foreach ($list as $name => $vo) {
             $data[] = [$name, count($vo)];

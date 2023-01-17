@@ -11,9 +11,8 @@ class Validator {
      * parser
      * @param array $data data array
      * @param array $rules ["name" => ["rule", "message"]]
-     * @return object
      */
-    static function parser(array $data, array $rules): object {
+    static function parser(array $data, array $rules): Data {
 //        $role = [
 //            "name" => ["rule", "message"]
 //        ];
