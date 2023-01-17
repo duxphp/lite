@@ -173,6 +173,9 @@ class Bootstrap {
         // 注解加载
         App::di()->set("attributes", Attribute::load(App::$registerApp));
 
+        // 事件注解加载
+        $this->event->registerAttribute();
+
         // 事件注册
         foreach ($appList as $vo) {
             call_user_func([new $vo, "init"], $this);
@@ -181,8 +184,6 @@ class Bootstrap {
         foreach ($appList as $vo) {
             call_user_func([new $vo, "register"], $this);
         }
-
-        $this->event->registerAttribute();
 
         // 普通路由注册
         foreach ($this->route->app as $route) {
