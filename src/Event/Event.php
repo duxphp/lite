@@ -8,6 +8,7 @@ use JBZoo\Event\EventManager;
 
 class Event {
 
+    public array $registers = [];
     private EventManager $event;
 
     public function __construct() {
@@ -18,7 +19,7 @@ class Event {
         $this->register($name, $callback, $priority);
     }
 
-    public function one($name, string|callable $callback, int $priority = EventManager::MID): void {
+    public function once($name, string|callable $callback, int $priority = EventManager::MID): void {
         $this->register($name, $callback, $priority, true);
     }
 
@@ -26,11 +27,11 @@ class Event {
         return $this->event->trigger($eventName, $arguments, $continueCallback);
     }
 
-    private function register($name, string|callable $callback, int $priority = EventManager::MID, bool $one = false): EventManager {
+    private function register($name, string|callable $callback, int $priority = EventManager::MID, bool $one = false): void {
         if ($callback instanceof \Closure) {
-            return call_user_func([$this->event, $one ? "one" : "on"], $callback, $priority);
+            call_user_func([$this->event, $one ? "once" : "on"], $callback, $priority);
         }
-        return call_user_func([$this->event, $one ? "one" : "on"], $name, function () use ($callback) {
+        call_user_func([$this->event, $one ? "once" : "on"], $name, function () use ($callback) {
             $params = func_get_args();
             [$class, $method] = explode(":", $callback, 2);
             $call = new $class();
@@ -56,12 +57,13 @@ class Event {
                 if (!$params["name"]) {
                     throw new \Exception("method [$class] The annotation is missing the name parameter");
                 }
-                call_user_func([$this, $params["type"] == "on" ? "on" : "once"], $params["name"], $class, $params["priority"]);
+                $this->registers[$params["name"]][] = $class;
+                call_user_func([$this, $params["type"] == "on" ? "on" : "once"], $params["name"], $class, $params["priority"] ?: EventManager::MID);
             }
         }
     }
 
-    public function __call($name, $arguments): EventManager {
+    public function __call($name, $arguments) {
         return call_user_func_array([$this->event, $name], $arguments);
     }
 

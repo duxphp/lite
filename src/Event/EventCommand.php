@@ -19,26 +19,33 @@ class EventCommand extends Command {
     protected function configure(): void {
         $this->addArgument(
             'name',
-            InputArgument::REQUIRED,
+            InputArgument::OPTIONAL,
             'please enter the event name'
         );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         $name = $input->getArgument("name");
-        $list = App::event()->getList($name);
-        $data = [];
-        foreach ($list as $name => $vo) {
-            $data[] = [$name, count($vo)];
+        if ($name) {
+            $list = [$name => App::event()->registers[$name]];
+        }else {
+            $list = App::event()->registers;
         }
+        $data = [];
+        foreach ($list as $name => $items) {
+            $table = new Table($output);
+            $data = [];
+            foreach ($items as $item) {
+                $data[] = [$item];
+            }
+            $table
+                ->setHeaders([
+                    [new TableCell("{$name}", ['colspan' => 1])],
+                ])
+                ->setRows($data);
+            $table->render();
 
-        $table = new Table($output);
-        $table
-            ->setHeaders([
-                ['Name', 'Num']
-            ])
-            ->setRows($data);
-        $table->render();
+        }
         return Command::SUCCESS;
     }
 }
