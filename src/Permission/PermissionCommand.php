@@ -36,17 +36,21 @@ class PermissionCommand extends Command {
 
         foreach ($permissionList as $key => $item) {
             $data = [];
-            $permissions = $item->getData();
+            $permissions = $item->get();
             foreach ($permissions as $k => $permission) {
                 if ($k) {
                     $data[] = new TableSeparator();
                 }
-                $data[] = [$permission["name"], $permission["label"]];
+                $data[] = [$permission["name"]];
+                foreach ($permission["children"] as $vo) {
+                    $data[] = [$vo["name"], $vo["label"]];
+
+                }
             }
             $table = new Table($output);
             $table
                 ->setHeaders([
-                    [new TableCell("permissions {$key}", ['colspan' => 3])],
+                    [new TableCell("permissions {$key}", ['colspan' => 2])],
                     ['Name', 'Label']
                 ])
                 ->setRows($data);

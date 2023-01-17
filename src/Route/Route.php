@@ -111,7 +111,6 @@ class Route {
      * @param callable|object|string $callable
      * @param string $name
      * @param string $title
-     * @param string $auth
      * @return void
      */
     public function path(string $pattern, callable|object|string $callable, string $name, string $title): void {
@@ -184,8 +183,11 @@ class Route {
      * @param string $pattern
      * @return array
      */
-    public function parseTree(string $pattern = ""): array {
+    public function parseTree(string $pattern = "", array $middleware = []): array {
         $pattern = $pattern ?: $this->pattern;
+        foreach ($this->middleware as $vo) {
+            $middleware[] = get_class($vo);
+        }
         $data = [];
         foreach ($this->data as $route) {
             $route["pattern"] = $pattern . $route["pattern"];
@@ -194,11 +196,11 @@ class Route {
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
-                "auth" => $route["auth"],
+                "middleware" => $middleware
             ];
         }
         foreach ($this->group as $group) {
-            $data[] = $group->parseTree($pattern . $group->pattern);
+            $data[] = $group->parseTree($pattern . $group->pattern, $middleware);
         }
 
         return [
