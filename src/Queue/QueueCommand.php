@@ -44,11 +44,18 @@ class QueueCommand extends Command {
             pcntl_alarm($timeout);
             try {
                 $body = $message->getBody();
-                [$class, $method] = explode("@", $body, 2);
-                if (!method_exists($class, $method)) {
-                    App::log("queue")->error("method [{$class}@{$method}]  does not exist");
+                [$class, $method] = explode(":", $body, 2);
+                if (!class_exists($class)) {
+                    App::log("queue")->error("class [{$class}]  does not exist");
                 } else {
-                    call_user_func([new $class, $method], $message->getProperties());
+                    $object = new $class;
+                    if (!$method) {
+                        $object(...$message->getProperties());
+                    } else if (method_exists($object, $method)) {
+                        $object->$method(...$message->getProperties());
+                    } else {
+                        App::log("queue")->error("method [{$body}]  does not exist");
+                    }
                 }
                 $consumer->acknowledge($message);
             } catch (\Exception $error) {
@@ -68,8 +75,7 @@ class QueueCommand extends Command {
         if ($retryNum > $retry) {
             unset($this->retryData[$id]);
             $body = $message->getBody();
-            [$class, $method] = explode("@", $body, 2);
-            App::log("queue")->error("task [{$class}@{$method}] retry failed");
+            App::log("queue")->error("task [$body] retry failed");
         }else {
             $this->retryData[$id] = $retryNum;
         }

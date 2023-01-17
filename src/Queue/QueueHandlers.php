@@ -11,7 +11,7 @@ class QueueHandlers {
 
 
     public Context $context;
-    private string $group = "default";
+    private string $group;
     private string $class;
     private string $method;
     private array $params;
@@ -31,7 +31,7 @@ class QueueHandlers {
      * @param array $params
      * @return QueueHandlers
      */
-    public function callback(string $class, string $method, array $params = []): self {
+    public function callback(string $class, string $method = "", array $params = []): self {
         $this->class = $class;
         $this->method = $method;
         $this->params = $params;
@@ -54,11 +54,15 @@ class QueueHandlers {
      * @return void
      */
     public function send(): void {
-        if (!$this->class || !$this->method) {
-            throw new Exception("Please set the callback class method");
+        if (!$this->class) {
+            throw new Exception("Please set the callback class");
+        }
+        $body = [$this->class];
+        if ($this->method) {
+            $body[] = $this->method;
         }
         $queue = $this->context->createQueue($this->group);
-        $message = $this->context->createMessage($this->class."@".$this->method, $this->params);
+        $message = $this->context->createMessage(implode(":", $body), $this->params);
         $ctx = $this->context->createProducer();
 
         if ($this->supportDelay && $this->delay) {
