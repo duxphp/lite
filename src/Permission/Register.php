@@ -40,18 +40,18 @@ class Register {
      * 注解权限注册
      * @return void
      */
-    public function run(): void {
+    public function registerAttribute(): void {
         $groupClass = [];
         $attributes = (array)App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
+            if (
+                $attribute != PermissionGroup::class &&
+                $attribute != PermissionManage::class &&
+                $attribute != PermissionAttr::class
+            ) {
+                continue;
+            }
             foreach ($list as $vo) {
-                if (
-                    $attribute != PermissionGroup::class &&
-                    $attribute != PermissionManage::class &&
-                    $attribute != PermissionAttr::class
-                ) {
-                    continue;
-                }
                 $params = $vo["params"];
                 $class = $vo["class"];
                 $classArr = explode("\\", $class);

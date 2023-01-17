@@ -7,6 +7,7 @@ namespace Dux;
 use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
+use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
@@ -104,6 +105,7 @@ class Bootstrap {
         $commands[] = ModelCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
         $commands[] = PermissionCommand::class;
+        $commands[] = ListCommand::class;
         $this->command = Command::init($commands);
     }
 
@@ -181,8 +183,9 @@ class Bootstrap {
             $route->run($this->web);
         }
         // 注解模块
-        $this->getRoute()->run();
-        $this->getPermission()->run();
+        $this->getRoute()->registerAttribute();
+        $this->getPermission()->registerAttribute();
+        App::dbMigrate()->registerAttribute();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {

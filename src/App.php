@@ -178,20 +178,16 @@ class App {
 
     /**
      * dbMigrate
-     * @param string $type
      * @return Migrate
      */
-    static function dbMigrate(string $type = ""): Migrate {
-        if (!$type) {
-            $type = self::config("database")->get("db.type", "default");
-        }
-        if (!self::$di->has("migrate." . $type)) {
+    static function dbMigrate(): Migrate {
+        if (!self::$di->has("db.migrate")) {
             self::$di->set(
-                "migrate." . $type,
-                new Migrate(self::db($type))
+                "db.migrate",
+                new Migrate()
             );
         }
-        return self::$di->get("migrate." . $type);
+        return self::$di->get("db.migrate");
     }
 
     /**

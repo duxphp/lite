@@ -3,6 +3,7 @@
 namespace Dux\Database;
 
 use Dux\App;
+use Dux\Auth\AuthMiddleware;
 use Illuminate\Database\Schema\Blueprint;
 use Doctrine\DBAL\Schema\Comparator;
 
@@ -14,7 +15,6 @@ class Migrate {
     }
 
     public function migrate(): void {
-
         foreach ($this->migrate as $model) {
             if (!method_exists($model, 'migration')) {
                 continue;
@@ -47,6 +47,23 @@ class Migrate {
             $manager->alterTable($diff);
         }
         App::db()->schema()->drop($tempTable);
+    }
+
+
+    // 注册迁移模型
+    public function registerAttribute(): void {
+        $attributes = (array)App::di()->get("attributes");
+        foreach ($attributes as $attribute => $list) {
+            if (
+                $attribute != AuthMiddleware::class
+            ) {
+                continue;
+            }
+            foreach ($list as $vo) {
+                $class = $vo["class"];
+                $this->register($class);
+            }
+        }
     }
 
 
