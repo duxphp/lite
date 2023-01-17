@@ -37,8 +37,8 @@ if (!function_exists('config_path')) {
 
 if (!function_exists('sys_path')) {
     function sys_path(string $base = "", string $path = ""): string {
-        $base = rtrim("/", str_replace("\\", "/", $base));
-        $path = str_replace("\\", "/", $path ? "/" . trim("/", $path) : "");
+        $base = rtrim(str_replace("\\", "/", $base), "/");
+        $path = str_replace("\\", "/", $path ? "/" . $path : "");
         return $base . $path;
     }
 }

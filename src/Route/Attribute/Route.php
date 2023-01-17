@@ -9,22 +9,11 @@ use Attribute;
 class Route {
 
     public function __construct(
-        public array  $methods,
-        public string $pattern,
-        public string $name,
-        public string $title = "",
-        public bool   $permission = true,
-        public string $app = "") {
-    }
-
-    public function get(): array {
-        return [
-            "app" => $this->app,
-            "methods" => $this->methods,
-            "pattern" => $this->pattern,
-            "name" => $this->name,
-            "title" => $this->title,
-            "permission" => $this->permission,
-        ];
+        array  $methods,
+        string $pattern,
+        string $name,
+        string $title = "",
+        bool   $permission = true,
+        string $app = "") {
     }
 }

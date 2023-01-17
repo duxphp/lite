@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Dux\Route;
 
+use Dux\App;
 use Dux\Handlers\Exception;
+use Dux\Route\Attribute\Group;
+use Dux\Route\Attribute\Manage;
 use Nette\Utils\Finder;
 
 class Register {
@@ -17,7 +20,7 @@ class Register {
      * @param Route $route
      * @return void
      */
-    public function set(string $name, Route $route): void  {
+    public function set(string $name, Route $route): void {
         $this->app[$name] = $route;
     }
 
@@ -44,8 +47,67 @@ class Register {
         $this->path[$namespace] = $path;
     }
 
+    /**
+     * 注解路由运行
+     * @return void
+     */
+    public function run(Register $route) {
+        $groupClass = [];
+        foreach (App::$attributeApp as $attribute => $vo) {
+            if (
+                $attribute != Manage::class &&
+                $attribute != Group::class &&
+                $attribute != \Dux\Route\Attribute\Route::class
+            ) {
+                continue;
+            }
+            $params = $vo["params"];
+            $class = $vo["class"];
+            // route
+            if ($attribute == \Dux\Route\Attribute\Route::class) {
+                $group = null;
+                if (str_contains($class, ":")) {
+                    // method
+                    [$className, $methodName] = explode(":", $class, 2);
+                    if (!$params["app"] && !isset($groupClass[$className])) {
+                        throw new \Exception("class [" . $class . "] attribute parameter missing \"app\" ");
+                    }
+                    $group = $params["app"] ? $route->get($params["app"]) : $groupClass[$className];
+                } else {
+                    // class
+                    if (empty($params["app"])) {
+                        throw new \Exception("class [" . $class . "] attribute parameter missing \"app\" ");
+                    }
+                    $group = $route->get($params["app"]);
+                }
+                $group->map(
+                    methods: $params["methods"],
+                    pattern: $params["pattern"],
+                    callable: $class,
+                    name: $params["name"],
+                    title: $params["title"],
+                    permission: $params["permission"]
+                );
+            }
+            // manage
+            if ($attribute == Manage::class) {
+                $route->get($params["app"])->manage(
+                    pattern: $params["pattern"],
+                    class: $class,
+                    name: $params["name"],
+                    title: $params["title"],
+                    ways: $params["ways"],
+                    permission: $params["permission"]
+                );
+            }
+            // group
+            if ($attribute == Group::class) {
+                $group = $route->get($params["app"])->group($params["pattern"], $params["title"], ...$params["middleware"]);
+                $groupClass[$class] = $group;
+            }
 
+        }
 
-
+    }
 
 }

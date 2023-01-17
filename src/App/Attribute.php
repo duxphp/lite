@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Dux\App;
 
-use Composer\Autoload\ClassLoader;
 use Dux\App;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Finder;
@@ -11,8 +10,8 @@ use Nette\Utils\Finder;
 class Attribute {
 
     static function load(array $apps): array {
-        $status = App::config("app")->get("cache", false);
-        $cachePath = data_path("/cache/app/attribute.json");
+        $status = App::config("app")->get("app.cache", false);
+        $cachePath = data_path("cache/app/attribute.json");
         if (!$status) {
             return self::get($apps);
         }
@@ -21,7 +20,7 @@ class Attribute {
             return json_decode($content, true);
         }
         $data = self::get($apps);
-        FileSystem::write($cachePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        FileSystem::write($cachePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return $data;
     }
 
@@ -46,6 +45,19 @@ class Attribute {
                         "class" => $class,
                         "params" => $attribute->getArguments()
                     ];
+                }
+                $methods = $reflection->getMethods();
+                foreach ($methods as $method) {
+                    $attributes = $method->getAttributes();
+                    foreach ($attributes as $attribute) {
+                        if (!isset($data[$attribute->getName()]) && !class_exists($attribute->getName())) {
+                            continue;
+                        }
+                        $data[$attribute->getName()][] = [
+                            "class" => $class . ":" . $method->getName(),
+                            "params" => $attribute->getArguments()
+                        ];
+                    }
                 }
             }
         }

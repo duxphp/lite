@@ -9,22 +9,10 @@ use Attribute;
 class Manage {
 
     public function __construct(
-        public string $app,
-        public string $pattern,
-        public string $name,
-        public string $title = "",
-        public array $ways = [],
-        public bool   $permission = true) {
-    }
-
-    public function get(): array {
-        return [
-            "app" => $this->app,
-            "pattern" => $this->pattern,
-            "name" => $this->name,
-            "title" => $this->title,
-            "ways" => $this->ways,
-            "permission" => $this->permission,
-        ];
-    }
+        string $app,
+        string $pattern,
+        string $name,
+        string $title = "",
+        array  $ways = [],
+        bool   $permission = true) {}
 }

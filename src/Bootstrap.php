@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux;
 
 
+use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Database\MigrateCommand;
@@ -164,6 +165,10 @@ class Bootstrap {
         foreach ($appList as $vo) {
             App::$registerApp[] = $vo;
         }
+
+        // 注解加载
+        App::$attributeApp = Attribute::load(App::$registerApp);
+
         // 事件注册
         foreach ($appList as $vo) {
             call_user_func([new $vo, "init"], $this);
