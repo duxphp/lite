@@ -32,7 +32,6 @@
     "overtrue/flysystem-qiniu": "^3.2",
     "overtrue/flysystem-cos": "^5.1",
     "iidestiny/flysystem-oss": "^4",
-    "evenement/evenement": "^3.0",
     "illuminate/database": "^9.45",
     "latte/latte": "^3.0",
     "nette/php-generator": "^4.0",
@@ -43,7 +42,8 @@
     "tuupola/slim-jwt-auth": "^3.7",
     "symfony/var-dumper": "^6.2",
     "donatj/phpuseragentparser": "^1.7",
-    "nette/finder": "^2.6"
+    "nette/finder": "^2.6",
+    "jbzoo/event": "^4.0"
   },
   "autoload": {
     "psr-4": {

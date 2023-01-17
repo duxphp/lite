@@ -6,7 +6,6 @@ namespace Dux\App;
 use Dux\Bootstrap;
 use Dux\Database\Migrate;
 use Dux\Route\Register as Route;
-use Evenement\EventEmitter;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
 

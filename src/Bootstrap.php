@@ -9,6 +9,7 @@ use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
+use Dux\Event\Event;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
 use Dux\Helpers\ModelCommand;
@@ -17,7 +18,7 @@ use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use DI\Container;
 use Dux\View\View;
-use Evenement\EventEmitter;
+use JBZoo\Event\EventManager;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -40,7 +41,7 @@ class Bootstrap {
     public string $exceptionBack = "go back";
     public Engine $view;
 
-    public EventEmitter $event;
+    public EventManager $event;
     public Route\Register $route;
     public ?Menu\Register $menu = null;
     public ?Permission\Register $permission = null;
@@ -156,7 +157,7 @@ class Bootstrap {
     }
 
     public function loadEvent(): void {
-        $this->event = new EventEmitter();
+        $this->event = new EventManager();
     }
 
     /**
@@ -181,6 +182,10 @@ class Bootstrap {
         foreach ($appList as $vo) {
             call_user_func([new $vo, "register"], $this);
         }
+
+        // 事件注册
+        Event::registerAttribute($this->event);
+
         // 普通路由注册
         foreach ($this->route->app as $route) {
             $route->run($this->web);
@@ -190,6 +195,7 @@ class Bootstrap {
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
             throw new HttpNotFoundException($request);
         });
+
         // 应用启动
         foreach ($appList as $vo) {
             call_user_func([new $vo, "boot"], $this);
@@ -204,7 +210,7 @@ class Bootstrap {
         }
     }
 
-    public function getEvent(): EventEmitter {
+    public function getEvent(): EventManager {
         return $this->event;
     }
 

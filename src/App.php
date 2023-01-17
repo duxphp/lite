@@ -12,9 +12,8 @@ use Dux\Database\Migrate;
 use Dux\Handlers\Exception;
 use Dux\Storage\Storage;
 use Dux\View\View;
-use Evenement\EventEmitter;
 use Illuminate\Database\Capsule\Manager;
-use Illuminate\Database\Connection;
+use JBZoo\Event\EventManager;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
 use Redis;
@@ -120,9 +119,9 @@ class App {
 
     /**
      * event
-     * @return EventEmitter
+     * @return EventManager
      */
-    static function event(): EventEmitter {
+    static function event(): EventManager {
         return self::$bootstrap->event;
     }
 
