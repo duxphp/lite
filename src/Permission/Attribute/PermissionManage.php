@@ -12,6 +12,7 @@ class PermissionManage {
         string $app,
         string $name,
         string $label = "",
-        int $order = 0
+        int $order = 0,
+        array $ways = []
     ) {}
 }

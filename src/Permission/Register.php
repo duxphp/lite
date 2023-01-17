@@ -18,7 +18,7 @@ class Register {
      * @param Permission $route
      * @return void
      */
-    public function set(string $name, Permission $route): void  {
+    public function set(string $name, Permission $route): void {
         $this->app[$name] = $route;
     }
 
@@ -41,7 +41,7 @@ class Register {
      */
     public function run(): void {
         $groupClass = [];
-        $attributes = (array) App::di()->get("attributes");
+        $attributes = (array)App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
             foreach ($list as $vo) {
                 if (
@@ -71,7 +71,8 @@ class Register {
                     $group = $this->get($params["app"])->manage(
                         name: $params["name"],
                         label: $params["label"] ?: $label,
-                        order: $params["order"] ?: 0
+                        order: $params["order"] ?: 0,
+                        ways: $params["ways"] ?: []
                     );
                     $groupClass[$class] = $group;
                 }

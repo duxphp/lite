@@ -23,14 +23,26 @@ class Permission {
         return $group;
     }
 
-    public function manage(string $name, string $label, int $order = 0): PermissionGroup {
+    public function manage(string $name, string $label, int $order = 0, array $ways = []): PermissionGroup {
         $group = $this->group($name, $label, $order);
-        $group->add("list", "列表");
-        $group->add("info", "信息");
-        $group->add("add", "添加");
-        $group->add("edit", "编辑");
-        $group->add("store", "存储");
-        $group->add("del", "删除");
+        if (!$ways || in_array("list", $ways)) {
+            $group->add("list", "列表");
+        }
+        if (!$ways || in_array("info", $ways)) {
+            $group->add("info", "信息");
+        }
+        if (!$ways || in_array("add", $ways)) {
+            $group->add("add", "添加");
+        }
+        if (!$ways || in_array("edit", $ways)) {
+            $group->add("edit", "编辑");
+        }
+        if (!$ways || in_array("store", $ways)) {
+            $group->add("store", "存储");
+        }
+        if (!$ways || in_array("del", $ways)) {
+            $group->add("del", "删除");
+        }
         return $group;
     }
 
