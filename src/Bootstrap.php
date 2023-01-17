@@ -107,6 +107,9 @@ class Bootstrap {
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
         $this->command = Command::init($commands);
+
+        // 注册模型迁移
+        App::dbMigrate()->registerAttribute();
     }
 
     /**
@@ -182,10 +185,6 @@ class Bootstrap {
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
-        // 注解模块
-        $this->getRoute()->registerAttribute();
-        $this->getPermission()->registerAttribute();
-        App::dbMigrate()->registerAttribute();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
