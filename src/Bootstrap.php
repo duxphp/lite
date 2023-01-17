@@ -209,7 +209,7 @@ class Bootstrap {
         }
     }
 
-    public function getEvent(): EventManager {
+    public function getEvent(): Event {
         return $this->event;
     }
 
