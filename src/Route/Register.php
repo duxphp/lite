@@ -37,10 +37,10 @@ class Register {
     }
 
     /**
-     * 注解路由运行
+     * 注解路由注册
      * @return void
      */
-    public function run(Register $route) {
+    public function run(): void {
         $groupClass = [];
         $attributes = (array) App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
@@ -56,12 +56,12 @@ class Register {
                 $class = $vo["class"];
                 // group
                 if ($attribute == RouteGroup::class) {
-                    $group = $route->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
+                    $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
                     $groupClass[$class] = $group;
                 }
                 // manage
                 if ($attribute == RouteManage::class) {
-                    $route->get($params["app"])->manage(
+                    $this->get($params["app"])->manage(
                         pattern: $params["pattern"],
                         class: $class,
                         name: $params["name"],
@@ -71,20 +71,19 @@ class Register {
                 }
                 // route
                 if ($attribute == \Dux\Route\Attribute\Route::class) {
-                    $group = null;
                     if (str_contains($class, ":")) {
                         // method
                         [$className, $methodName] = explode(":", $class, 2);
                         if (!$params["app"] && !isset($groupClass[$className])) {
-                            throw new \Exception("class [" . $class . "] attribute parameter missing \"app\" ");
+                            throw new \Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
                         }
-                        $group = $params["app"] ? $route->get($params["app"]) : $groupClass[$className];
+                        $group = $params["app"] ? $this->get($params["app"]) : $groupClass[$className];
                     } else {
                         // class
                         if (empty($params["app"])) {
-                            throw new \Exception("class [" . $class . "] attribute parameter missing \"app\" ");
+                            throw new \Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
                         }
-                        $group = $route->get($params["app"]);
+                        $group = $this->get($params["app"]);
                     }
                     $group->map(
                         methods: $params["methods"],

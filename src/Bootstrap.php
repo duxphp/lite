@@ -178,8 +178,9 @@ class Bootstrap {
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
-        // 注解路由注册
-        $this->getRoute()->run($this->route);
+        // 注解模块
+        $this->getRoute()->run();
+        $this->getPermission()->run();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
