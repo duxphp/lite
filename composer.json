@@ -43,7 +43,8 @@
     "symfony/var-dumper": "^6.2",
     "donatj/phpuseragentparser": "^1.7",
     "nette/finder": "^2.6",
-    "jbzoo/event": "^4.0"
+    "jbzoo/event": "^4.0",
+    "nikic/php-parser": "^4.15"
   },
   "autoload": {
     "psr-4": {

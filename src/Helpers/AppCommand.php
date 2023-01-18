@@ -31,12 +31,6 @@ class AppCommand extends Command {
         if (is_dir($dir)) {
             return $this->error($output, 'The application already exists');
         }
-        try {
-            FileSystem::createDir($dir);
-            FileSystem::createDir("$dir/Config");
-        }catch (\Exception $exception) {
-            return $this->error($output, 'Application creation failure');
-        }
 
         // App.php
         $file = new \Nette\PhpGenerator\PhpFile;
@@ -47,32 +41,31 @@ class AppCommand extends Command {
         $class->addComment("Application Registration");
         $class->addProperty("name", "App Name")->setType("string");
         $class->addProperty("description", "App Desc")->setType("string");
-        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write("$dir/App.php", $content);
+        FileSystem::write("$dir/App.php", (string) $file);
 
         // Route.php
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addUse(\Dux\Route\Route::class, "DuxRoute");
         $namespace->addClass("Route");
-        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write("$dir/Config/Route.php", $content);
+        FileSystem::write("$dir/Config/Route.php", (string) $file);
 
         // Permission.php
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addUse(\Dux\Permission\Permission::class, "DuxPermission");
         $namespace->addClass("Permission");
-        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write("$dir/Config/Permission.php", $content);
+        FileSystem::write("$dir/Config/Permission.php", (string) $file);
 
         // Menu.php
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addUse(\Dux\Menu\Menu::class, "DuxMenu");
         $namespace->addClass("Menu");
-        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write("$dir/Config/Menu.php", $content);
+        FileSystem::write("$dir/Config/Menu.php", (string) $file);
 
         // config
         $configFile = App::$configPath . "/app.yaml";

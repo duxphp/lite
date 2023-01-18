@@ -46,14 +46,6 @@ class ModelCommand extends Command {
         $modelDir = "$dir/Models";
         if (is_file("$modelDir/$modelName")) {
             return $this->error($output, "The model already exists");
-
-        }
-        try {
-            if (!is_dir($modelDir)) {
-                FileSystem::createDir($modelDir);
-            }
-        } catch (\Exception $exception) {
-            return $this->error($output, 'Failed to create the model directory');
         }
 
         $file = new \Nette\PhpGenerator\PhpFile;
@@ -61,7 +53,7 @@ class ModelCommand extends Command {
         $namespace = $file->addNamespace("App\\$name\\Models");
         $namespace->addUse(\Dux\Database\Attribute\AutoMigrate::class);
         $class = $namespace->addClass($modelName);
-        $class->addAttribute("AutoMigrate");
+        $class->addAttribute(\Dux\Database\Attribute\AutoMigrate::class);
         $class->setExtends(\Dux\Database\Model::class);
         $class->addProperty("table", $this->ccFormat($modelName));
         $method = $class->addMethod("migration")->setBody(implode("\n", [
@@ -69,8 +61,7 @@ class ModelCommand extends Command {
             '$table->timestamps();',
         ]));
         $method->addParameter("table")->setType(Blueprint::class);
-        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write("$modelDir/$modelName.php", $content);
+        FileSystem::write("$modelDir/$modelName.php", (string) $file);
 
         $output->writeln("<info>Generate model successfully</info>");
         return Command::SUCCESS;
