@@ -12,6 +12,7 @@ use Dux\Database\MigrateCommand;
 use Dux\Event\Event;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
+use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
@@ -103,6 +104,7 @@ class Bootstrap {
         $commands[] = EventCommand::class;
         $commands[] = AppCommand::class;
         $commands[] = ModelCommand::class;
+        $commands[] = ManageCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
