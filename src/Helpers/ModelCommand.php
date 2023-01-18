@@ -36,7 +36,7 @@ class ModelCommand extends Command {
         }
         $helper = $this->getHelper('question');
 
-        $question = new Question("Please enter a model name？\n", false);
+        $question = new Question("Please enter a model name: ", false);
 
         $modelName = $helper->ask($input, $output, $question);
         if (!$modelName) {
@@ -59,7 +59,9 @@ class ModelCommand extends Command {
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\$name\\Models");
+        $namespace->addUse(\Dux\Database\Attribute\AutoMigrate::class);
         $class = $namespace->addClass($modelName);
+        $class->addAttribute("AutoMigrate");
         $class->setExtends(\Dux\Database\Model::class);
         $class->addProperty("table", $this->ccFormat($modelName));
         $method = $class->addMethod("migration")->setBody(implode("\n", [
@@ -70,12 +72,12 @@ class ModelCommand extends Command {
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
         FileSystem::write("$modelDir/$modelName.php", $content);
 
-        $output->write("<info>Generate model successfully</info>");
+        $output->writeln("<info>Generate model successfully</info>");
         return Command::SUCCESS;
     }
 
     public function error(OutputInterface $output, string $message): int {
-        $output->write("<error>$$message</error>");
+        $output->writeln("<error>$$message</error>");
         return Command::FAILURE;
     }
 

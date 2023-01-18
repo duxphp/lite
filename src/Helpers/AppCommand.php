@@ -33,10 +33,12 @@ class AppCommand extends Command {
         }
         try {
             FileSystem::createDir($dir);
+            FileSystem::createDir("$dir/Config");
         }catch (\Exception $exception) {
             return $this->error($output, 'Application creation failure');
         }
 
+        // App.php
         $file = new \Nette\PhpGenerator\PhpFile;
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\" . $name);
@@ -46,8 +48,33 @@ class AppCommand extends Command {
         $class->addProperty("name", "App Name")->setType("string");
         $class->addProperty("description", "App Desc")->setType("string");
         $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
-        FileSystem::write($dir . "/App.php", $content);
+        FileSystem::write("$dir/App.php", $content);
 
+        // Route.php
+        $file = new \Nette\PhpGenerator\PhpFile;
+        $file->setStrictTypes();
+        $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addClass("Route");
+        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
+        FileSystem::write("$dir/Config/Route.php", $content);
+
+        // Permission.php
+        $file = new \Nette\PhpGenerator\PhpFile;
+        $file->setStrictTypes();
+        $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addClass("Permission");
+        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
+        FileSystem::write("$dir/Config/Permission.php", $content);
+
+        // Menu.php
+        $file = new \Nette\PhpGenerator\PhpFile;
+        $file->setStrictTypes();
+        $namespace = $file->addNamespace("App\\$name\\Config");
+        $namespace->addClass("Menu");
+        $content = (new \Nette\PhpGenerator\PsrPrinter)->printFile($file);
+        FileSystem::write("$dir/Config/Menu.php", $content);
+
+        // config
         $configFile = App::$configPath . "/app.yaml";
         $conf = Config::load($configFile);
         $registers = $conf->get("registers", []);
@@ -55,12 +82,12 @@ class AppCommand extends Command {
         $conf->set("registers", $registers);
         $conf->toFile($configFile);
 
-        $output->write("<info>Generate application successfully</info>");
+        $output->writeln("<info>Generate application successfully</info>");
         return Command::SUCCESS;
     }
 
     public function error(OutputInterface $output, string $message): int {
-        $output->write("<error>$$message</error>");
+        $output->writeln("<error>$$message</error>");
         return Command::FAILURE;
     }
 

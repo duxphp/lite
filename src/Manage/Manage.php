@@ -4,6 +4,7 @@ namespace Dux\Manage;
 
 use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
+use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Illuminate\Database\Query\Builder;
 use Psr\Http\Message\ResponseInterface;
@@ -17,8 +18,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method infoAssign(object $info): array
  * @method infoFormat(object $info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
- * @method saveFormat(object $data, int $id): array
- * @method saveAfter(object $info, object $data)
+ * @method saveFormat(Data $data, int $id): array
+ * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
  * @method storeAfter(object $info, array $updateData, $data)
  * @method delBefore($info)
@@ -150,7 +151,7 @@ class Manage {
         }
         $model->save();
         if (method_exists($this, "saveAfter")) {
-            $this->saveAfter($model, $data);
+            $this->saveAfter($data, $model);
         }
         App::db()->getConnection()->commit();
         return send($response, ($id ? "编辑" : "添加") . "{$name}成功");
