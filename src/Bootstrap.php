@@ -159,6 +159,10 @@ class Bootstrap {
         $this->event = new Event();
     }
 
+    public function loadDb(): void {
+        App::db();
+    }
+
     /**
      * 载入应用
      * @return void

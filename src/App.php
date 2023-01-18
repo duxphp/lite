@@ -61,9 +61,10 @@ class App {
         $app->loadWeb(self::$di);
         $app->loadCache();
         $app->loadView();
-        $app->loadRoute();
         $app->loadEvent();
+        $app->loadDb();
         $app->loadApp();
+        $app->loadRoute();
         self::$bootstrap = $app;
         return $app;
     }
