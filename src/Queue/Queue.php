@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace Dux\Queue;
-use Dux\Handlers\Exception;
+
 use Enqueue\Redis\RedisConnectionFactory;
 use Interop\Queue\Context;
 use RuntimeException;
@@ -10,6 +10,11 @@ use RuntimeException;
 class Queue {
 
     public Context $context;
+
+    /**
+     * @var array []\Interop\Queue\Queue
+     */
+    public array $group = [];
 
     private bool $supportDelay = true;
 
@@ -22,7 +27,13 @@ class Queue {
     }
 
     public function add(string $group = ""): QueueHandlers {
-        return new QueueHandlers($this->context, $this->supportDelay, $group);
+        if (isset($this->group[$group])) {
+            $queue = $this->group[$group];
+        } else {
+            $queue = $this->context->createQueue($group);
+            $this->group[$group] = $queue;
+        }
+        return new QueueHandlers($this->context, $queue, $this->supportDelay);
     }
 
 }

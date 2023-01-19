@@ -3,23 +3,20 @@ declare(strict_types=1);
 
 namespace Dux\Queue;
 use Dux\Handlers\Exception;
-use Enqueue\Redis\RedisConnectionFactory;
 use Interop\Queue\Context;
-use RuntimeException;
 
 class QueueHandlers {
 
-
     public Context $context;
-    private string $group;
     private string $class;
     private string $method;
     private array $params;
     private int $delay;
     private bool $supportDelay;
+    private \Interop\Queue\Queue $queue;
 
-    public function __construct(Context $context, bool $supportDelay, string $group = "default") {
-        $this->group = $group;
+    public function __construct(Context $context, \Interop\Queue\Queue $queue, bool $supportDelay) {
+        $this->queue = $queue;
         $this->context = $context;
         $this->supportDelay = $supportDelay;
     }
@@ -61,14 +58,12 @@ class QueueHandlers {
         if ($this->method) {
             $body[] = $this->method;
         }
-        $queue = $this->context->createQueue($this->group);
         $message = $this->context->createMessage(implode(":", $body), $this->params);
         $ctx = $this->context->createProducer();
-
         if ($this->supportDelay && $this->delay) {
-            $ctx = $ctx->setDeliveryDelay($this->delay);
+            $ctx->setDeliveryDelay($this->delay);
         }
-        $ctx->send($queue, $message);
+        $ctx->send($this->queue, $message);
     }
 
 

@@ -4,13 +4,9 @@ declare(strict_types=1);
 namespace Dux\Queue;
 
 use Dux\App;
-use Enqueue\Redis\RedisMessage;
-use Enqueue\Redis\RedisConsumer;
-use \InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class QueueCommand extends Command {
@@ -67,7 +63,7 @@ class QueueCommand extends Command {
     }
 
 
-    public function retry(RedisMessage $message, RedisConsumer $consumer, int $retry) {
+    public function retry(\Interop\Queue\Message $message, \Interop\Queue\Consumer $consumer, int $retry) {
         $id = $message->getMessageId();
         $retryNum = $this->retryData[$id] ?: 0;
         $retryNum++;
