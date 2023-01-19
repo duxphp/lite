@@ -114,7 +114,7 @@ class ManageCommand extends Command {
             $class = $namespace->addClass("Route");
         }
         if (!$method) {
-            $method = $class->addMethod($methodName)->setReturnType("void")->setProtected();
+            $method = $class->addMethod($methodName)->setReturnType("void")->setStatic();
             $method->addParameter("route")->setType(\Dux\Route\Route::class);
         }
         $classNamespace = "App\\$appName\\$layerName\\$className";
@@ -143,7 +143,7 @@ class ManageCommand extends Command {
             $class = $namespace->addClass("Permission");
         }
         if (!$method) {
-            $method = $class->addMethod($methodName)->setReturnType("void")->setProtected();
+            $method = $class->addMethod($methodName)->setReturnType("void")->setStatic();
             $method->addParameter("permission")->setType(\Dux\Permission\Permission::class);
         }
         $name = lcfirst($appName) . "." . lcfirst($className);
