@@ -44,7 +44,8 @@
     "donatj/phpuseragentparser": "^1.7",
     "nette/finder": "^2.6",
     "jbzoo/event": "^4.0",
-    "nikic/php-parser": "^4.15"
+    "nikic/php-parser": "^4.15",
+    "enqueue/enqueue": "^0.10.16"
   },
   "autoload": {
     "psr-4": {

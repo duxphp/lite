@@ -9,6 +9,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+
+use Interop\Queue\Message;
+use Interop\Queue\Processor;
+use Interop\Queue\Context;
+use Enqueue\Consumption\QueueConsumer;
+use Enqueue\Consumption\ChainExtension;
+use Enqueue\Consumption\Extension\SignalExtension;
+use Enqueue\Consumption\Extension\LimitConsumptionTimeExtension;
+use Enqueue\Consumption\Extension\ReplyExtension;
+use Enqueue\Consumption\Result;
+
 class QueueCommand extends Command {
 
     protected static $defaultName = 'queue';
@@ -23,21 +34,19 @@ class QueueCommand extends Command {
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int {
+    public function execute(InputInterface $input, OutputInterface $output): void {
         $output->writeln("start queue task");
 
         $name = $input->getArgument('group') ?: "default";
         $timeout = (int)App::config("queue")->get("timeout");
         $retry = (int)App::config("queue")->get("retry", 3);
 
-        $queue = App::queue()->context->createQueue($name);
-        $consumer = App::queue()->context->createConsumer($queue);
-        do {
-            $message = $consumer->receive();
-            pcntl_signal(SIGALRM, function () use ($consumer, $message, $retry) {
-                $this->retry($message, $consumer, $retry);
-            });
-            pcntl_alarm($timeout);
+        $queueConsumer = new QueueConsumer(App::queue()->context,  new ChainExtension([
+            new SignalExtension(),
+            new LimitConsumptionTimeExtension(new \DateTime("now + $timeout sec")),
+            new ReplyExtension(),
+        ]));
+        $queueConsumer->bindCallback($name, function(Message $message, Context $context) use ($retry) {
             try {
                 $body = $message->getBody();
                 [$class, $method] = explode(":", $body, 2);
@@ -53,13 +62,55 @@ class QueueCommand extends Command {
                         App::log("queue")->error("method [{$body}]  does not exist");
                     }
                 }
-                $consumer->acknowledge($message);
             } catch (\Exception $error) {
                 App::log("queue")->error($error->getMessage(), [$error->getFile() . ":" . $error->getLine()]);
-                $this->retry($message, $consumer, $retry);
+                $id = $message->getMessageId();
+                $retryNum = $this->retryData[$id] ?: 0;
+                $retryNum++;
+                if ($retryNum > $retry) {
+                    unset($this->retryData[$id]);
+                    App::log("queue")->error("task [$body] retry failed");
+                }else {
+                    $this->retryData[$id] = $retryNum;
+                    $replyMessage = $context->createMessage($body);
+                    return Result::reply($replyMessage);
+                }
             }
-            pcntl_alarm(0);
-        } while (1);
+            return Processor::ACK;
+        });
+        $queueConsumer->consume();
+
+
+//        $queue = App::queue()->context->createQueue($name);
+//        $consumer = App::queue()->context->createConsumer($queue);
+//        do {
+//            $message = $consumer->receive();
+//            pcntl_signal(SIGALRM, function () use ($consumer, $message, $retry) {
+//                $this->retry($message, $consumer, $retry);
+//            });
+//            pcntl_alarm($timeout);
+//            try {
+//                $body = $message->getBody();
+//                [$class, $method] = explode(":", $body, 2);
+//                if (!class_exists($class)) {
+//                    App::log("queue")->error("class [{$class}]  does not exist");
+//                } else {
+//                    $object = new $class;
+//                    if (!$method) {
+//                        $object(...$message->getProperties());
+//                    } else if (method_exists($object, $method)) {
+//                        $object->$method(...$message->getProperties());
+//                    } else {
+//                        App::log("queue")->error("method [{$body}]  does not exist");
+//                    }
+//                }
+//                $consumer->acknowledge($message);
+//            } catch (\Exception $error) {
+//                App::log("queue")->error($error->getMessage(), [$error->getFile() . ":" . $error->getLine()]);
+//                $this->retry($message, $consumer, $retry);
+//            }
+//            pcntl_alarm(0);
+//        } while (1);
     }
 
 
