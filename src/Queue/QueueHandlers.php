@@ -11,8 +11,8 @@ class QueueHandlers {
     private string $class;
     private string $method;
     private array $params;
-    private int $delay;
-    private bool $supportDelay;
+    private int $delay = 0;
+    private bool $supportDelay = false;
     private \Interop\Queue\Queue $queue;
 
     public function __construct(Context $context, \Interop\Queue\Queue $queue, bool $supportDelay) {

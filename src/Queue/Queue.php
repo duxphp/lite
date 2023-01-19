@@ -26,7 +26,7 @@ class Queue {
         $this->context = $factory->createContext();
     }
 
-    public function add(string $group = ""): QueueHandlers {
+    public function add(string $group = "default"): QueueHandlers {
         if (isset($this->group[$group])) {
             $queue = $this->group[$group];
         } else {
