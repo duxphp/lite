@@ -16,7 +16,7 @@ use Interop\Queue\Context;
 use Enqueue\Consumption\QueueConsumer;
 use Enqueue\Consumption\ChainExtension;
 use Enqueue\Consumption\Extension\SignalExtension;
-use Enqueue\Consumption\Extension\LimitConsumptionTimeExtension;
+use Enqueue\Consumption\Extension\LimitConsumedMessagesExtension;
 use Enqueue\Consumption\Extension\ReplyExtension;
 use Enqueue\Consumption\Result;
 
@@ -34,7 +34,7 @@ class QueueCommand extends Command {
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): void {
+    public function execute(InputInterface $input, OutputInterface $output): int {
         $output->writeln("start queue task");
 
         $name = $input->getArgument('group') ?: "default";
@@ -43,7 +43,7 @@ class QueueCommand extends Command {
 
         $queueConsumer = new QueueConsumer(App::queue()->context,  new ChainExtension([
             new SignalExtension(),
-            new LimitConsumptionTimeExtension(new \DateTime("now + $timeout sec")),
+            new LimitConsumedMessagesExtension(10),
             new ReplyExtension(),
         ]));
         $queueConsumer->bindCallback($name, function(Message $message, Context $context) use ($retry) {
@@ -79,6 +79,8 @@ class QueueCommand extends Command {
             return Processor::ACK;
         });
         $queueConsumer->consume();
+
+        return Command::SUCCESS;
 
 
 //        $queue = App::queue()->context->createQueue($name);
