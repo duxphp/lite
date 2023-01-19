@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Dux\Queue;
 
 use Dux\App;
+use Interop\Queue\Consumer;
+use Interop\Queue\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,14 +15,14 @@ use Interop\Queue\Context;
 use Enqueue\Consumption\QueueConsumer;
 use Enqueue\Consumption\ChainExtension;
 use Enqueue\Consumption\Extension\SignalExtension;
+use Spatie\Async\Pool;
 
 class QueueCommand extends Command {
 
     protected static $defaultName = 'queue';
     protected static $defaultDescription = 'Queue start service';
-    private Context $context;
-    private int $timeout;
-    private int $retry;
+    private \Interop\Queue\Queue $queue;
+    private Consumer $consumer;
 
     protected function configure(): void {
         $this->addArgument(
@@ -30,21 +32,17 @@ class QueueCommand extends Command {
         );
     }
 
-
     public function execute(InputInterface $input, OutputInterface $output): int {
         $output->writeln("start queue task");
-
         $name = $input->getArgument('group') ?: "default";
-        $this->timeout = (int)App::config("queue")->get("timeout", 10);
-        $this->retry = (int)App::config("queue")->get("retry", 3);
-        $this->context = App::queue()->context;
-        $queueConsumer = new QueueConsumer($this->context, new ChainExtension([
+        $timeout = (int)App::config("queue")->get("timeout", 10);
+        $retry = (int)App::config("queue")->get("retry", 3);
+        $context = App::queue()->context;
+        $queueConsumer = new QueueConsumer($context, new ChainExtension([
             new SignalExtension(),
         ]));
-        pcntl_async_signals(true);
-        $queueConsumer->bind($name, new QueueProcessor($this->context->createQueue($name), $this->timeout, $this->retry));
+        $queueConsumer->bind($name, new QueueProcessor($context->createQueue($name), $timeout, $retry));
         $queueConsumer->consume();
         return Command::SUCCESS;
     }
-
 }

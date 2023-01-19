@@ -17,15 +17,10 @@ class QueueProcessor implements Processor {
     ) {}
 
     public function process(Message $message, Context $context): object|string {
-        pcntl_signal(SIGALRM, function () use ($message) {
-            $body = $message->getBody();
-            App::log("queue")->error("task [$body] timeout");
-            $this->retry($message, $this->queue);
-        });
-        pcntl_alarm(5);
         try {
             $body = $message->getBody();
             [$class, $method] = explode(":", $body, 2);
+            App::log("queue")->error("class [{$class}]  start");
             if (!class_exists($class)) {
                 App::log("queue")->error("class [{$class}]  does not exist");
             } else {
@@ -40,16 +35,14 @@ class QueueProcessor implements Processor {
             }
         } catch (\Exception $error) {
             App::log("queue")->error($error->getMessage(), [$error->getFile() . ":" . $error->getLine()]);
-            $this->retry($message, $queue);
+            $this->retry($message, $context);
         }
-        pcntl_alarm(0);
         return Processor::ACK;
-
 
     }
 
 
-    public function retry(Message $message, \Interop\Queue\Queue $queue) {
+    public function retry(Message $message, Context $context) {
         $id = $message->getMessageId();
         $retryNum = $message->getHeader("retry_num", 0);
         $retryNum++;
@@ -58,7 +51,7 @@ class QueueProcessor implements Processor {
             App::log("queue")->error("task [$body] retry failed");
         }else {
             $message->setHeader("retry_num", $retryNum);
-            $this->context->createProducer()->send($queue, $message);
+            $context->createProducer()->send($this->queue, $message);
         }
     }
 }
