@@ -18,6 +18,7 @@ use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use DI\Container;
+use Dux\Server\WorkermanCommand;
 use Dux\View\View;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
@@ -108,6 +109,7 @@ class Bootstrap {
         $commands[] = \Dux\App\AppCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
+        $commands[] = WorkermanCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
