@@ -6,6 +6,7 @@ use Dux\App;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -24,10 +25,16 @@ class WorkermanCommand extends Command {
 
 
     protected function configure(): void {
+        $this->addArgument(
+            'action',
+            InputArgument::OPTIONAL,
+            'Please enter the service operation'
+        );
         $this->addOption(
             'port',
-            InputArgument::OPTIONAL,
-            'please enter the route group name'
+            null,
+            InputOption::VALUE_REQUIRED,
+            'set the service port number'
         );
     }
 
