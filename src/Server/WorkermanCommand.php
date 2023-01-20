@@ -24,7 +24,7 @@ class WorkermanCommand extends Command {
 
 
     protected function configure(): void {
-        $this->addArgument(
+        $this->addOption(
             'port',
             InputArgument::OPTIONAL,
             'please enter the route group name'
@@ -32,7 +32,7 @@ class WorkermanCommand extends Command {
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $port = $input->getArgument("port") ?: 8080;
+        $port = $input->getOption("port") ?: 8080;
         $http = new Worker("http://0.0.0.0:$port");
         $http->onWorkerStart = function () {
             echo 'Workerman http server is started at http://0.0.0.0:8080'.PHP_EOL;
