@@ -62,7 +62,6 @@ if (!function_exists('dux_debug')) {
         foreach ($args as $v) {
             VarDumper::dump($v);
         }
-        exit(1);
     }
 }
 
