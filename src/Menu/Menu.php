@@ -38,7 +38,8 @@ class Menu {
             $appData = $app->get();
             if ($this->push[$name]) {
                 foreach ($this->push[$name] as $push) {
-                    $appData["children"] = [...$appData["children"], ...$push["children"]];
+                    $object = $push->get();
+                    $appData["children"] = [...$appData["children"], ...($object["children"] ?: [])];
                 }
             }
             $menuData[] = $appData;
