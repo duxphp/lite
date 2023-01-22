@@ -91,6 +91,9 @@ class ManageCommand extends Command {
         // permission
         $this->createPermission($appName, $appDir, $layerName, $className);
 
+        // jsx
+        $this->createJsx($appName, $appDir, $layerName, $className);
+
         $output->writeln("<info>Generate manage successfully</info>");
         return Command::SUCCESS;
     }
@@ -149,6 +152,22 @@ class ManageCommand extends Command {
         $name = lcfirst($appName) . "." . lcfirst($className);
         $method->addBody("\n\n" . '$group = $permission->manage("", "' . $name . '");');
         FileSystem::write($filePath, (string)$file);
+    }
+
+
+    private function createJsx($appName, $appDir, $layerName, $className) {
+        $fileDir = "$appDir/Client/" . lcfirst($layerName);
+        $routeUrl = lcfirst($appName) . "/" . lcfirst($className);
+        $pageUrl = $routeUrl . "/page";
+        $listJsx = file_get_contents(__DIR__ . '/Tpl/list.jsx');
+        $listJsx = str_replace("{{routeUrl}}", $routeUrl, $listJsx);
+        $listJsx = str_replace("{{pageUrl}}", $pageUrl, $listJsx);
+        FileSystem::write($fileDir . "/list.jsx", (string)$listJsx);
+
+        $formJsx = file_get_contents(__DIR__ . '/Tpl/form.jsx');
+        $formJsx = str_replace("{{routeUrl}}", $routeUrl, $formJsx);
+        $formJsx = str_replace("{{pageUrl}}", $pageUrl, $formJsx);
+        FileSystem::write($fileDir . "/form.jsx", (string)$formJsx);
     }
 
     public function error(OutputInterface $output, string $message): int {
