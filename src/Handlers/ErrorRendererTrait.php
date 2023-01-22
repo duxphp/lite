@@ -14,4 +14,12 @@ trait ErrorRendererTrait
         }
         return $defaultTitle;
     }
+
+    protected function getErrorDescription(Throwable $exception): string {
+        $defaultDesc = parent::getErrorDescription($exception);
+        if ($exception instanceof ExceptionValidator) {
+            $defaultDesc = $exception->getDescription();
+        }
+        return $defaultDesc;
+    }
 }

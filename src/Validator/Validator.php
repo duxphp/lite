@@ -4,6 +4,7 @@ namespace Dux\Validator;
 
 // https://github.com/vlucas/valitron
 use Dux\Handlers\ExceptionBusiness;
+use Dux\Handlers\ExceptionValidator;
 
 class Validator {
 
@@ -26,8 +27,7 @@ class Validator {
             $v->rule($item[0], $key, ...$params)->message($message);
         }
         if(!$v->validate()) {
-            $col = collect($v->errors());
-            throw new ExceptionBusiness($col->first()[0], 500);
+            throw new ExceptionValidator("数据输入错误", $v->errors());
         }
         $dataObj = new Data();
         foreach ($data as $k => $v) {
