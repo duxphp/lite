@@ -3,7 +3,6 @@
 namespace Dux\Validator;
 
 // https://github.com/vlucas/valitron
-use Dux\Handlers\ExceptionBusiness;
 use Dux\Handlers\ExceptionValidator;
 
 class Validator {
