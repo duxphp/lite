@@ -26,7 +26,7 @@ class Validator {
             $v->rule($item[0], $key, ...$params)->message($message);
         }
         if(!$v->validate()) {
-            throw new ExceptionValidator("数据输入错误", $v->errors());
+            throw new ExceptionValidator($v->errors());
         }
         $dataObj = new Data();
         foreach ($data as $k => $v) {

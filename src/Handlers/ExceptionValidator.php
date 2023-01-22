@@ -10,13 +10,10 @@ use Throwable;
  */
 class ExceptionValidator  extends ExceptionData {
 
-    public function __construct(string $message, array $data) {
+    public function __construct(array $data) {
+        $errors = array_values($data);
+        $message = $errors[0] ? $errors[0][0] : '';
         parent::__construct($message, 422);
         $this->data = $data;
-    }
-
-    public function getDescription() {
-        $errors = array_values($this->data);
-        return $errors[0] ? $errors[0][0] : '';
     }
 }
