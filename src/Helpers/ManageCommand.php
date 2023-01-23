@@ -156,7 +156,7 @@ class ManageCommand extends Command {
 
 
     private function createJsx($appName, $appDir, $layerName, $className) {
-        $fileDir = "$appDir/Client/" . lcfirst($layerName);
+        $fileDir = "$appDir/Client/" . lcfirst($layerName) . "/" . lcfirst($className);
         $routeUrl = lcfirst($appName) . "/" . lcfirst($className);
         $pageUrl = $routeUrl . "/page";
         $listJsx = file_get_contents(__DIR__ . '/Tpl/list.jsx');
