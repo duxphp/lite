@@ -1,6 +1,6 @@
-import React, { useRef, useMemo } from 'react'
-import {PageTable, Permission, route, UrlSwitch} from '@/duxweb'
-import {Button} from '@arco-design/web-react'
+import React, {useRef, useMemo} from 'react'
+import {LinkConfirm, LinkModal, PageTable, UrlSwitch} from '@/duxweb'
+import {IconPlus} from '@arco-design/web-react/icon';
 
 export default function Table() {
   const table = useRef(null)
@@ -12,40 +12,41 @@ export default function Table() {
         title: '名称'
       },
       {
+        dataIndex: 'status',
+        title: '状态',
+        render: (_, record) => (
+          <UrlSwitch url={`{{routeUrl}}/${record.id}/store`} field='status' defaultChecked={!!record.status}/>)
+      },
+      {
         dataIndex: 'op',
         title: '操作',
         width: 180,
         render: (_, record) => (
           <>
-            <Permission mark=''>
-              <Button
-                status='primary'
-                type='text'
-                size='small'
-                onClick={async () => {
-                  const status = await route.modal(
-                      '{{pageUrl}}',
-                      {
-                        id: record.id
-                      },
-                      {
-                        title: '模板编辑'
-                      }
-                    )
-                    .getData()
-                  if (status) {
-                    table.current.reload()
-                  }
-                }}
-              >
-                编辑
-              </Button>
-            </Permission>
-            <Permission mark=''>
-              <Button status='danger' type='text'  size='small'>
-                删除
-              </Button>
-            </Permission>
+            <LinkModal
+              url='{{pageUrl}}'
+              params={{
+                id: record.id
+              }}
+              title='编辑页面'
+              name='编辑'
+              table={table}
+              button={{
+                size: 'small',
+                type: 'text'
+              }}
+            />
+            <LinkConfirm
+              url={`{{routeUrl}}/${record.id}`}
+              title='确认进行删除？'
+              name='删除'
+              table={table}
+              button={{
+                size: 'small',
+                type: 'text',
+                status: 'danger'
+              }}
+            />
           </>
         )
       }
@@ -55,35 +56,22 @@ export default function Table() {
   return (
     <PageTable
       ref={table}
-      title='列表页面'
+      title='列表管理'
       url='{{routeUrl}}'
       primaryKey='id'
       columns={columns}
-      menus={[
-        <Permission key='add' mark=''>
-          <Button
-            type='primary'
-            onClick={async () => {
-              const status = await route
-                .modal(
-                  '{{pageUrl}}',
-                  {
-                    page: 1
-                  },
-                  {
-                    title: '模板添加',
-                  },
-                )
-                .getData()
-              if (status) {
-                table.current.reload()
-              }
-            }}
-          >
-              新建
-          </Button>
-        </Permission>
-      ]}
+      menus={<>
+        <LinkModal
+          url='{{pageUrl}}'
+          title='添加页面'
+          name='新建'
+          table={table}
+          button={{
+            type: 'primary',
+            icon: <IconPlus />
+          }}
+        ></LinkModal>
+      </>}
     ></PageTable>
   )
 }
