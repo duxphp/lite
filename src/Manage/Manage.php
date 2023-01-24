@@ -210,23 +210,4 @@ class Manage {
         App::db()->getConnection()->commit();
         return send($response, "删除{$name}成功");
     }
-
-    private ?\BlueM\Tree $treeData = null;
-
-    /**
-     * 转换级别数据
-     * @param $id
-     * @return array
-     */
-    protected function coverLevel($id): array {
-        if (!$this->treeData) {
-            $tree = $this->model::tree();
-            $this->treeData = $tree;
-        } else {
-            $tree = $this->treeData;
-        }
-        $node = $tree->getNodeById($id);
-        $ancestorsPlusSelf = $node->getAncestorsAndSelf();
-        return array_reverse(array_column($ancestorsPlusSelf, "id"));
-    }
 }
