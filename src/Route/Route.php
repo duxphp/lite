@@ -10,11 +10,12 @@ use Slim\Routing\RouteCollectorProxy;
 
 class Route {
 
-    public string $pattern = "";
+    private string $pattern = "";
     private array $middleware = [];
     private array $group = [];
     private array $data = [];
     private string $title;
+    public array $manageAttr = [];
 
     /**
      * @param string $pattern 匹配
@@ -136,39 +137,47 @@ class Route {
      * @param string $name
      * @param string $title
      * @param array $ways ["list", "info", "add", "edit", "store", "del"]
-     * @return void
+     * @return Route
      */
-    public function manage(string $pattern, string $class, string $name, string $title, array $ways = []): void {
+    public function manage(string $pattern, string $class, string $name, string $title, array $ways = []): Route {
+        $group = $this->group($pattern, $title);
+        $group->manageAttr = [
+            $class,
+            $name,
+            $title,
+        ];
         if (!$ways || in_array("list", $ways)) {
-            $this->get($pattern,  "$class:list", "$name.list", "{$title}列表");
+            $group->get('',  "$class:list", "$name.list", "{$title}列表");
         }
         if (!$ways || in_array("info", $ways)) {
-            $this->get("$pattern/{id}", "$class:info", "$name.info", "{$title}详情");
+            $group->get("/{id}", "$class:info", "$name.info", "{$title}详情");
         }
         if (!$ways || in_array("add", $ways)) {
-            $this->post($pattern, "$class:save", "$name.add", "{$title}添加");
+            $group->post("", "$class:save", "$name.add", "{$title}添加");
         }
         if (!$ways || in_array("edit", $ways)) {
-            $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑");
+            $group->post("/{id}", "$class:save", "$name.edit", "{$title}编辑");
         }
         if (!$ways || in_array("del", $ways)) {
-            $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除");
+            $group->delete("/{id}", "$class:del", "$name.del", "{$title}删除");
         }
         if (!$ways || in_array("store", $ways)) {
-            $this->post("$pattern/{id}/store", "$class:store", "$name.store", "{$title}存储");
+            $group->post("/{id}/store", "$class:store", "$name.store", "{$title}存储");
         }
+        return $group;
     }
 
     /**
-     * @param string $pattern
-     * @param string $class
-     * @param string $name
-     * @param string $title
-     * @return void
+     * @return self
      */
-    public function manageSoftDelete(string $pattern, string $class, string $name, string $title): void {
-        $this->get("$pattern/{id}/restore", "$class:restore", "$name.restore", "{$title}恢复");
-        $this->delete("$pattern/{id}/trashed", "$class:trashed", "$name.trashed", "{$title}清除");
+    public function softDelete(): self {
+        if (!$this->manageAttr) {
+            return $this;
+        }
+        [$class, $name, $title] = $this->manageAttr;
+        $this->get("/{id}/restore", "$class:restore", "$name.restore", "{$title}恢复");
+        $this->delete("/{id}/trashed", "$class:trashed", "$name.trashed", "{$title}清除");
+        return $this;
     }
 
     /**
