@@ -158,10 +158,12 @@ class ManageCommand extends Command {
     private function createJsx($appName, $appDir, $layerName, $className) {
         $fileDir = "$appDir/Client/" . lcfirst($layerName) . "/" . lcfirst($className);
         $routeUrl = lcfirst($appName) . "/" . lcfirst($className);
+        $name = lcfirst($appName) . "." . lcfirst($className);
         $pageUrl = $routeUrl . "/page";
         $listJsx = file_get_contents(__DIR__ . '/Tpl/list.jsx');
         $listJsx = str_replace("{{routeUrl}}", $routeUrl, $listJsx);
         $listJsx = str_replace("{{pageUrl}}", $pageUrl, $listJsx);
+        $listJsx = str_replace("{{name}}", $name, $listJsx);
         FileSystem::write($fileDir . "/list.jsx", (string)$listJsx);
 
         $formJsx = file_get_contents(__DIR__ . '/Tpl/form.jsx');

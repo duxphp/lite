@@ -35,6 +35,7 @@ export default function Table() {
                 size: 'small',
                 type: 'text'
               }}
+              permission='{{name}}.edit'
             />
             <LinkConfirm
               url={`{{routeUrl}}/${record.id}`}
@@ -46,6 +47,7 @@ export default function Table() {
                 type: 'text',
                 status: 'danger'
               }}
+              permission='{{name}}.del'
             />
           </>
         )
@@ -60,6 +62,7 @@ export default function Table() {
       url='{{routeUrl}}'
       primaryKey='id'
       columns={columns}
+      permission='{{name}}.list'
       menus={<>
         <LinkModal
           url='{{pageUrl}}'
@@ -70,6 +73,7 @@ export default function Table() {
             type: 'primary',
             icon: <IconPlus />
           }}
+          permission='{{name}}.add'
         ></LinkModal>
       </>}
     ></PageTable>
