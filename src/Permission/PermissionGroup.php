@@ -25,6 +25,13 @@ class PermissionGroup {
         return $this;
     }
 
+
+    public function softDelete(): self {
+        $this->add("restore", '恢复');
+        $this->add("trashed", '清除');
+        return $this;
+    }
+
     public function get(): array {
         return [
             "name" => $this->name,
