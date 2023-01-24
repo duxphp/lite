@@ -22,8 +22,15 @@ use Psr\Http\Message\ServerRequestInterface;
  * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
  * @method storeAfter(object $info, array $updateData, $data)
- * @method delBefore($info)
- * @method delAfter($info)
+ * @method delWhere(Builder $query, array $args): Builder
+ * @method delBefore(object $info, array $args)
+ * @method delAfter(object $info, array $args)
+ * @method trashedWhere(Builder $query, array $args): Builder
+ * @method trashedBefore(object $info, array $args)
+ * @method trashedAfter(object $info, array $args)
+ * @method restoreWhere(Builder $query, array $args): Builder
+ * @method restoreBefore(object $info, array $args)
+ * @method restoreAfter(object $info, array $args)
  */
 class Manage {
 
@@ -201,13 +208,69 @@ class Manage {
         }
         App::db()->getConnection()->beginTransaction();
         if (method_exists($this, "delBefore")) {
-            $this->delBefore($info);
+            $this->delBefore($info, $args);
         }
-        $this->model::query()->where($this->id, $info[$this->id])->delete();
+        $info->delete();
         if (method_exists($this, "delAfter")) {
-            $this->delAfter($info);
+            $this->delAfter($info, $args);
         }
         App::db()->getConnection()->commit();
         return send($response, "删除{$name}成功");
+    }
+
+    /**
+     * 清除数据
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     */
+    public function trashed(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $id = $args["id"] ?: 0;
+        $name = $this->name ?? "";
+        $query = $this->model::query();
+        if (method_exists($this, "trashedWhere")) {
+            $info = $this->trashedWhere($query, $args)->withTrashed()->first();
+        } else {
+            $info = $query->where($this->id, $id)->withTrashed()->first();
+        }
+        App::db()->getConnection()->beginTransaction();
+        if (method_exists($this, "trashedBefore")) {
+            $this->trashedBefore($info, $args);
+        }
+        $info->forceDelete();
+        if (method_exists($this, "trashedAfter")) {
+            $this->trashedAfter($info, $args);
+        }
+        App::db()->getConnection()->commit();
+        return send($response, "清除{$name}成功");
+    }
+
+    /**
+     * 恢复数据
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     */
+    public function restore(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $id = $args["id"] ?: 0;
+        $name = $this->name ?? "";
+        $query = $this->model::query();
+        if (method_exists($this, "restoreWhere")) {
+            $info = $this->restoreWhere($query, $args)->withTrashed()->first();
+        } else {
+            $info = $query->withTrashed()->where($this->id, $id)->first();
+        }
+        App::db()->getConnection()->beginTransaction();
+        if (method_exists($this, "restoreBefore")) {
+            $this->restoreBefore($info, $args);
+        }
+        $info->restore();
+        if (method_exists($this, "restoreAfter")) {
+            $this->restoreAfter($info, $args);
+        }
+        App::db()->getConnection()->commit();
+        return send($response, "清除{$name}成功");
     }
 }

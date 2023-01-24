@@ -46,6 +46,11 @@ class Permission {
         return $group;
     }
 
+    public function manageSoftDelete(PermissionGroup $group): void {
+        $group->add("restore", '恢复');
+        $group->add("trashed", '清除');
+    }
+
     public function get(): array {
         $data = [];
         foreach ($this->data as $vo) {

@@ -151,12 +151,24 @@ class Route {
         if (!$ways || in_array("edit", $ways)) {
             $this->post("$pattern/{id}", "$class:save", "$name.edit", "{$title}编辑");
         }
-        if (!$ways || in_array("store", $ways)) {
-            $this->post("$pattern/{id}/store", "$class:store", "$name.store", "{$title}存储");
-        }
         if (!$ways || in_array("del", $ways)) {
             $this->delete("$pattern/{id}", "$class:del", "$name.del", "{$title}删除");
         }
+        if (!$ways || in_array("store", $ways)) {
+            $this->post("$pattern/{id}/store", "$class:store", "$name.store", "{$title}存储");
+        }
+    }
+
+    /**
+     * @param string $pattern
+     * @param string $class
+     * @param string $name
+     * @param string $title
+     * @return void
+     */
+    public function manageSoftDelete(string $pattern, string $class, string $name, string $title): void {
+        $this->get("$pattern/{id}/restore", "$class:restore", "$name.restore", "{$title}恢复");
+        $this->delete("$pattern/{id}/trashed", "$class:trashed", "$name.trashed", "{$title}清除");
     }
 
     /**
