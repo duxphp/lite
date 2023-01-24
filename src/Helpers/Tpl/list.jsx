@@ -21,6 +21,7 @@ export default function Table() {
         dataIndex: 'op',
         title: '操作',
         width: 180,
+        fixed: 'right',
         render: (_, record) => (
           <>
             <LinkModal
