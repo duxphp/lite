@@ -6,7 +6,7 @@ export default function Form() {
   const {params} = useRouter()
 
   return (
-    <ModalForm url={`{{routeUrl}}/${params.id || 0}`} type={params.id ? 'edit' : 'add'}>
+    <ModalForm url={`{{routeUrl}}/${params.id || 0}`}>
       {({ data }) => (
         <>
           <ArcoForm.Item label='名称' field='name' rules={[{required: true}]}>
