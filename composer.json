@@ -48,7 +48,8 @@
     "jbzoo/event": "^4.0",
     "nikic/php-parser": "^4.15",
     "enqueue/enqueue": "^0.10.16",
-    "phpoffice/phpspreadsheet": "^1.26"
+    "phpoffice/phpspreadsheet": "^1.26",
+    "godruoyi/php-snowflake": "^2.2"
   },
   "autoload": {
     "psr-4": {
