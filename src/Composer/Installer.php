@@ -9,6 +9,7 @@ use Composer\Installer\LibraryInstaller;
 use Composer\PartialComposer;
 use Composer\Repository\InstalledRepositoryInterface;
 use Composer\Util\Filesystem;
+use Composer\Util\ProcessExecutor;
 use Dux\App;
 use React\Promise\PromiseInterface;
 
@@ -39,11 +40,12 @@ class Installer extends LibraryInstaller
         $binaryInstaller = $this->binaryInstaller;
         $installPath = $this->getInstallPath($package);
 
-        return $promise->then(static function () use ($binaryInstaller, $installPath, $package, $repo): void {
+        $process = $this->process;
+        return $promise->then(static function () use ($binaryInstaller, $installPath, $package, $repo, $process): void {
             $binaryInstaller->installBinaries($package, $installPath);
             if (!$repo->hasPackage($package)) {
                 $repo->addPackage(clone $package);
-                $this->process->execute('php dux app:install ' . $package->getName());
+                $process->execute('php dux app:install ' . $package->getName());
             }
 
         });
@@ -52,28 +54,5 @@ class Installer extends LibraryInstaller
     public function supports($packageType)
     {
         return $packageType === 'dux-app';
-    }
-
-    public function copyDir($source, $destination, $child = 1)
-    {
-        if(!is_dir($source)){
-            return 0;
-        }
-        if(!is_dir($destination)){
-            mkdir($destination,0777);
-        }
-        $handle= dir($source);
-        while($entry = $handle->read()) {
-            if(($entry!=".")&&($entry!="..")){
-                if(is_dir($source."/".$entry)){
-                    if($child){
-                        $this -> xCopy($source."/".$entry,$destination."/".$entry,$child);
-                    }
-                }else{
-                    copy($source."/".$entry,$destination."/".$entry);
-                }
-            }
-        }
-        return 1;
     }
 }
