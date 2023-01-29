@@ -51,7 +51,7 @@ class AppUninstallCommand extends Command {
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
                 FileSystem::delete($targetDir);
-                $output->writeln("<error>delete file: $relativeDir </error>");
+                $output->writeln("<error>  - Delete $relativeDir </error>");
             }
         }
 

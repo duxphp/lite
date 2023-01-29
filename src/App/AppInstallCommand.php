@@ -60,7 +60,7 @@ class AppInstallCommand extends Command {
                     continue;
                 }
                 FileSystem::copy($vo, $targetDir);
-                $output->writeln("<info>sync file: $relativeDir </info>");
+                $output->writeln("<info>  - Add $relativeDir </info>");
             }
         }
         if ($app) {
