@@ -98,3 +98,9 @@ if (!function_exists('bc_math')) {
         };
     }
 }
+
+if (!function_exists('bc_comp')) {
+    function bc_comp(int|float|string $left = 0, int|float|string $right = 0, int $scale = 2): int {
+        return bccomp((string)$left, (string)$right, $scale);
+    }
+}
