@@ -55,7 +55,7 @@ class AppUninstallCommand extends Command {
             }
         }
 
-        $output->writeln("<fg=green>successfully uninstalling the application</>");
+        $output->writeln("<info>successfully uninstalling the application</info>");
         return Command::SUCCESS;
     }
 
