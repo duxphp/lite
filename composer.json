@@ -1,6 +1,6 @@
 {
   "name": "duxphp/lite",
-  "type": "library",
+  "type": "composer-plugin",
   "description": "The lightweight framework based on slim php",
   "keywords": ["PHP framework", "PHP", "slim", "duxphp"],
   "homepage": "https://github.com/duxphp",
@@ -20,6 +20,7 @@
     "ext-json": "*",
     "ext-bcmath": "*",
     "ext-curl": "*",
+    "composer-plugin-api": "^2.0",
     "slim/slim": "^4.11",
     "slim/psr7": "^1.6",
     "monolog/monolog": "^3.2",
@@ -49,24 +50,17 @@
     "nikic/php-parser": "^4.15",
     "enqueue/enqueue": "^0.10.16",
     "phpoffice/phpspreadsheet": "^1.26",
-    "godruoyi/php-snowflake": "^2.2",
-    "oomphinc/composer-installers-extender": "^2.0"
+    "godruoyi/php-snowflake": "^2.2"
+  },
+  "require-dev": {
+    "composer/composer": "^2.0"
   },
   "extra": {
-    "installer-types": ["dux-app"],
-    "installer-paths": {
-      "app/{$name}": ["type:dux-app"]
-    }
+    "class": "\\Dux\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
       "Dux\\": "src/"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/installers": true,
-      "oomphinc/composer-installers-extender": true
     }
   }
 }
