@@ -60,7 +60,7 @@ class AppInstallCommand extends Command {
                     continue;
                 }
                 FileSystem::copy($vo, $targetDir);
-                $output->writeln("<green>  - Add $relativeDir </green>");
+                $output->writeln("<fg=green>  - Add $relativeDir </>");
             }
         }
         if ($app) {
@@ -69,7 +69,7 @@ class AppInstallCommand extends Command {
             $command->run($greetInput, $output);
         }
 
-        $output->writeln("<green>successfully installing the application</green>");
+        $output->writeln("<fg=green>successfully installing the application</>");
         return Command::SUCCESS;
     }
 
