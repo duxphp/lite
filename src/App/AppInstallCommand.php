@@ -41,7 +41,7 @@ class AppInstallCommand extends Command {
     }
 
     public function error(OutputInterface $output, string $message): int {
-        $output->writeln("<error>$$message</error>");
+        $output->writeln("<error>$message</error>");
         return Command::FAILURE;
     }
 
