@@ -10,7 +10,7 @@ use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use Iidestiny\Flysystem\Oss\OssAdapter;
 
 class Storage {
-    static function init(string $type, array $config, string $publicUrl = ""): Filesystem {
+    static function init(string $type, array $config): Filesystem {
         switch ($type) {
             case "qiniu":
                 // https://github.com/overtrue/flysystem-qiniu
@@ -24,13 +24,13 @@ class Storage {
                 $adapter = new OssAdapter($config["accessKeyId"], $config["accessKeySecret"], $config["endpoint"], $config["bucket"], $config["isCName"], $config["prefix"]);
                 break;
             default:
-            $adapter = new LocalFilesystemAdapter(
-                App::$basePath . "/" . $config["path"]
-            );
+                $adapter = new LocalFilesystemAdapter(
+                    App::$basePath . "/" . $config["path"]
+                );
         }
         return new Filesystem(
             $adapter,
-            ["public_url" => $publicUrl]
+            ["public_url" => $config["public_url"]]
         );
 
     }
