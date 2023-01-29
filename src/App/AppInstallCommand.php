@@ -28,13 +28,17 @@ class AppInstallCommand extends Command {
     public function execute(InputInterface $input, OutputInterface $output): int {
 
         $name = $input->getArgument('name');
-        $name = ucfirst($name);
-        $dir = base_path("/vendor/$name/src");
-        if (is_dir($dir)) {
+        $dir = base_path("vendor/$name/src");
+        if (!is_dir($dir)) {
             return $this->error($output, 'The application already exists');
         }
-        FileSystem::copy(base_path('/vendor/'), $dir);
+        FileSystem::copy($dir, app_path());
         return Command::SUCCESS;
+    }
+
+    public function error(OutputInterface $output, string $message): int {
+        $output->writeln("<error>$$message</error>");
+        return Command::FAILURE;
     }
 
 }
