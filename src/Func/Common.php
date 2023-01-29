@@ -85,3 +85,16 @@ if (!function_exists('get_ip')) {
         return $ip;
     }
 }
+
+if (!function_exists('bc_math')) {
+    function bc_math(int|float|string $left = 0, string $symbol = '+', int|float|string $right = 0, int $default = 2): string {
+        bcscale($default);
+        return match ($symbol) {
+            '+' => bcadd((string)$left, (string)$right),
+            '-' => bcsub((string)$left, (string)$right),
+            '*' => bcmul((string)$left, (string)$right),
+            '/' => bcdiv((string)$left, (string)$right),
+            '%' => bcmod((string)$left, (string)$right),
+        };
+    }
+}
