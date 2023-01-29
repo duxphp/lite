@@ -32,7 +32,11 @@ class AppInstallCommand extends Command {
         if (!is_dir($dir)) {
             return $this->error($output, 'The application already exists');
         }
-        FileSystem::copy($dir, app_path());
+        $list = glob("$dir/*");
+        foreach ($list as $vo) {
+            FileSystem::copy($vo, app_path(basename($vo)));
+        }
+
         return Command::SUCCESS;
     }
 
