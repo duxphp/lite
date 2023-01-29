@@ -12,10 +12,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppInstallCommand extends Command {
+class AppUninstallCommand extends Command {
 
-    protected static $defaultName = 'app:install';
-    protected static $defaultDescription = 'install applications in the system';
+    protected static $defaultName = 'app:uninstall';
+    protected static $defaultDescription = 'uninstall applications in the system';
 
 
     protected function configure(): void {
@@ -40,36 +40,22 @@ class AppInstallCommand extends Command {
         $extra = $config['extra'];
         $duxExtra = $extra['dux'] ?: [];
 
-        $app = false;
         foreach ($duxExtra as $target => $source) {
-            if ($target == 'app') {
-                $app = true;
-            }
             if (is_array($source)) {
-                $ignore = $source['ignore'];
                 $sourceDir = $source['dir'];
             }else {
-                $ignore = false;
                 $sourceDir = $source;
             }
             $list = glob("$dir/$sourceDir/*");
             foreach ($list as $vo) {
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
-                if ($ignore && (is_dir($targetDir) || is_file($targetDir))) {
-                    continue;
-                }
-                FileSystem::copy($vo, $targetDir);
-                $output->writeln("<info>sync file: $relativeDir </info>");
+                FileSystem::delete($targetDir);
+                $output->writeln("<error>delete file: $relativeDir </error>");
             }
         }
-        if ($app) {
-            $command = $this->getApplication()->find('db:sync');
-            $greetInput = new ArrayInput([]);
-            $command->run($greetInput, $output);
-        }
 
-        $output->writeln("<info>successfully installing the application</info>");
+        $output->writeln("<info>successfully uninstalling the application</info>");
         return Command::SUCCESS;
     }
 

@@ -108,6 +108,7 @@ class Bootstrap {
         $commands[] = ManageCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
         $commands[] = \Dux\App\AppInstallCommand::class;
+        $commands[] = \Dux\App\AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
         $commands[] = WorkermanCommand::class;

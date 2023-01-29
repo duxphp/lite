@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Dux\Composer;
 
 use Composer\Composer;
+use Composer\Installer\PackageEvent;
+use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -36,16 +38,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface {
     public static function getSubscribedEvents()
     {
         return array(
-            PluginEvents::PRE_POOL_CREATE => array(array('onPrePoolCreate', 0)),
+            PackageEvents::POST_PACKAGE_INSTALL => array(array('onPostPackageInstall', 0)),
         );
     }
 
-    public function onPrePoolCreate(PrePoolCreateEvent $event)
+    public function onPostPackageInstall(PackageEvent $event)
     {
+        $package = $event->getOperation()->getPackage();
+        $type = $package->getType();
+        if ($type !== 'dux-app') {
+            return;
+        }
         $process = new ProcessExecutor($this->io);
-        $process->execute('php dux app:install ' . $event->getName());
+        $process->execute('php dux app:install ' . $package->getName());
     }
-
-
-
 }
