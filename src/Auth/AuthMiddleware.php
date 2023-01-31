@@ -21,9 +21,9 @@ class AuthMiddleware {
         $jwt = new \Tuupola\Middleware\JwtAuthentication([
             "secret" => $secret,
             "secure" => false,
-            "before" => function ($request, $arguments) {
+            "before" => function ($request, $arguments) use($app) {
                 $token = $arguments["decoded"];
-                return $request->withAttribute('auth', $token);
+                return $request->withAttribute('auth', $token)->withAttribute('app', $app);
             },
             "after" => function ($response, $arguments) use ($renewal, $secret, $app) {
                 $token = $arguments["decoded"];
