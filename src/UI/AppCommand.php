@@ -20,7 +20,7 @@ class AppCommand extends Command {
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         UI::sync();
-        $output->write("<info>The UI file is successfully synchronized</info>");
+        $output->writeln("<info>The UI file is successfully synchronized</info>");
         return Command::SUCCESS;
     }
 

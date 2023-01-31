@@ -4,21 +4,52 @@ declare(strict_types=1);
 namespace Dux\Composer;
 
 use Composer\Composer;
+use Composer\Installer\PackageEvent;
+use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Plugin\PluginEvents;
+use Composer\Plugin\PrePoolCreateEvent;
+use Composer\Util\ProcessExecutor;
 
-class Plugin implements PluginInterface {
+class Plugin implements PluginInterface, EventSubscriberInterface {
 
+    protected $composer;
+    protected $io;
     public function activate(Composer $composer, IOInterface $io)
     {
-        $composer->getInstallationManager()->addInstaller(new Installer($io, $composer));
+        $this->composer = $composer;
+        $this->io = $io;
     }
 
     public function deactivate(Composer $composer, IOInterface $io)
     {
+        $this->composer = $composer;
+        $this->io = $io;
     }
 
     public function uninstall(Composer $composer, IOInterface $io)
     {
+        $this->composer = $composer;
+        $this->io = $io;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            PackageEvents::POST_PACKAGE_INSTALL => array(array('onPostPackageInstall', 0)),
+        );
+    }
+
+    public function onPostPackageInstall(PackageEvent $event)
+    {
+        $package = $event->getOperation()->getPackage();
+        $type = $package->getType();
+        if ($type !== 'dux-app') {
+            return;
+        }
+        $process = new ProcessExecutor($this->io);
+        $process->execute('php dux app:install ' . $package->getName());
     }
 }
