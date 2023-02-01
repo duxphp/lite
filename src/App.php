@@ -15,7 +15,6 @@ use Dux\Storage\Storage;
 use Dux\Validator\Data;
 use Dux\View\View;
 use Illuminate\Database\Capsule\Manager;
-use JBZoo\Event\EventManager;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
 use Redis;
@@ -113,7 +112,7 @@ class App {
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
-        $config = new Config(App::$configPath . "/$name.yaml");
+        $config = new Config(App::$configPath . "/$name.yaml", new \Dux\Config\Yaml());
         self::$di->set("config." . $name, $config);
         return $config;
     }
