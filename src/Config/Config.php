@@ -6,6 +6,11 @@ namespace Dux\Config;
 class Config {
     static array $variables = [];
 
+
+    public static function setValues(array $data): void {
+        self::$variables = [...self::$variables, ...$data];
+    }
+
     public static function setValue(string $key, mixed $value): void {
         self::$variables[$key] = $value;
     }

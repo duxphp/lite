@@ -79,11 +79,13 @@ class Bootstrap {
      * @return void
      */
     public function loadConfig(): void {
-        Config::setValue('base_path', App::$basePath);
-        Config::setValue('app_path', App::$appPath);
-        Config::setValue('data_path', App::$dataPath);
-        Config::setValue('config_path', App::$configPath);
-        Config::setValue('public_path', App::$publicPath);
+        Config::setValues([
+            'base_path' => App::$basePath,
+            'app_path' => App::$appPath,
+            'data_path' => App::$dataPath,
+            'config_path' => App::$configPath,
+            'public_path' => App::$publicPath,
+        ]);
 
         $this->debug = (bool)App::config("app")->get("app.debug");
         $this->exceptionTitle = App::config("app")->get("exception.title", $this->exceptionTitle);
