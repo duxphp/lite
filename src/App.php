@@ -53,6 +53,13 @@ class App {
         self::$dataPath = $basePath . '/data';
         self::$publicPath = $basePath . '/public';
         self::$appPath = $basePath . '/app';
+
+        define("PATH_BASE", self::$basePath);
+        define("PATH_CONFIG", self::$configPath);
+        define("PATH_DATA", self::$dataPath);
+        define("PATH_PUBLIC", self::$publicPath);
+        define("PATH_APP", self::$appPath);
+
         self::$di = new Container();
 
         $app = new Bootstrap();
@@ -103,11 +110,11 @@ class App {
      * @return Config
      */
     static function config(string $name): Config {
-        if (self::$di->has("config.".$name)) {
-            return self::$di->get("config.".$name);
+        if (self::$di->has("config." . $name)) {
+            return self::$di->get("config." . $name);
         }
         $config = new Config(App::$configPath . "/$name.yaml");
-        self::$di->set("config.".$name, $config);
+        self::$di->set("config." . $name, $config);
         return $config;
     }
 
