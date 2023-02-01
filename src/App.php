@@ -53,12 +53,6 @@ class App {
         self::$publicPath = $basePath . '/public';
         self::$appPath = $basePath . '/app';
 
-        define("PATH_BASE", self::$basePath);
-        define("PATH_CONFIG", self::$configPath);
-        define("PATH_DATA", self::$dataPath);
-        define("PATH_PUBLIC", self::$publicPath);
-        define("PATH_APP", self::$appPath);
-
         self::$di = new Container();
 
         $app = new Bootstrap();

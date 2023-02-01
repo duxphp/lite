@@ -7,6 +7,7 @@ namespace Dux;
 use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
+use Dux\Config\Config;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
 use Dux\Event\Event;
@@ -78,6 +79,12 @@ class Bootstrap {
      * @return void
      */
     public function loadConfig(): void {
+        Config::setValue('base_path', App::$basePath);
+        Config::setValue('app_path', App::$appPath);
+        Config::setValue('data_path', App::$dataPath);
+        Config::setValue('config_path', App::$configPath);
+        Config::setValue('public_path', App::$publicPath);
+
         $this->debug = (bool)App::config("app")->get("app.debug");
         $this->exceptionTitle = App::config("app")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("app")->get("exception.desc", $this->exceptionDesc);
