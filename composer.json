@@ -53,14 +53,17 @@
     "godruoyi/php-snowflake": "^2.2"
   },
   "require-dev": {
-    "composer/composer": "^2.0"
+    "composer/composer": "^2.0",
+    "phpunit/phpunit": "^9.5"
   },
   "extra": {
     "class": "\\Dux\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
-      "Dux\\": "src/"
+      "Dux\\": "src/",
+      "Dux\\Tests\\": "tests"
+
     }
   }
 }
