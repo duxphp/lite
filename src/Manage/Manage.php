@@ -6,7 +6,7 @@ use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
-use Illuminate\Database\Query\Builder;
+use \Illuminate\Database\Eloquent\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

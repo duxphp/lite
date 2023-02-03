@@ -5,8 +5,8 @@ namespace Dux\Menu;
 
 class MenuApp {
 
-    private array $config;
-    private array $data;
+    private array $config = [];
+    private array $data = [];
     private string $pattern;
 
     public function __construct(array $config = [], string $pattern = "") {
