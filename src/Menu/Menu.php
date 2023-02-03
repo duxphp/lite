@@ -63,7 +63,7 @@ class Menu {
                 $groupsMenu[] = $groupData;
             }
             $groupList = collect($groupsMenu)->sortBy('order')->values()->toArray();
-            if (empty($groupList)) {
+            if (empty($groupList) && !$appData['url']) {
                 continue;
             }
             $appData["children"] = $groupList;
