@@ -37,7 +37,7 @@ class SwowCommand extends Command {
 
         $server = new \Swow\Psr7\Server\Server();
         $server->bind('0.0.0.0', $port)->listen(Socket::DEFAULT_BACKLOG);
-
+        $output->writeln("<info>server start http://0.0.0.0:".$port."</info>");
         while (true) {
             try {
                 $connection = null;
