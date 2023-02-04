@@ -26,11 +26,12 @@ class MenuApp {
             $group[] = $vo->get();
         }
         return [
-            "name" => $this->config["name"],
-            "icon" => $this->config["icon"],
-            "url" => $this->config["url"] ? $this->pattern . $this->config["url"] : "",
-            "order" => $this->config["order"] ?: 0,
-            "children" => $group,
+            ...$this->config,
+            ...[
+                "url" => $this->config["url"] ? $this->pattern . $this->config["url"] : "",
+                "order" => $this->config["order"] ?: 0,
+                "children" => $group,
+            ]
         ];
     }
 }
