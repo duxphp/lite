@@ -6,7 +6,6 @@ use Dux\Handlers\ExceptionBusiness;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use GuzzleHttp\Psr7\Request;
 
 class Excel
 {
@@ -18,9 +17,8 @@ class Excel
         if (!in_array($ext, $extArr)) {
             throw new ExceptionBusiness("File type error");
         }
-
-        $request = new Request('GET', $url);
-        $fileTmp = $request->getBody()->getContents();
+        $client = new \GuzzleHttp\Client();
+        $fileTmp = $client->request('GET', $url)->getBody()->getContents();
         $tmpFile = tempnam(sys_get_temp_dir(), 'excel_');
         $tmp = fopen($tmpFile, 'w');
         fwrite($tmp, $fileTmp);
@@ -55,9 +53,9 @@ class Excel
             }
             unlink($tmpFile);
             return $table;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             unlink($tmpFile);
-            throw new $e;
+            throw $e;
         }
     }
 
