@@ -72,7 +72,8 @@ class ModelCommand extends Command {
         return Command::FAILURE;
     }
 
-    private function ccFormat($name){
+    private function ccFormat($name): string
+    {
         $temp_array = array();
         for($i=0;$i<strlen($name);$i++){
             $ascii_code = ord($name[$i]);

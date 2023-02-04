@@ -13,6 +13,7 @@ use Dux\Database\MigrateCommand;
 use Dux\Event\Event;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
+use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Permission\PermissionCommand;
@@ -117,6 +118,7 @@ class Bootstrap {
         $commands[] = AppCommand::class;
         $commands[] = ModelCommand::class;
         $commands[] = ManageCommand::class;
+        $commands[] = CtrCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
         $commands[] = \Dux\App\AppInstallCommand::class;
         $commands[] = \Dux\App\AppUninstallCommand::class;
