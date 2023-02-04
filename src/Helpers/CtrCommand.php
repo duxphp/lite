@@ -59,6 +59,7 @@ class CtrCommand extends Command {
         $namespace = $file->addNamespace("App\\$appName\\$layerName");
         $namespace->addUse(\Psr\Http\Message\ResponseInterface::class);
         $namespace->addUse(\Psr\Http\Message\ServerRequestInterface::class);
+        $namespace->addUse(\Dux\Validator\Validator::class);
         $class = $namespace->addClass($className);
         $method = $class->addMethod("list")->setReturnType(\Psr\Http\Message\ResponseInterface::class)->setBody("
     \$data = Validator::parser([...\$request->getParsedBody(), ...\$args], [
