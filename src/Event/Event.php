@@ -28,8 +28,9 @@ class Event {
     }
 
     private function register($name, string|callable $callback, int $priority = EventManager::MID, bool $one = false): void {
-        if ($callback instanceof \Closure) {
-            call_user_func([$this->event, $one ? "once" : "on"], $callback, $priority);
+        if (is_callable($callback)) {
+
+            call_user_func([$this->event, $one ? "once" : "on"], $name, $callback, $priority);
         }
         call_user_func([$this->event, $one ? "once" : "on"], $name, function () use ($callback) {
             $params = func_get_args();
