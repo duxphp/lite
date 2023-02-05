@@ -29,8 +29,8 @@ class Event {
 
     private function register($name, string|callable $callback, int $priority = EventManager::MID, bool $one = false): void {
         if (is_callable($callback)) {
-
             call_user_func([$this->event, $one ? "once" : "on"], $name, $callback, $priority);
+            return;
         }
         call_user_func([$this->event, $one ? "once" : "on"], $name, function () use ($callback) {
             $params = func_get_args();
