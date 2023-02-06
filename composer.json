@@ -20,6 +20,7 @@
     "ext-json": "*",
     "ext-bcmath": "*",
     "ext-curl": "*",
+    "ext-openssl": "*",
     "composer-plugin-api": "^2.0",
     "slim/slim": "^4.11",
     "slim/psr7": "^1.6",
