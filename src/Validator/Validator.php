@@ -21,6 +21,8 @@ class Validator {
             if (empty($item)) {
                 continue;
             }
+            $keys = explode('#', $key);
+            $key = trim($keys[0]);
             $message = last($item);
             $params = array_slice($item, 1, -1);
             $v->rule($item[0], $key, ...$params)->message($message);
