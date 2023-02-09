@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Config;
 
@@ -13,7 +14,7 @@ class Yaml extends \Noodlehaus\Parser\Yaml
      * @return array
      * @throws ParseException
      */
-    public function parseFile($filename)
+    public function parseFile($filename): array
     {
         if (!is_file($filename) || !is_readable($filename)) {
             throw new \Symfony\Component\Yaml\Exception\ParseException(sprintf('File "%s" does not exist or unreadable.', $filename));
@@ -27,7 +28,7 @@ class Yaml extends \Noodlehaus\Parser\Yaml
      * @return array
      * @throws ParseException
      */
-    public function parseString($config)
+    public function parseString($config): array
     {
         foreach (Config::$variables as $key => $value) {
             $config = str_replace("%$key%", $value, $config);

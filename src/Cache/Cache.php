@@ -10,8 +10,8 @@ use Phpfastcache\Helper\Psr16Adapter;
 
 class Cache {
 
-    static function init(string $type, array $config): Psr16Adapter {
-        if ($type == "files") {
+    public static function init(string $type, array $config): Psr16Adapter {
+        if ($type === "files") {
             $config["path"] = App::$dataPath . "/cache";
         }
         CacheManager::setDefaultConfig(new ConfigurationOption($config));

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Validator;
 
@@ -12,7 +13,7 @@ class Validator {
      * @param array $data data array
      * @param array $rules ["name" => ["rule", "message"]]
      */
-    static function parser(array $data, array $rules): Data {
+    public static function parser(array $data, array $rules): Data {
 //        $role = [
 //            "name" => ["rule", "message"]
 //        ];

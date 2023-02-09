@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Queue;
 
@@ -42,7 +43,8 @@ class QueueProcessor implements Processor {
     }
 
 
-    public function retry(Message $message, Context $context) {
+    public function retry(Message $message, Context $context): void
+    {
         $id = $message->getMessageId();
         $retryNum = $message->getHeader("retry_num", 0);
         $retryNum++;

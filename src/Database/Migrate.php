@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Database;
 
 use Dux\App;
 use Dux\Database\Attribute\AutoMigrate;
-use Dux\Database\Attribute\Event;
 use Illuminate\Database\Schema\Blueprint;
 use Doctrine\DBAL\Schema\Comparator;
 
@@ -56,7 +56,7 @@ class Migrate {
         $attributes = (array)App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
             if (
-                $attribute != AutoMigrate::class
+                $attribute !== AutoMigrate::class
             ) {
                 continue;
             }

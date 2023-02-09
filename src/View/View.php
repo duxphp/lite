@@ -8,7 +8,7 @@ use Latte\Engine;
 
 class View {
 
-    static function init(string $name): Engine {
+    public static function init(string $name): Engine {
         $latte = new Engine;
         $latte->setTempDirectory(App::$dataPath . '/tpl/' . $name);
         return $latte;

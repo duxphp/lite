@@ -8,7 +8,7 @@ use Illuminate\Database\Capsule\Manager;
 class Db {
 
 
-    static function init(array $configs): Manager {
+    public static function init(array $configs): Manager {
         $capsule = new Manager;
         foreach ($configs as $key => $config) {
             $capsule->addConnection($config, $key);

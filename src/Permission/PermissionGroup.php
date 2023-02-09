@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Dux\Permission;
 
 class PermissionGroup {
-    private int $order = 0;
-    private string $name = "";
-    private string $label = "";
+    private int $order;
+    private string $name;
+    private string $label;
     private array $data = [];
-    private string $pattern = "";
+    private string $pattern;
 
     public function __construct(string $name, string $label, int $order, string $pattern = "") {
         $this->name = $name;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Database;
 
@@ -35,7 +36,7 @@ trait TreeTrait {
      */
     public function coverLevel($id): array {
         if (!$this->treeData) {
-            $tree = $this->tree();
+            $tree = self::tree();
             $this->treeData = $tree;
         } else {
             $tree = $this->treeData;

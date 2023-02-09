@@ -15,34 +15,34 @@ use Composer\Util\ProcessExecutor;
 
 class Plugin implements PluginInterface, EventSubscriberInterface {
 
-    protected $composer;
-    protected $io;
-    public function activate(Composer $composer, IOInterface $io)
+    protected Composer $composer;
+    protected IOInterface $io;
+    public function activate(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
     }
 
-    public function deactivate(Composer $composer, IOInterface $io)
+    public function deactivate(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
     }
 
-    public function uninstall(Composer $composer, IOInterface $io)
+    public function uninstall(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             PackageEvents::POST_PACKAGE_INSTALL => array(array('onPostPackageInstall', 0)),
         );
     }
 
-    public function onPostPackageInstall(PackageEvent $event)
+    public function onPostPackageInstall(PackageEvent $event): void
     {
         $package = $event->getOperation()->getPackage();
         $type = $package->getType();

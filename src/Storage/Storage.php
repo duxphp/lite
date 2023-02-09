@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Storage;
 
@@ -10,7 +11,7 @@ use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use Iidestiny\Flysystem\Oss\OssAdapter;
 
 class Storage {
-    static function init(string $type, array $config): Filesystem {
+    public static function init(string $type, array $config): Filesystem {
         switch ($type) {
             case "qiniu":
                 // https://github.com/overtrue/flysystem-qiniu

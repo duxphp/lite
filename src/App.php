@@ -31,22 +31,22 @@ use Phpfastcache\Helper\Psr16Adapter;
 use Symfony\Component\Console\Application;
 
 class App {
-    static string $basePath;
-    static string $configPath;
-    static string $dataPath;
-    static string $publicPath;
-    static string $appPath;
-    static Bootstrap $bootstrap;
-    static Container $di;
-    static array $config;
-    static array $registerApp = [];
+    public static string $basePath;
+    public static string $configPath;
+    public static string $dataPath;
+    public static string $publicPath;
+    public static string $appPath;
+    public static Bootstrap $bootstrap;
+    public static Container $di;
+    public static array $config;
+    public static array $registerApp = [];
 
     /**
      * create
      * @param $basePath
      * @return Bootstrap
      */
-    static function create($basePath): Bootstrap {
+    public static function create($basePath): Bootstrap {
         self::$basePath = $basePath;
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
@@ -69,7 +69,7 @@ class App {
         return $app;
     }
 
-    static function createCli($basePath): Bootstrap {
+    public static function createCli($basePath): Bootstrap {
         $app = self::create($basePath);
         $app->loadCommand();
         return $app;
@@ -78,7 +78,7 @@ class App {
     /**
      * @return SlimApp
      */
-    static function app(): SlimApp {
+    public static function app(): SlimApp {
         return self::$bootstrap->web;
     }
 
@@ -87,7 +87,7 @@ class App {
      * @param array $class
      * @return void
      */
-    static function registerApp(array $class): void {
+    public static function registerApp(array $class): void {
         foreach ($class as $vo) {
             if (!$vo instanceof AppExtend) {
                 throw new Exception("The application $vo could not be registered");
@@ -102,7 +102,7 @@ class App {
      * @param string $app
      * @return Config
      */
-    static function config(string $name): Config {
+    public static function config(string $name): Config {
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
@@ -116,7 +116,7 @@ class App {
      * @source PHPSocialNetwork/phpfastcache
      * @return Psr16Adapter
      */
-    static function cache(): Psr16Adapter {
+    public static function cache(): Psr16Adapter {
         return self::$bootstrap->cache;
     }
 
@@ -124,7 +124,7 @@ class App {
      * event
      * @return Event
      */
-    static function event(): Event {
+    public static function event(): Event {
         return self::$bootstrap->event;
     }
 
@@ -132,7 +132,7 @@ class App {
      * di
      * @return Container
      */
-    static function di(): Container {
+    public static function di(): Container {
         return self::$di;
     }
 
@@ -140,7 +140,7 @@ class App {
      * command
      * @return Application
      */
-    static function command(): Application {
+    public static function command(): Application {
         return self::$bootstrap->command;
     }
 
@@ -148,7 +148,7 @@ class App {
      * getDebug
      * @return bool
      */
-    static function getDebug(): bool {
+    public static function getDebug(): bool {
         return self::$bootstrap->debug;
     }
 
@@ -159,7 +159,7 @@ class App {
      * @param array $rules ["name", "rule", "message"]
      * @return Data
      */
-    static function validator(array $data, array $rules): Data {
+    public static function validator(array $data, array $rules): Data {
         return Validator::parser($data, $rules);
     }
 
@@ -168,7 +168,7 @@ class App {
      * @source illuminate/database
      * @return Manager
      */
-    static function db(): Manager {
+    public static function db(): Manager {
         if (!self::$di->has("db")) {
             self::$di->set(
                 "db",
@@ -182,7 +182,7 @@ class App {
      * dbMigrate
      * @return Migrate
      */
-    static function dbMigrate(): Migrate {
+    public static function dbMigrate(): Migrate {
         if (!self::$di->has("db.migrate")) {
             self::$di->set(
                 "db.migrate",
@@ -200,7 +200,7 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    static function log(string $app = "default"): Logger {
+    public static function log(string $app = "default"): Logger {
         if (!self::$di->has("logger." . $app)) {
             self::$di->set(
                 "logger." . $app,
@@ -217,7 +217,7 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    static function queue(string $type = ""): Queue {
+    public static function queue(string $type = ""): Queue {
         if (!$type) {
             $type = self::config("queue")->get("type");
         }
@@ -240,7 +240,7 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    static function view(string $name): Engine {
+    public static function view(string $name): Engine {
         if (!self::$di->has("view." . $name)) {
             self::$di->set(
                 "view." . $name,
@@ -255,7 +255,7 @@ class App {
      * @param string $type
      * @return Filesystem
      */
-    static function storage(string $type = ""): Filesystem {
+    public static function storage(string $type = ""): Filesystem {
         if (!$type) {
             $type = self::config("storage")->get("type");
         }
@@ -276,7 +276,7 @@ class App {
      * @param string $name
      * @return Menu\Menu
      */
-    static function menu(string $name): Menu\Menu {
+    public static function menu(string $name): Menu\Menu {
         return self::$bootstrap->getMenu()->get($name);
     }
 
@@ -285,7 +285,7 @@ class App {
      * @param string $name
      * @return Permission\Permission
      */
-    static function permission(string $name): Permission\Permission {
+    public static function permission(string $name): Permission\Permission {
         return self::$bootstrap->getPermission()->get($name);
     }
 
@@ -294,7 +294,7 @@ class App {
      * @param string $name
      * @return Redis
      */
-    static function redis($database = 0, string $name = "default"): Redis {
+    public static function redis($database = 0, string $name = "default"): Redis {
         if (!self::$di->has("redis." . $name)) {
             $config = self::config("database")->get("redis.drivers." . $name);
             $redis = (new \Dux\Database\Redis($config))->connect();
