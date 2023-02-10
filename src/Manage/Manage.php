@@ -9,28 +9,29 @@ use Dux\Validator\Validator;
 use \Illuminate\Database\Eloquent\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use \Illuminate\Database\Eloquent\Model;
 
 /**
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method listFormat(object $item): array
  * @method listAssign($query, $args): array
  * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): array
- * @method infoAssign(object $info): array
- * @method infoFormat(object $info): array
+ * @method infoAssign(Model $info): array
+ * @method infoFormat(Model $info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
  * @method saveFormat(Data $data, int $id): array
  * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
- * @method storeAfter(object $info, array $updateData, $data)
+ * @method storeAfter(Model $info, array $updateData, $data)
  * @method delWhere(Builder $query, array $args): Builder
- * @method delBefore(object $info, array $args)
- * @method delAfter(object $info, array $args)
+ * @method delBefore(Model $info, array $args)
+ * @method delAfter(Model $info, array $args)
  * @method trashedWhere(Builder $query, array $args): Builder
- * @method trashedBefore(object $info, array $args)
- * @method trashedAfter(object $info, array $args)
+ * @method trashedBefore(Model $info, array $args)
+ * @method trashedAfter(Model $info, array $args)
  * @method restoreWhere(Builder $query, array $args): Builder
- * @method restoreBefore(object $info, array $args)
- * @method restoreAfter(object $info, array $args)
+ * @method restoreBefore(Model $info, array $args)
+ * @method restoreAfter(Model $info, array $args)
  */
 class Manage {
 
