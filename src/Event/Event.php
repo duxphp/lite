@@ -27,7 +27,7 @@ class Event {
         $attributes = (array)App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
             if (
-                $attribute !== \Dux\Event\Attribute\Event::class
+                $attribute !== \Dux\Event\Attribute\Listener::class
             ) {
                 continue;
             }
