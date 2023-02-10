@@ -57,6 +57,7 @@ class ManageCommand extends Command {
         $namespace = $file->addNamespace("App\\$appName\\$layerName");
         $namespace->addUse(\Dux\Manage\Manage::class);
         $namespace->addUse(Data::class);
+        $namespace->addUse(\Illuminate\Database\Eloquent\Model::class);
         $class = $namespace->addClass($className);
         $class->addProperty("model", "")->setType("string")->setProtected();
         $class->addProperty("name", "业务名")->setType("string")->setProtected();
@@ -71,7 +72,7 @@ class ManageCommand extends Command {
 "info" => [
     "id" => $info->id,
 ]];')->setProtected();
-        $method->addParameter("info")->setType("object");
+        $method->addParameter("info")->setType(\Illuminate\Database\Eloquent\Model::class);
 
         $method = $class->addMethod("saveValidator")->setReturnType("array")->setBody('return [
     "name" => ["required", "请输入名称"],
