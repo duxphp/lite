@@ -41,7 +41,7 @@ class EventCommand extends Command {
             }
             $table
                 ->setHeaders([
-                    [new TableCell("{$name}", ['colspan' => 1])],
+                    [new TableCell((string)$name, ['colspan' => 1])],
                 ])
                 ->setRows($data);
             $table->render();
