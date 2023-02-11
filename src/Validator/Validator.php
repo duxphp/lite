@@ -9,7 +9,7 @@ use Dux\Handlers\ExceptionValidator;
 class Validator {
 
     /**
-     * parser
+     * 数据验证
      * @param array $data data array
      * @param array $rules ["name" => ["rule", "message"]]
      */
