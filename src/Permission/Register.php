@@ -14,13 +14,13 @@ class Register {
     public array $app = [];
 
     /**
-     * 设置菜单应用
+     * 设置权限应用
      * @param string $name
-     * @param Permission $route
+     * @param Permission $permission
      * @return void
      */
-    public function set(string $name, Permission $route): void {
-        $this->app[$name] = $route;
+    public function set(string $name, Permission $permission): void {
+        $this->app[$name] = $permission;
     }
 
     /**
