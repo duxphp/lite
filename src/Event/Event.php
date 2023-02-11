@@ -12,7 +12,7 @@ class Event extends EventDispatcher {
 
     public function addListener(string $eventName, callable|array $listener, int $priority = 0): void
     {
-        $this->registers[$eventName][] = is_callable($listener) ? 'callable': implode(':', $listener);
+        $this->registers[$eventName][] = !is_array($listener) ? 'callable': implode(':', [$listener[0]::class, $listener[1]]);
         parent::addListener($eventName, $listener, $priority);
     }
 
