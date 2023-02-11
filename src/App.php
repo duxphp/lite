@@ -154,7 +154,7 @@ class App {
 
     /**
      * validator
-     * @source nette/utils
+     * @source https://github.com/vlucas/valitron
      * @param array $data data array
      * @param array $rules ["name", "rule", "message"]
      * @return Data
