@@ -128,16 +128,6 @@ class App {
         return self::$bootstrap->event;
     }
 
-    public static function listener(): Logger {
-        if (!self::$di->has("dispatch")) {
-            self::$di->set(
-                "dispatch",
-                LogHandler::init($app, Level::Debug)
-            );
-        }
-        return self::$di->get("logger." . $app);
-    }
-
     /**
      * di
      * @return Container
