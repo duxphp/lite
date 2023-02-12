@@ -63,11 +63,6 @@ class AppInstallCommand extends Command {
                 $output->writeln("<info>  - Add $relativeDir </info>");
             }
         }
-        if ($app) {
-            $command = $this->getApplication()->find('db:sync');
-            $greetInput = new ArrayInput([]);
-            $command->run($greetInput, $output);
-        }
 
         $output->writeln("<info>successfully installing the application</info>");
         return Command::SUCCESS;
