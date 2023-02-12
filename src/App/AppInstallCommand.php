@@ -12,13 +12,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppInstallCommand extends Command {
+class AppInstallCommand extends Command
+{
 
     protected static $defaultName = 'app:install';
     protected static $defaultDescription = 'install applications in the system';
 
 
-    protected function configure(): void {
+    protected function configure(): void
+    {
         $this->addArgument(
             'name',
             InputArgument::REQUIRED,
@@ -26,7 +28,8 @@ class AppInstallCommand extends Command {
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int {
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
         $name = $input->getArgument('name');
         $dir = base_path("vendor/$name");
         if (!is_dir($dir)) {
@@ -41,18 +44,13 @@ class AppInstallCommand extends Command {
         $duxExtra = $extra['dux'] ?: [];
 
         $app = false;
-        foreach ($duxExtra as $target => $source) {
-            if ($target == 'app') {
-                $app = true;
-            }
-            if (is_array($source)) {
-                $ignore = $source['ignore'];
-                $sourceDir = $source['dir'];
-            }else {
-                $ignore = false;
-                $sourceDir = $source;
-            }
-            $list = glob("$dir/$sourceDir/*");
+        foreach ($duxExtra as $item) {
+
+            $target = $item['target'];
+            $source = $item['source'];
+            $ignore = (bool)$item['ignore'];
+
+            $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
@@ -68,7 +66,8 @@ class AppInstallCommand extends Command {
         return Command::SUCCESS;
     }
 
-    public function error(OutputInterface $output, string $message): int {
+    public function error(OutputInterface $output, string $message): int
+    {
         $output->writeln("<error>$message</error>");
         return Command::FAILURE;
     }
