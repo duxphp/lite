@@ -32,9 +32,10 @@ class AuthMiddleware {
                     throw new \Dux\Handlers\ExceptionBusiness("Authorization app error", 401);
                 }
                 $renewalTime = $token["iat"] + $renewal;
+                $expire =  $token["exp"] - $token["iat"];
                 $time = time();
                 if ($renewalTime <= $time) {
-                    $token["exp"] = $time + ($token["exp"] - $token["iat"]);
+                    $token["exp"] = $time + $expire;
                     $auth = JWT::encode($token, $secret);
                     return $response->withHeader("Authorization", "Bearer $auth");
                 }
