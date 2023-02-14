@@ -12,7 +12,7 @@ use Slim\Routing\RouteContext;
 
 class Auth {
 
-    static public function token(string $app, $params = [], int $expire = 86400): string {
+    public static function token(string $app, $params = [], int $expire = 86400): string {
         $time = time();
         $payload = [
             'sub' => $app,

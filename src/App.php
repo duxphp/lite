@@ -128,16 +128,6 @@ class App {
         return self::$bootstrap->event;
     }
 
-    public static function listener(): Logger {
-        if (!self::$di->has("dispatch")) {
-            self::$di->set(
-                "dispatch",
-                LogHandler::init($app, Level::Debug)
-            );
-        }
-        return self::$di->get("logger." . $app);
-    }
-
     /**
      * di
      * @return Container
@@ -164,7 +154,7 @@ class App {
 
     /**
      * validator
-     * @source nette/utils
+     * @source https://github.com/vlucas/valitron
      * @param array $data data array
      * @param array $rules ["name", "rule", "message"]
      * @return Data

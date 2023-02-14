@@ -11,7 +11,13 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class Excel
 {
 
-    public static function import($url, $start = 1): ?array
+    /**
+     * 导入表格
+     * @param string $url
+     * @param int $start
+     * @return array|null
+     */
+    public static function import(string $url, int $start = 1): ?array
     {
         $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
         $extArr = ['xlsx', 'xls', 'csv'];
@@ -60,7 +66,14 @@ class Excel
         }
     }
 
-    public static function export($title, $subtitle, $label, $data)
+    /**
+     * 表格导出
+     * @param string $title
+     * @param string $subtitle
+     * @param array $label
+     * @param array $data
+     */
+    public static function export(string $title, string $subtitle, array $label, array $data)
     {
         $count = count($label);
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
