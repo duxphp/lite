@@ -34,7 +34,7 @@ class AuthMiddleware {
                 $renewalTime = $token["iat"] + $renewal;
                 $time = time();
                 if ($renewalTime <= $time) {
-                    $token["exp"] = $time + $token["exp"];
+                    $token["exp"] = $time + ($token["exp"] - $token["iat"]);
                     $auth = JWT::encode($token, $secret);
                     return $response->withHeader("Authorization", "Bearer $auth");
                 }
