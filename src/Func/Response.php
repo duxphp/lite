@@ -45,8 +45,8 @@ function format_data(Collection|LengthAwarePaginator|Model $data, callable $call
     $total = 0;
     if ($data instanceof LengthAwarePaginator) {
         $pageStatus = true;
-        $data->currentPage();
-        $data->total();
+        $page = $data->currentPage();
+        $total = $data->total();
         $data = $data->getCollection();
     }
 

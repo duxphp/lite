@@ -23,6 +23,7 @@ use DI\Container;
 use Dux\Server\SwowCommand;
 use Dux\Server\WorkermanCommand;
 use Dux\View\View;
+use Illuminate\Pagination\Paginator;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
@@ -34,7 +35,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpNotFoundException;
 
-class Bootstrap {
+class Bootstrap
+{
 
     public bool $debug = true;
     public ?slimApp $web = null;
@@ -55,11 +57,13 @@ class Bootstrap {
     /**
      * init
      */
-    public function __construct() {
+    public function __construct()
+    {
         error_reporting(E_ALL ^ E_DEPRECATED ^ E_WARNING);
     }
 
-    public function loadFunc() {
+    public function loadFunc()
+    {
         require_once "Func/Response.php";
         require_once "Func/Common.php";
     }
@@ -68,7 +72,8 @@ class Bootstrap {
      * loadWeb
      * @return void
      */
-    public function loadWeb(Container $di): void {
+    public function loadWeb(Container $di): void
+    {
         AppFactory::setContainer($di);
         $this->di = $di;
         $this->web = AppFactory::create();
@@ -83,7 +88,8 @@ class Bootstrap {
      * loadConfig
      * @return void
      */
-    public function loadConfig(): void {
+    public function loadConfig(): void
+    {
         $this->debug = (bool)App::config("app")->get("app.debug");
         $this->exceptionTitle = App::config("app")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("app")->get("exception.desc", $this->exceptionDesc);
@@ -103,7 +109,8 @@ class Bootstrap {
      * loadCache
      * @return void
      */
-    public function loadCache(): void {
+    public function loadCache(): void
+    {
         $type = App::config("cache")->get("type");
         $this->cache = Cache::init($type, (array)App::config("cache")->get("drivers." . $type));
     }
@@ -112,7 +119,8 @@ class Bootstrap {
      * loadCommand
      * @return void
      */
-    public function loadCommand(): void {
+    public function loadCommand(): void
+    {
         $commands = App::config("command")->get("registers", []);
         $commands[] = QueueCommand::class;
         $commands[] = RouteCommand::class;
@@ -139,14 +147,17 @@ class Bootstrap {
      * loadView
      * @return void
      */
-    public function loadView() {
+    public function loadView()
+    {
         $this->view = View::init("app");
     }
+
     /**
      * loadRoute
      * @return void
      */
-    public function loadRoute(): void {
+    public function loadRoute(): void
+    {
 
         // 注册公共头
         if (!in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
@@ -176,6 +187,14 @@ class Bootstrap {
         });
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $this->di->set(Request::class, $request);
+            $params = $request->getQueryParams();
+            Paginator::currentPageResolver(static function ($pageName = 'page') use ($params) {
+                $page = $params[$pageName];
+                if ((int)$page >= 1) {
+                    return $page;
+                }
+                return 1;
+            });
             $response = $handler->handle($request);
             return $response->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', '*')
@@ -186,11 +205,13 @@ class Bootstrap {
 
     }
 
-    public function loadEvent(): void {
+    public function loadEvent(): void
+    {
         $this->event = new Event();
     }
 
-    public function loadDb(): void {
+    public function loadDb(): void
+    {
         App::db();
     }
 
@@ -198,7 +219,8 @@ class Bootstrap {
      * 载入应用
      * @return void
      */
-    public function loadApp(): void {
+    public function loadApp(): void
+    {
 
         $appList = App::config("app")->get("registers", []);
         foreach ($appList as $vo) {
@@ -236,7 +258,8 @@ class Bootstrap {
         }
     }
 
-    public function run(): void {
+    public function run(): void
+    {
         if ($this->command) {
             $this->command->run();
         } else {
@@ -244,22 +267,26 @@ class Bootstrap {
         }
     }
 
-    public function getEvent(): Event {
+    public function getEvent(): Event
+    {
         return $this->event;
     }
 
-    public function getRoute(): Route\Register {
+    public function getRoute(): Route\Register
+    {
         return $this->route;
     }
 
-    public function getMenu(): Menu\Register {
+    public function getMenu(): Menu\Register
+    {
         if (!$this->menu) {
             $this->menu = new \Dux\Menu\Register();
         }
         return $this->menu;
     }
 
-    public function getPermission(): Permission\Register {
+    public function getPermission(): Permission\Register
+    {
         if (!$this->permission) {
             $this->permission = new \Dux\Permission\Register();
         }
