@@ -25,7 +25,8 @@ class Migrate {
     }
 
     private function migrateTable(Model $model): void {
-        $pre = App::db()->connection()->getTablePrefix();
+        $connect = App::db()->connection();
+        $pre = $connect->getTablePrefix();
         $modelTable = $model->getTable();
         $tempTable = 'table_' . $modelTable;
         $tableExists = App::db()->schema()->hasTable($modelTable);
@@ -34,8 +35,11 @@ class Migrate {
             $model->migration($table);
         });
         if (!$tableExists) {
+            // 更新表数据
+            $model->seed($connect);
             return;
         }
+        // 更新表字段
         $manager = $model->getConnection()->getDoctrineSchemaManager();
         $modelTableDetails = $manager->introspectTable($pre.$modelTable);
         $tempTableDetails = $manager->introspectTable($pre.$tempTable);

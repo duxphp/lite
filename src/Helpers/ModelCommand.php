@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Helpers;
 
 use Dux\App;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
@@ -52,6 +53,8 @@ class ModelCommand extends Command {
         $file->setStrictTypes();
         $namespace = $file->addNamespace("App\\$name\\Models");
         $namespace->addUse(\Dux\Database\Attribute\AutoMigrate::class);
+        $namespace->addUse(\Illuminate\Database\Schema\Blueprint::class);
+        $namespace->addUse(Connection::class);
         $class = $namespace->addClass($modelName);
         $class->addAttribute(\Dux\Database\Attribute\AutoMigrate::class);
         $class->setExtends(\Dux\Database\Model::class);
@@ -61,6 +64,10 @@ class ModelCommand extends Command {
             '$table->timestamps();',
         ]));
         $method->addParameter("table")->setType(Blueprint::class);
+
+        $method = $class->addMethod("seed");
+        $method->addParameter("db")->setType(Connection::class);
+
         FileSystem::write("$modelDir/$modelName.php", (string) $file);
 
         $output->writeln("<info>Generate model successfully</info>");
