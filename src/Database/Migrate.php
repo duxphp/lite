@@ -30,7 +30,6 @@ class Migrate
         }
 
         foreach ($seeds as $seed) {
-            // 更新表数据
             $seed->seed($connect);
         }
 
