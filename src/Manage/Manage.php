@@ -16,7 +16,7 @@ use \Illuminate\Support\Collection;
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method listFormat(object $item): array
  * @method listAssign($query, $args): array
- * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): array
+ * @method infoWhere($query, array $args, ServerRequestInterface $request): array
  * @method infoAssign($info): array
  * @method infoFormat($info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
@@ -56,6 +56,9 @@ class Manage {
         $limit = $queryParams["limit"] ?: $this->listLimit;
         $treeStatus = $this->tree;
         $pageStatus = $this->listPage;
+        /**
+         * @var $query Builder
+         */
         $query = $this->model::query();
         if ($this->listFields) {
             $query = $query->select($this->listFields);
@@ -99,7 +102,7 @@ class Manage {
         $info = collect();
         if ($id) {
             /**
-             * @var $query \Illuminate\Database\Eloquent\Model|object|static|null
+             * @var $query Builder
              */
             $query = $this->model::query();
             if (method_exists($this, "infoWhere")) {
