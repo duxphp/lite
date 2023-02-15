@@ -28,6 +28,7 @@ use Phpfastcache\Helper\Psr16Adapter;
 use Slim\App as slimApp;
 use Slim\Factory\AppFactory;
 use Dux\Handlers\ErrorHandler;
+use Slim\Psr7\Request;
 use \Symfony\Component\Console\Application;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -49,6 +50,7 @@ class Bootstrap {
     public Route\Register $route;
     public ?Menu\Register $menu = null;
     public ?Permission\Register $permission = null;
+    private Container $di;
 
     /**
      * init
@@ -68,6 +70,7 @@ class Bootstrap {
      */
     public function loadWeb(Container $di): void {
         AppFactory::setContainer($di);
+        $this->di = $di;
         $this->web = AppFactory::create();
         $this->route = new \Dux\Route\Register();
     }
@@ -172,6 +175,7 @@ class Bootstrap {
             return $response;
         });
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $this->di->set(Request::class, $request);
             $response = $handler->handle($request);
             return $response->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', '*')
