@@ -5,27 +5,39 @@ namespace Dux\Database;
 
 use Dux\App;
 use Dux\Database\Attribute\AutoMigrate;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Doctrine\DBAL\Schema\Comparator;
 
-class Migrate {
+class Migrate
+{
     public array $migrate = [];
 
-    public function register(string ...$model): void {
+    public function register(string ...$model): void
+    {
         $this->migrate = [...$this->migrate, ...$model];
     }
 
-    public function migrate(): void {
+    public function migrate(): void
+    {
+        $seeds = [];
+        $connect = App::db()->connection();
         foreach ($this->migrate as $model) {
             if (!method_exists($model, 'migration')) {
                 continue;
             }
-            $this->migrateTable(new $model);
+            $this->migrateTable($connect, new $model, $seeds);
         }
+
+        foreach ($seeds as $seed) {
+            // 更新表数据
+            $seed->seed($connect);
+        }
+
     }
 
-    private function migrateTable(Model $model): void {
-        $connect = App::db()->connection();
+    private function migrateTable(Connection $connect, Model $model, &$seed): void
+    {
         $pre = $connect->getTablePrefix();
         $modelTable = $model->getTable();
         $tempTable = 'table_' . $modelTable;
@@ -35,16 +47,17 @@ class Migrate {
             $model->migration($table);
         });
         if (!$tableExists) {
-            // 更新表数据
-            $model->seed($connect);
+            if (method_exists($model, 'seed')) {
+                $seed[] = $model;
+            }
             return;
         }
         // 更新表字段
         $manager = $model->getConnection()->getDoctrineSchemaManager();
-        $modelTableDetails = $manager->introspectTable($pre.$modelTable);
-        $tempTableDetails = $manager->introspectTable($pre.$tempTable);
+        $modelTableDetails = $manager->introspectTable($pre . $modelTable);
+        $tempTableDetails = $manager->introspectTable($pre . $tempTable);
         foreach ($tempTableDetails->getIndexes() as $indexName => $indexInfo) {
-            $correctIndexName = str_replace('table_','',$indexName);
+            $correctIndexName = str_replace('table_', '', $indexName);
             $tempTableDetails->renameIndex($indexName, $correctIndexName);
         }
         $diff = (new Comparator)->compareTables($modelTableDetails, $tempTableDetails);
@@ -56,7 +69,8 @@ class Migrate {
 
 
     // 注册迁移模型
-    public function registerAttribute(): void {
+    public function registerAttribute(): void
+    {
         $attributes = (array)App::di()->get("attributes");
         foreach ($attributes as $attribute => $list) {
             if (
