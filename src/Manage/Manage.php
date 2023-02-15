@@ -10,28 +10,29 @@ use \Illuminate\Database\Eloquent\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use \Illuminate\Database\Eloquent\Model;
+use \Illuminate\Support\Collection;
 
 /**
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method listFormat(object $item): array
  * @method listAssign($query, $args): array
  * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): array
- * @method infoAssign(Model $info): array
- * @method infoFormat(Model $info): array
+ * @method infoAssign($info): array
+ * @method infoFormat($info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
  * @method saveFormat(Data $data, int $id): array
  * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
- * @method storeAfter(Model $info, array $updateData, $data)
+ * @method storeAfter($info, array $updateData, $data)
  * @method delWhere(Builder $query, array $args): Builder
- * @method delBefore(Model $info, array $args)
- * @method delAfter(Model $info, array $args)
+ * @method delBefore($info, array $args)
+ * @method delAfter($info, array $args)
  * @method trashedWhere(Builder $query, array $args): Builder
- * @method trashedBefore(Model $info, array $args)
- * @method trashedAfter(Model $info, array $args)
+ * @method trashedBefore($info, array $args)
+ * @method trashedAfter($info, array $args)
  * @method restoreWhere(Builder $query, array $args): Builder
- * @method restoreBefore(Model $info, array $args)
- * @method restoreAfter(Model $info, array $args)
+ * @method restoreBefore($info, array $args)
+ * @method restoreAfter($info, array $args)
  */
 class Manage {
 
@@ -97,6 +98,9 @@ class Manage {
         $id = $args["id"] ?: 0;
         $info = collect();
         if ($id) {
+            /**
+             * @var $query \Illuminate\Database\Eloquent\Model|object|static|null
+             */
             $query = $this->model::query();
             if (method_exists($this, "infoWhere")) {
                 $info = $this->infoWhere($query, $args, $request)->first();
