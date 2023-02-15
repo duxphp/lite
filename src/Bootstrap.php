@@ -186,7 +186,6 @@ class Bootstrap
             return $response;
         });
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-            $this->di->set(Request::class, $request);
             $params = $request->getQueryParams();
             Paginator::currentPageResolver(static function ($pageName = 'page') use ($params) {
                 $page = $params[$pageName];
