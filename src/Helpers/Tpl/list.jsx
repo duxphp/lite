@@ -1,5 +1,5 @@
 import React, {useRef, useMemo} from 'react'
-import {LinkConfirm, LinkModal, PageTable, UrlSwitch} from '@/duxweb'
+import {LinkConfirm, LinkModal, PageTable, UrlSwitch} from 'duxweb'
 import {IconPlus} from '@arco-design/web-react/icon';
 
 export default function Table() {

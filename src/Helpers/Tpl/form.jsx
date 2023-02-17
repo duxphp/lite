@@ -1,5 +1,5 @@
 import React from 'react'
-import {useRouter, ModalForm} from '@/duxweb'
+import {useRouter, ModalForm} from 'duxweb'
 import {Input, Form as ArcoForm} from '@arco-design/web-react'
 
 export default function Form() {
