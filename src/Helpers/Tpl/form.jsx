@@ -9,7 +9,7 @@ export default function Form() {
     <ModalForm url={`{{routeUrl}}/${params.id || 0}`}>
       {({ data }) => (
         <>
-          <ArcoForm.Item label='名称' field='name' rules={[{required: true}]}>
+          <ArcoForm.Item label='名称' field='name' required>
             <Input placeholder='请输入名称'/>
           </ArcoForm.Item>
         </>
