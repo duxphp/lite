@@ -20,7 +20,7 @@ use \Illuminate\Support\Collection;
  * @method infoAssign($info): array
  * @method infoFormat($info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
- * @method saveFormat(Data $data, int $id): array
+ * @method saveFormat(Data $data, int $id, ServerRequestInterface $request): array
  * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
  * @method storeAfter($info, array $updateData, $data)
@@ -151,7 +151,7 @@ class Manage {
         }
 
         if (method_exists($this, "saveFormat")) {
-            $modelData = $this->saveFormat($data, $id);
+            $modelData = $this->saveFormat($data, $id, $request);
         } else {
             $modelData = (array)$data;
         }
