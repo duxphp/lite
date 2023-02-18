@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eda806700fd21381b1be01fc1d2c84a0",
+    "content-hash": "b3b80fec7610017d4b7cd064fee3fb4d",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -9375,7 +9375,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-pcntl": "*",
         "ext-json": "*",
         "ext-bcmath": "*",

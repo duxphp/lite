@@ -171,9 +171,13 @@ class Manage {
         foreach ($modelData as $key => $vo) {
             $model->$key = $vo;
         }
+
+        if (method_exists($this, "saveBefore")) {
+            $this->saveBefore($data, $model, $id);
+        }
         $model->save();
         if (method_exists($this, "saveAfter")) {
-            $this->saveAfter($data, $model);
+            $this->saveAfter($data, $model, $id);
         }
         App::db()->getConnection()->commit();
         return send($response, ($id ? "编辑" : "添加") . "{$name}成功");
