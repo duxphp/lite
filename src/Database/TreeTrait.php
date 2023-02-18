@@ -6,7 +6,7 @@ namespace Dux\Database;
 trait TreeTrait {
     public static function tree(): \BlueM\Tree {
         $data = self::query()->get();
-        return new \BlueM\Tree($data->toArray(), ['rootId' => 0, 'id' => 'id', 'parent' => 'parent_id']);
+        return new \BlueM\Tree($data->toArray(), ['rootId' => 0, 'id' => self::$treeKey ?: 'id', 'parent' => 'parent_id']);
     }
 
     public static function childrenAll(int $parentId = 0) {
@@ -23,7 +23,7 @@ trait TreeTrait {
         if (isset($this->treeFields)) {
             $fields = $this->treeFields;
         }
-        return $this->hasMany(get_class($this), 'parent_id' ,'id')->select($fields)->with(['children']);
+        return $this->hasMany(get_class($this), 'parent_id', $this->treeKey ?: 'id')->select($fields)->with(['children']);
     }
 
 
@@ -43,6 +43,6 @@ trait TreeTrait {
         }
         $node = $tree->getNodeById($id);
         $ancestorsPlusSelf = $node->getAncestorsAndSelf();
-        return array_reverse(array_column($ancestorsPlusSelf, "id"));
+        return array_reverse(array_column($ancestorsPlusSelf, $this->treeKey ?: "id"));
     }
 }
