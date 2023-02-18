@@ -52,7 +52,8 @@
     "enqueue/enqueue": "^0.10.16",
     "phpoffice/phpspreadsheet": "^1.26",
     "godruoyi/php-snowflake": "^2.2",
-    "symfony/event-dispatcher": "^6.2"
+    "symfony/event-dispatcher": "^6.2",
+    "kalnoy/nestedset": "^6.0"
   },
   "require-dev": {
     "composer/composer": "^2.0",
