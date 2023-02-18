@@ -60,12 +60,19 @@ class Manage {
          * @var $query Builder
          */
         $query = $this->model::query();
+
+        $key = $queryParams['id'];
+        if ($key) {
+            $query->where('id', $key);
+        }
+
         if ($this->listFields) {
             $query = $query->select($this->listFields);
         }
         if ($treeStatus) {
             $query = $query->where("parent_id", 0)->with(['children']);
         }
+
         if (method_exists($this, "listWhere")) {
             $query = $this->listWhere($query, $args, $request);
         }
