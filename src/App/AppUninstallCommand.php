@@ -40,13 +40,10 @@ class AppUninstallCommand extends Command {
         $extra = $config['extra'];
         $duxExtra = $extra['dux'] ?: [];
 
-        foreach ($duxExtra as $target => $source) {
-            if (is_array($source)) {
-                $sourceDir = $source['dir'];
-            }else {
-                $sourceDir = $source;
-            }
-            $list = glob("$dir/$sourceDir/*");
+        foreach ($duxExtra as $item) {
+            $target = $item['target'];
+            $source = $item['source'];
+            $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
