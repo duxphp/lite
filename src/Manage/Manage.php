@@ -60,12 +60,19 @@ class Manage {
          * @var $query Builder
          */
         $query = $this->model::query();
+
+        $key = $queryParams['id'];
+        if ($key) {
+            $query->where('id', $key);
+        }
+
         if ($this->listFields) {
             $query = $query->select($this->listFields);
         }
         if ($treeStatus) {
             $query = $query->where("parent_id", 0)->with(['children']);
         }
+
         if (method_exists($this, "listWhere")) {
             $query = $this->listWhere($query, $args, $request);
         }
@@ -164,9 +171,13 @@ class Manage {
         foreach ($modelData as $key => $vo) {
             $model->$key = $vo;
         }
+
+        if (method_exists($this, "saveBefore")) {
+            $this->saveBefore($data, $model, $id);
+        }
         $model->save();
         if (method_exists($this, "saveAfter")) {
-            $this->saveAfter($data, $model);
+            $this->saveAfter($data, $model, $id);
         }
         App::db()->getConnection()->commit();
         return send($response, ($id ? "编辑" : "添加") . "{$name}成功");

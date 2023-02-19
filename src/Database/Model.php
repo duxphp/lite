@@ -12,12 +12,6 @@ class Model extends \Illuminate\Database\Eloquent\Model
 {
     protected $fillable = [];
     protected $guarded = [];
-    protected array $schema = [];
-
-    public function getSchema(): array
-    {
-        return $this->schema;
-    }
 
     public function migration(Blueprint $table)
     {
