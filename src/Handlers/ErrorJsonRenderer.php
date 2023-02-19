@@ -44,6 +44,7 @@ class ErrorJsonRenderer extends JsonErrorRenderer
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
+            'trace' => $exception->getTrace(),
         ];
     }
 }
