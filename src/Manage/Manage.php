@@ -69,17 +69,14 @@ class Manage {
         if ($this->listFields) {
             $query = $query->select($this->listFields);
         }
-        if ($treeStatus) {
-            $query = $query->where("parent_id", 0)->with(['children']);
-        }
 
         if (method_exists($this, "listWhere")) {
             $query = $this->listWhere($query, $args, $request);
         }
-        if ($pageStatus) {
+        if ($pageStatus && !$treeStatus) {
             $query = $query->paginate($limit);
         } else {
-            $query = $query->get();
+            $query = $query->get()->toTree();
         }
         $assign = [];
         if (method_exists($this, "listFormat")) {
@@ -140,22 +137,8 @@ class Manage {
     public function save(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $id = $args["id"] ?: 0;
         $name = $this->name;
-        $treeStatus = $this->tree;
         $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args, $request) : []);
         App::db()->getConnection()->beginTransaction();
-
-        if ($id && $treeStatus) {
-            $parentId = last($data->parent);
-            if ($data->id == $parentId) {
-                throw new ExceptionBusiness("当前分类不能成为上级分类");
-            }
-            $tree = $this->model::tree();
-            $node = $tree->getNodeById($id);
-            $descendants = array_column($node->getDescendants(), "id");
-            if ($parentId && in_array($parentId, $descendants)) {
-                throw new ExceptionBusiness("上级节点不能为子节点");
-            }
-        }
 
         if (method_exists($this, "saveFormat")) {
             $modelData = $this->saveFormat($data, $id, $request);
