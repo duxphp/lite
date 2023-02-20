@@ -26,24 +26,23 @@ class WorkermanCommand extends Command {
 
 
     protected function configure(): void {
-        $this->addArgument(
-            'action',
-            InputArgument::OPTIONAL,
-            'Please enter the service operation'
-        );
-        $this->addOption(
-            'port',
-            null,
-            InputOption::VALUE_REQUIRED,
-            'set the service port number'
-        );
+        $this->setName('web')
+            ->addArgument(
+                'args',
+                InputArgument::IS_ARRAY
+            )->addOption(
+                'daemon',
+                'd',
+                InputOption::VALUE_OPTIONAL
+            );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $port = $input->getOption("port") ?: 8080;
+        $port = App::config('service')->get('port', 8080);
         $http = new Worker("http://0.0.0.0:$port");
-        $http->onWorkerStart = function () {
-            echo 'Workerman http server is started at http://0.0.0.0:8080'.PHP_EOL;
+        $http->count = 4;
+        $http->onWorkerStart = function () use ($output) {
+            $output->writeln('<info>DuxLite Web Service Start</info>');
         };
         $http->onMessage = new OnMessage(
             new PsrRequestFactory(
