@@ -5,6 +5,7 @@ namespace Dux\App;
 
 use Dux\App;
 use Nette\Utils\FileSystem;
+use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -40,17 +41,36 @@ class AppUninstallCommand extends Command {
         $extra = $config['extra'];
         $duxExtra = $extra['dux'] ?: [];
 
+        $apps = [];
         foreach ($duxExtra as $item) {
             $target = $item['target'];
             $source = $item['source'];
             $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
+                $apps[] = basename($vo);
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
                 FileSystem::delete($targetDir);
                 $output->writeln("<error>  - Delete $relativeDir </error>");
             }
         }
+
+        // config
+        $configFile = App::$configPath . "/app.yaml";
+        $conf = Config::load($configFile);
+        $registers = $conf->get("registers", []);
+
+        foreach ($registers as $key => $vo) {
+            $params = explode('\\', $vo);
+            $app = $params[1];
+            if (!in_array($app, $apps)) {
+                continue;
+            }
+            unset($registers[$key]);
+        }
+
+        $conf->set("registers", array_values($registers));
+        $conf->toFile($configFile);
 
         $output->writeln("<info>successfully uninstalling the application</info>");
         return Command::SUCCESS;

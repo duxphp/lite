@@ -5,6 +5,7 @@ namespace Dux\App;
 
 use Dux\App;
 use Nette\Utils\FileSystem;
+use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -43,7 +44,7 @@ class AppInstallCommand extends Command
         $extra = $config['extra'];
         $duxExtra = $extra['dux'] ?: [];
 
-        $app = false;
+        $apps = [];
         foreach ($duxExtra as $item) {
 
             $target = $item['target'];
@@ -52,6 +53,7 @@ class AppInstallCommand extends Command
 
             $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
+                $apps[] = basename($vo);
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = base_path($relativeDir);
                 if ($ignore && (is_dir($targetDir) || is_file($targetDir))) {
@@ -61,6 +63,20 @@ class AppInstallCommand extends Command
                 $output->writeln("<info>  - Add $relativeDir </info>");
             }
         }
+
+        // config
+        $configFile = App::$configPath . "/app.yaml";
+        $conf = Config::load($configFile);
+        $registers = $conf->get("registers", []);
+        foreach ($apps as $app) {
+            $name = "\\App\\$app\\App";
+            if (in_array($name, $registers)) {
+                continue;
+            }
+            $registers[] = $name;
+        }
+        $conf->set("registers", $registers);
+        $conf->toFile($configFile);
 
         $output->writeln("<info>successfully installing the application</info>");
         return Command::SUCCESS;
