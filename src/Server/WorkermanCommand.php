@@ -19,7 +19,6 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Factory\UploadedFileFactory;
 use Workerman\Worker;
-use Workerman\Timer;
 
 class WorkermanCommand extends Command {
 
@@ -40,22 +39,14 @@ class WorkermanCommand extends Command {
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $port = App::config('service')->get('port', 8080);
+        $port = App::config('service')->get('http.port', 8080);
+        $count = App::config('service')->get('http.count', 1);
         $http = new Worker("http://0.0.0.0:$port");
-        $http->count = 4;
+        $http->count = $count;
         $http->onWorkerStart = function () use ($output) {
             $output->writeln('<info>DuxLite Web Service Start</info>');
-
-            // Db Heartbeat
-            Timer::add(55, function () {
-                foreach (App::db()->getDatabaseManager()->getConnections() as $connection) {
-                    if ($connection->getConfig('driver') == 'mysql') {
-                        try {
-                            $connection->select('select 1');
-                        } catch (Throwable $e) {}
-                    }
-                }
-            });
+            App::$server = ServerEnum::WORKERMAN;
+            App::event()->dispatch(new ServerEvent(ServerEnum::WORKERMAN), 'server.start');
         };
         $http->onMessage = new OnMessage(
             new PsrRequestFactory(

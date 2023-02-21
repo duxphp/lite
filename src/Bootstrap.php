@@ -8,6 +8,7 @@ use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Config\Config;
+use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
 use Dux\Event\Event;
@@ -207,6 +208,9 @@ class Bootstrap
     public function loadEvent(): void
     {
         $this->event = new Event();
+
+        // 注册服务事件
+        $this->event->addListener('server.start', [new DbListener(), 'start']);
     }
 
     public function loadDb(): void
