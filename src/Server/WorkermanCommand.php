@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 
 use Chubbyphp\WorkermanRequestHandler\OnMessage;
@@ -18,6 +19,7 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Factory\UploadedFileFactory;
 use Workerman\Worker;
+use Workerman\Timer;
 
 class WorkermanCommand extends Command {
 
@@ -43,6 +45,17 @@ class WorkermanCommand extends Command {
         $http->count = 4;
         $http->onWorkerStart = function () use ($output) {
             $output->writeln('<info>DuxLite Web Service Start</info>');
+
+            // Db Heartbeat
+            Timer::add(55, function () {
+                foreach (App::db()->getDatabaseManager()->getConnections() as $connection) {
+                    if ($connection->getConfig('driver') == 'mysql') {
+                        try {
+                            $connection->select('select 1');
+                        } catch (Throwable $e) {}
+                    }
+                }
+            });
         };
         $http->onMessage = new OnMessage(
             new PsrRequestFactory(
