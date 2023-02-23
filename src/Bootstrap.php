@@ -24,6 +24,7 @@ use DI\Container;
 use Dux\Server\SwowCommand;
 use Dux\Server\WorkermanCommand;
 use Dux\View\View;
+use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
@@ -138,6 +139,7 @@ class Bootstrap
         $commands[] = ListCommand::class;
         $commands[] = WorkermanCommand::class;
         $commands[] = SwowCommand::class;
+        $commands[] = WebsocketCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
