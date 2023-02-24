@@ -19,7 +19,7 @@ class MigrateCommand extends Command {
     protected static $defaultDescription = 'Synchronize model data tables and fields';
 
     public function execute(InputInterface $input, OutputInterface $output): int {
-        App::dbMigrate()->migrate();
+        App::dbMigrate()->migrate($output);
         $output->writeln("<info>Sync database successfully</info>");
         return Command::SUCCESS;
     }

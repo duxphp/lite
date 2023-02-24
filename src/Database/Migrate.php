@@ -8,6 +8,7 @@ use Dux\Database\Attribute\AutoMigrate;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Doctrine\DBAL\Schema\Comparator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Migrate
 {
@@ -18,7 +19,7 @@ class Migrate
         $this->migrate = [...$this->migrate, ...$model];
     }
 
-    public function migrate(): void
+    public function migrate(OutputInterface $output): void
     {
         $seeds = [];
         $connect = App::db()->connection();
@@ -27,6 +28,8 @@ class Migrate
                 continue;
             }
             $this->migrateTable($connect, new $model, $seeds);
+            $name = $model::class;
+            $output->writeln("<info>sync model $name</info>");
         }
 
         foreach ($seeds as $seed) {
