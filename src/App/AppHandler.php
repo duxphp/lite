@@ -46,7 +46,7 @@ class AppHandler
         }
 
         // config
-        $configFile = App::$configPath . "/app.yaml";
+        $configFile = "./config/app.yaml";
         $conf = Config::load($configFile);
         $registers = $conf->get("registers", []);
         foreach ($apps as $app) {
@@ -89,7 +89,7 @@ class AppHandler
         }
 
         // config
-        $configFile = App::$configPath . "/app.yaml";
+        $configFile = "./config/app.yaml";
         $conf = Config::load($configFile);
         $registers = $conf->get("registers", []);
 
