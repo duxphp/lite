@@ -12,7 +12,7 @@ class AppHandler
 
     public static function install(string $name): void
     {
-        $dir = base_path("vendor/$name");
+        $dir = "./vendor/$name";
         if (!is_dir($dir)) {
             throw new \ErrorException('The application already exists');
         }
@@ -36,7 +36,7 @@ class AppHandler
             foreach ($list as $vo) {
                 $apps[] = basename($vo);
                 $relativeDir = $target . "/" . basename($vo);
-                $targetDir = base_path($relativeDir);
+                $targetDir = "./$relativeDir";
                 if ($ignore && (is_dir($targetDir) || is_file($targetDir))) {
                     continue;
                 }
@@ -62,7 +62,7 @@ class AppHandler
 
     public static function uninstall(string $name): void
     {
-        $dir = base_path("vendor/$name");
+        $dir = "./vendor/$name";
         if (!is_dir($dir)) {
             throw new \ErrorException('The application already exists');
         }
@@ -82,7 +82,7 @@ class AppHandler
             foreach ($list as $vo) {
                 $apps[] = basename($vo);
                 $relativeDir = $target . "/" . basename($vo);
-                $targetDir = base_path($relativeDir);
+                $targetDir = "./$relativeDir";
                 FileSystem::delete($targetDir);
                 echo "  - Delete $relativeDir \n";
             }
