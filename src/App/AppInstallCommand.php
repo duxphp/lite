@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class AppInstallCommand extends Command
 {
@@ -24,15 +25,47 @@ class AppInstallCommand extends Command
     {
         $this->addArgument(
             'name',
-            InputArgument::REQUIRED,
+            InputArgument::OPTIONAL,
             'please enter the package name'
         );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+
         $name = $input->getArgument('name');
-        AppHandler::install($name);
+
+        if (!$name) {
+
+            $config = json_decode(file_get_contents("./composer.lock"), true);
+
+            $list = array_map(function ($item) {
+                if ($item['type'] === 'dux-app') {
+                    return $item['name'];
+                }
+            }, $config["packages"]);
+
+            $question = new ChoiceQuestion(
+                'Please select Install application',
+                $list,
+            );
+            $question->setMultiselect(true);
+
+            $selecteds = array_values($question->getChoices());
+            if (!$selecteds) {
+                return $this->error("The installation application is not selected");
+            }
+
+            foreach ($selecteds as $selected) {
+                $output->writeln("install application <info>$selected</info>");
+                AppHandler::install($name);
+            }
+
+        }else {
+            AppHandler::install($name);
+        }
+
+
         $output->writeln("<info>successfully installing the application</info>");
         return Command::SUCCESS;
     }
