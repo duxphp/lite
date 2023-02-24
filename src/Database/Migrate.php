@@ -27,14 +27,18 @@ class Migrate
             if (!method_exists($model, 'migration')) {
                 continue;
             }
+            $startTime = microtime();
             $this->migrateTable($connect, new $model, $seeds);
-            $output->writeln("<info>sync model $model</info>");
+            $time = round(microtime(true) - $startTime, 3);
+            $output->writeln("<info>sync model $model {$time}s</info>");
         }
 
         foreach ($seeds as $seed) {
+            $startTime = microtime();
             $seed->seed($connect);
+            $time = round(microtime(true) - $startTime, 3);
             $name = $seed::class;
-            $output->writeln("<info>sync send $name</info>");
+            $output->writeln("<info>sync send $name {$time}s</info>");
         }
 
     }
