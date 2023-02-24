@@ -29,49 +29,7 @@ class AppUninstallCommand extends Command {
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         $name = $input->getArgument('name');
-        $dir = base_path("vendor/$name");
-        if (!is_dir($dir)) {
-            return $this->error($output, 'The application already exists');
-        }
-        $composerFile = $dir . '/composer.json';
-        if (!is_file($composerFile)) {
-            return $this->error($output, 'The application configuration does not exist');
-        }
-        $config = json_decode(file_get_contents($composerFile), true);
-        $extra = $config['extra'];
-        $duxExtra = $extra['dux'] ?: [];
-
-        $apps = [];
-        foreach ($duxExtra as $item) {
-            $target = $item['target'];
-            $source = $item['source'];
-            $list = glob("$dir/$source/*");
-            foreach ($list as $vo) {
-                $apps[] = basename($vo);
-                $relativeDir = $target . "/" . basename($vo);
-                $targetDir = base_path($relativeDir);
-                FileSystem::delete($targetDir);
-                $output->writeln("<error>  - Delete $relativeDir </error>");
-            }
-        }
-
-        // config
-        $configFile = App::$configPath . "/app.yaml";
-        $conf = Config::load($configFile);
-        $registers = $conf->get("registers", []);
-
-        foreach ($registers as $key => $vo) {
-            $params = explode('\\', $vo);
-            $app = $params[1];
-            if (!in_array($app, $apps)) {
-                continue;
-            }
-            unset($registers[$key]);
-        }
-
-        $conf->set("registers", array_values($registers));
-        $conf->toFile($configFile);
-
+        AppHandler::uninstall($name);
         $output->writeln("<info>successfully uninstalling the application</info>");
         return Command::SUCCESS;
     }

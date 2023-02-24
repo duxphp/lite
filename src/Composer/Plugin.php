@@ -12,6 +12,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PrePoolCreateEvent;
 use Composer\Util\ProcessExecutor;
+use Dux\App\AppHandler;
 
 class Plugin implements PluginInterface, EventSubscriberInterface {
 
@@ -49,7 +50,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface {
         if ($type !== 'dux-app') {
             return;
         }
-        $process = new ProcessExecutor($this->io);
-        $process->execute('php dux app:install ' . $package->getName());
+        try {
+            AppHandler::install($package->getName());
+        }catch (\Exception $e) {
+            $this->io->error($e->getMessage());
+        }
     }
 }
