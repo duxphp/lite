@@ -57,7 +57,7 @@ class AppInstallCommand extends Command
 
             $selecteds = $helper->ask($input, $output, $question);
             if (!$selecteds) {
-                return $this->error("The installation application is not selected");
+                return $this->error($output, "The installation application is not selected");
             }
 
             foreach ($selecteds as $selected) {
