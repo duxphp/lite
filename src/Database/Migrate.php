@@ -28,8 +28,7 @@ class Migrate
                 continue;
             }
             $this->migrateTable($connect, new $model, $seeds);
-            $name = $model::class;
-            $output->writeln("<info>sync model $name</info>");
+            $output->writeln("<info>sync model $model</info>");
         }
 
         foreach ($seeds as $seed) {
