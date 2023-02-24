@@ -58,7 +58,7 @@ class AppInstallCommand extends Command
 
             foreach ($selecteds as $selected) {
                 $output->writeln("install application <info>$selected</info>");
-                AppHandler::install($name);
+                AppHandler::install($selected);
             }
 
         }else {
