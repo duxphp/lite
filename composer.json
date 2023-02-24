@@ -16,7 +16,6 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.1",
-    "ext-pcntl": "*",
     "ext-json": "*",
     "ext-bcmath": "*",
     "ext-curl": "*",
