@@ -18,8 +18,17 @@ class MigrateCommand extends Command {
     protected static $defaultName = 'db:sync';
     protected static $defaultDescription = 'Synchronize model data tables and fields';
 
+    protected function configure(): void
+    {
+        $this->addArgument(
+            'name',
+            InputArgument::OPTIONAL,
+            'please enter the model name'
+        );
+    }
     public function execute(InputInterface $input, OutputInterface $output): int {
-        App::dbMigrate()->migrate($output);
+        $name = $input->getArgument('name') ?: '';
+        App::dbMigrate()->migrate($output, $name);
         $output->writeln("<info>Sync database successfully</info>");
         return Command::SUCCESS;
     }
