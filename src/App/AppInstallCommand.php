@@ -39,19 +39,23 @@ class AppInstallCommand extends Command
 
             $config = json_decode(file_get_contents("./composer.lock"), true);
 
-            $list = array_map(function ($item) {
+            $list = array_values(array_filter(array_map(function ($item) {
                 if ($item['type'] === 'dux-app') {
                     return $item['name'];
                 }
-            }, $config["packages"]);
+            }, $config["packages"])));
+
+            $helper = $this->getHelper('question');
 
             $question = new ChoiceQuestion(
-                'Please select Install application',
+                'Please select Install application ("," split multiple)',
                 $list,
             );
-            $question->setMultiselect(true);
 
-            $selecteds = array_values($question->getChoices());
+            $question->setMultiselect(true);
+            $question->setErrorMessage('Application %s is invalid.');
+
+            $selecteds = $helper->ask($input, $output, $question);
             if (!$selecteds) {
                 return $this->error("The installation application is not selected");
             }
