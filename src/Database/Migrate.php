@@ -33,6 +33,8 @@ class Migrate
 
         foreach ($seeds as $seed) {
             $seed->seed($connect);
+            $name = $seed::class;
+            $output->writeln("<info>sync send $name</info>");
         }
 
     }
