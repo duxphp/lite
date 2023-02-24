@@ -30,7 +30,7 @@ class Migrate
             $startTime = microtime(true);
             $this->migrateTable($connect, new $model, $seeds);
             $time = round(microtime(true) - $startTime, 3);
-            $output->writeln("<info>sync model $model {$time}s</info>");
+            $output->writeln("<info>sync model $model</info> {$time}s");
         }
 
         foreach ($seeds as $seed) {
@@ -38,7 +38,7 @@ class Migrate
             $seed->seed($connect);
             $time = round(microtime(true) - $startTime, 3);
             $name = $seed::class;
-            $output->writeln("<info>sync send $name {$time}s</info>");
+            $output->writeln("<info>sync send $name</info> {$time}s");
         }
 
     }
