@@ -34,14 +34,17 @@ class AppHandler
 
             $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
-                $apps[] = basename($vo);
+
                 $relativeDir = $target . "/" . basename($vo);
                 $targetDir = "./$relativeDir";
+                if (str_contains($targetDir, '/app')) {
+                    $apps[] = basename($vo);
+                }
                 if ($ignore && (is_dir($targetDir) || is_file($targetDir))) {
                     continue;
                 }
                 FileSystem::copy($vo, $targetDir);
-                echo "  - Add $relativeDir \n";
+                echo "  - $targetDir Copy $relativeDir \n";
             }
         }
 
