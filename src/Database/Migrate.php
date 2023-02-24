@@ -24,7 +24,7 @@ class Migrate
         $seeds = [];
         $connect = App::db()->connection();
         foreach ($this->migrate as $model) {
-            if ($name && !str_contains($model, "/$name")) {
+            if ($name && !str_contains($model, "\\$name")) {
                 continue;
             }
 
