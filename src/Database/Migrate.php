@@ -19,11 +19,15 @@ class Migrate
         $this->migrate = [...$this->migrate, ...$model];
     }
 
-    public function migrate(OutputInterface $output): void
+    public function migrate(OutputInterface $output, string $name = ''): void
     {
         $seeds = [];
         $connect = App::db()->connection();
         foreach ($this->migrate as $model) {
+            if ($name && !str_contains($model, "/$name")) {
+                continue;
+            }
+
             if (!method_exists($model, 'migration')) {
                 continue;
             }
