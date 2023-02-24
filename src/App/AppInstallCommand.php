@@ -32,7 +32,7 @@ class AppInstallCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
-        AppHandler::install($name, true);
+        AppHandler::install($name);
         $output->writeln("<info>successfully installing the application</info>");
         return Command::SUCCESS;
     }

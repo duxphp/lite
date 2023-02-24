@@ -51,7 +51,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface {
             return;
         }
         try {
-            AppHandler::install($package->getName());
+            AppHandler::install($package->getName(), true);
         }catch (\Exception $e) {
             $this->io->error($e->getMessage());
         }
