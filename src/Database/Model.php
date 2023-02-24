@@ -17,6 +17,10 @@ class Model extends \Illuminate\Database\Eloquent\Model
     {
     }
 
+    public function migrationAfter(Connection $db)
+    {
+    }
+
     public function seed(Connection $db)
     {
     }

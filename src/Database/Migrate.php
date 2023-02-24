@@ -28,7 +28,13 @@ class Migrate
                 continue;
             }
             $startTime = microtime(true);
-            $this->migrateTable($connect, new $model, $seeds);
+            $modelObj = new $model;
+            $this->migrateTable($connect, $modelObj, $seeds);
+
+            if (method_exists($model, 'migrationAfter')) {
+                $modelObj->migrationAfter($modelObj->getConnection());
+            }
+
             $time = round(microtime(true) - $startTime, 3);
             $output->writeln("sync model <info>$model</info> {$time}s");
         }
