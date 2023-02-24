@@ -10,7 +10,7 @@ use Noodlehaus\Config;
 class AppHandler
 {
 
-    public static function install(string $name): void
+    public static function install(string $name, bool $ignore = false): void
     {
         $dir = "./vendor/$name";
         if (!is_dir($dir)) {
@@ -30,7 +30,7 @@ class AppHandler
 
             $target = $item['target'];
             $source = $item['source'];
-            $ignore = (bool)$item['ignore'];
+            $ignore = $item['ignore'] ?: $ignore;
 
             $list = glob("$dir/$source/*");
             foreach ($list as $vo) {
