@@ -21,14 +21,14 @@ class MigrateCommand extends Command {
     protected function configure(): void
     {
         $this->addArgument(
-            'name',
+            'app',
             InputArgument::OPTIONAL,
-            'please enter the model name'
+            'please enter the app name'
         );
     }
     public function execute(InputInterface $input, OutputInterface $output): int {
-        $name = $input->getArgument('name') ?: '';
-        App::dbMigrate()->migrate($output, $name);
+        $app = $input->getArgument('app') ?: '';
+        App::dbMigrate()->migrate($output, $app);
         $output->writeln("<info>Sync database successfully</info>");
         return Command::SUCCESS;
     }
