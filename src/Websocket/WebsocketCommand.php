@@ -47,26 +47,27 @@ class WebsocketCommand extends Command
         $handler = new Websocket();
 
         $worker->onWorkerStart = function (Worker $worker) use ($handler, $console) {
-            if (!Worker::$daemonize) {
-
-                $lastMtime = time();
-                Timer::add(1, function () use (&$lastMtime, $console) {
-                    $dirIterator = new RecursiveDirectoryIterator(App::$appPath);
-                    $iterator = new RecursiveIteratorIterator($dirIterator);
-                    foreach ($iterator as $file) {
-                        if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
-                            continue;
-                        }
-                        if ($lastMtime < $file->getMTime()) {
-                            $console->writeln("<info>file reload：$file</info>");
-                            posix_kill(posix_getppid(), SIGUSR1);
-                            $lastMtime = $file->getMTime();
-                            break;
-                        }
-                    }
-
-                }, [App::$appPath]);
+            if (Worker::$daemonize) {
+                return;
             }
+
+            $lastMtime = time();
+            Timer::add(1, function () use (&$lastMtime, $console) {
+                $dirIterator = new RecursiveDirectoryIterator(App::$appPath);
+                $iterator = new RecursiveIteratorIterator($dirIterator);
+                foreach ($iterator as $file) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
+                        continue;
+                    }
+                    if ($lastMtime < $file->getMTime()) {
+                        $console->writeln("<info>file reload：$file</info>");
+                        posix_kill(posix_getppid(), SIGUSR1);
+                        $lastMtime = $file->getMTime();
+                        break;
+                    }
+                }
+
+            }, [App::$appPath]);
             $handler->onWorkerStart($worker);
         };
         $worker->onConnect = [$handler, 'onConnect'];
