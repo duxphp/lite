@@ -6,6 +6,8 @@ use Workerman\Connection\TcpConnection;
 
 class Client
 {
+    public string $platform;
+
     public function __construct(public TcpConnection $connection, public string $sub, public int|string $id)
     {
     }

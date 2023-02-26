@@ -10,6 +10,7 @@ use Firebase\JWT\JWT;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
 use Workerman\Lib\Timer;
+use function DI\string;
 
 class Websocket
 {
@@ -53,6 +54,7 @@ class Websocket
     public function onConnect(TcpConnection $connection): void
     {
         $connection->onWebSocketConnect = function ($connection, $httpBuffer) {
+            $platform = (string)$_SERVER['PLATFORM'];
             $token = $_GET['token'];
             if (!$token) {
                 self::send($connection, 'error', '授权参数未知');
@@ -70,12 +72,13 @@ class Websocket
                 // 判断单点登录
                 $oldClient = $this->clients[$jwt->sub][$jwt->id];
                 if ($oldClient) {
-                    self::send($oldClient->connection, 'offline.login', '您的账号在其他地方登录');
-                    $oldClient->connection->close();
+                    // self::send($oldClient->connection, 'offline.login', '您的账号在其他地方登录');
+                    // $oldClient->connection->close();
                 }
 
                 // 设置功能类型与用户id
                 $client = new Client($connection, $jwt->sub, $jwt->id);
+                $client->platform = $platform;
 
                 // 设置客户端信息
                 $this->pings[$connection->id] = time();
