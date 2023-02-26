@@ -21,10 +21,11 @@ class Migrate
 
     public function migrate(OutputInterface $output, string $name = ''): void
     {
+        $name = ucfirst($name);
         $seeds = [];
         $connect = App::db()->connection();
         foreach ($this->migrate as $model) {
-            if ($name && !str_contains($model, "\\$name")) {
+            if ($name && !str_contains($model, "\\$name\\Models\\")) {
                 continue;
             }
 
