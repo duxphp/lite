@@ -69,11 +69,11 @@ class Websocket
                     $connection->close();
                     return;
                 }
+
                 // 判断单点登录
-                $oldClient = $this->clients[$jwt->sub][$jwt->id];
-                if ($oldClient) {
-                    self::send($oldClient->connection, 'offline.login', '您的账号在其他地方登录');
-                    $oldClient->connection->close();
+                if ($this->clients[$jwt->sub][$jwt->id]) {
+                    self::send($this->clients[$jwt->sub][$jwt->id]->connection, 'offline.login', '您的账号在其他地方登录');
+                    $this->clients[$jwt->sub][$jwt->id]->connection->close();
                 }
 
                 // 设置功能类型与用户id
@@ -150,6 +150,8 @@ class Websocket
 
         // 卸载客户端数据
         unset($this->pings[$connection->id], $this->clients[$client->sub][$client->id], $this->clientMaps[$connection->id]);
+
+        dux_debug($this->pings, $this->clients, $this->clientMaps);
     }
 
 
