@@ -72,8 +72,8 @@ class Websocket
                 // 判断单点登录
                 $oldClient = $this->clients[$jwt->sub][$jwt->id];
                 if ($oldClient) {
-                    // self::send($oldClient->connection, 'offline.login', '您的账号在其他地方登录');
-                    // $oldClient->connection->close();
+                    self::send($oldClient->connection, 'offline.login', '您的账号在其他地方登录');
+                    $oldClient->connection->close();
                 }
 
                 // 设置功能类型与用户id
