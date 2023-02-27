@@ -32,7 +32,7 @@ class Attribute {
             $files = Finder::findFiles("*/*.php")->from($appDir);
             foreach ($files as $file) {
                 $dirName = basename($file->getPath());
-                if (ucfirst($dirName) == 'Test') {
+                if (str_contains(ucfirst($dirName), 'Test')) {
                     continue;
                 }
                 $class = $reflection->getNamespaceName() . "\\" . $dirName . "\\" . $file->getBasename(".php");
