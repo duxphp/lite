@@ -78,9 +78,13 @@ class Websocket
                     // 解除老客户端关联
                     unset($this->clientMaps[$oldClient->connection->id]);
 
+
+                    $oldClient->connection->close();
+
                     // 更换链接到新客户端
                     $this->clients[$jwt->sub][$jwt->id]->connection = $connection;
                     $this->clientMaps[$connection->id] = $this->clients[$jwt->sub][$jwt->id];
+
                 }
 
                 // 设置功能类型与用户id
