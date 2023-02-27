@@ -86,7 +86,10 @@ class Websocket
                 $this->clientMaps[$connection->id] = $client;
                 App::event()->dispatch(new Event($this, $connection), 'websocket.online');
 
-                self::send($connection, 'connect');
+                self::send($connection, 'connect', '', [
+                    'has' => $jwt->sub,
+                    'has_id' => $jwt->id
+                ]);
             } catch (\Exception $e) {
                 self::send($connection, 'error', $e->getMessage());
                 $connection->close();
