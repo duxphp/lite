@@ -54,7 +54,7 @@ function format_data(Collection|LengthAwarePaginator|Model $data, callable $call
         return $callback($data);
     }
 
-    $list = $data->map($callback);
+    $list = $data->map($callback)->filter();
     $result = [
         'list' => $list->toArray(),
     ];
