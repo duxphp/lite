@@ -26,6 +26,19 @@ function send(ResponseInterface $response, string $message, array $data = [], in
 }
 
 /**
+ * @param ResponseInterface $response
+ * @param string $message
+ * @param int $code
+ * @return ResponseInterface
+ */
+function sendText(ResponseInterface $response, string $message, int $code = 200): ResponseInterface {
+    $response->getBody()->write($message);
+    return $response
+        ->withHeader('Content-Type', 'text/html')
+        ->withStatus($code);
+}
+
+/**
  * @param string $name
  * @param array $params
  * @return string
