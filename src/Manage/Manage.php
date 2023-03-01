@@ -15,7 +15,7 @@ use \Illuminate\Support\Collection;
 /**
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
  * @method listFormat(object $item): array
- * @method listAssign($query, $args): array
+ * @method listAssign($query, array $args, array $list): array
  * @method infoWhere($query, array $args, ServerRequestInterface $request): array
  * @method infoAssign($info): array
  * @method infoFormat($info): array
@@ -89,7 +89,7 @@ class Manage {
             ];
         }
         if (method_exists($this, "listAssign")) {
-            $assign = [...$assign, ...$this->listAssign($query, $args)];
+            $assign = [...$assign, ...$this->listAssign($query, $args, (array) $assign['list'])];
         }
         return send($response, "ok", $assign);
     }
