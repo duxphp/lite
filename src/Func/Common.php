@@ -78,6 +78,12 @@ if (!function_exists('get_ip')) {
     }
 }
 
+if (!function_exists('bc_format')) {
+    function bc_format(int|float|string $price = 0, int $decimals = 2): string {
+        return number_format($price, $decimals, '.', '');
+    }
+}
+
 if (!function_exists('bc_math')) {
     function bc_math(int|float|string $left = 0, string $symbol = '+', int|float|string $right = 0, int $default = 2): string {
         bcscale($default);
