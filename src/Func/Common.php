@@ -79,8 +79,8 @@ if (!function_exists('get_ip')) {
 }
 
 if (!function_exists('bc_format')) {
-    function bc_format(int|float|string $price = 0, int $decimals = 2): string {
-        return number_format($price, $decimals, '.', '');
+    function bc_format(int|float|string $value = 0, int $decimals = 2): string {
+        return number_format((float) $value, $decimals, '.', '');
     }
 }
 
