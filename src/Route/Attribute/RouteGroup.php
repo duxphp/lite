@@ -9,8 +9,10 @@ use Attribute;
 class RouteGroup {
 
     public function __construct(
-        string $app,
-        string $title,
-        string $pattern = "",
-        array $middleware = []) {}
+        public string $app,
+        public string $title,
+        public string $pattern = "",
+        public array $middleware = []) {}
+
+
 }
