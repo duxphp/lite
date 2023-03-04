@@ -252,6 +252,9 @@ class Bootstrap
             $route->run($this->web);
         }
 
+        // 注解路由注册
+        $this->route->registerAttribute();
+
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
             throw new HttpNotFoundException($request);
