@@ -93,7 +93,7 @@ class Register {
                         pattern: $params["pattern"] ?: lcfirst($layout) . ($methodName ? "/" . lcfirst($methodName) : ""),
                         callable: $class,
                         name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),
-                        title: $group->title . $params["title"]
+                        title: $params["title"]
                     );
                 }
             }
