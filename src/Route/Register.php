@@ -90,7 +90,7 @@ class Register {
                     }
                     $group->map(
                         methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
-                        pattern: $params["pattern"] ?: lcfirst($layout) . ($methodName ? "/" . lcfirst($methodName) : ""),
+                        pattern: $params["pattern"] ?: '',
                         callable: $class,
                         name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),
                         title: $group->title . $params["title"]

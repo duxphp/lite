@@ -247,13 +247,13 @@ class Bootstrap
             call_user_func([new $vo, "register"], $this);
         }
 
+        // 注解路由注册
+        $this->route->registerAttribute();
+
         // 普通路由注册
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
-
-        // 注解路由注册
-        $this->route->registerAttribute();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
