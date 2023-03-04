@@ -14,7 +14,8 @@ class Route {
     private array $middleware = [];
     private array $group = [];
     private array $data = [];
-    private string $title;
+
+    public string $title = "";
     public array $manageAttr = [];
 
     /**

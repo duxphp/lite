@@ -8,6 +8,12 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 class RouteGroup {
 
+    /**
+     * @param string $app 路由注册名
+     * @param string $title 标题前缀
+     * @param string $pattern 路由前缀
+     * @param array $middleware
+     */
     public function __construct(
         public string $app,
         public string $title,
