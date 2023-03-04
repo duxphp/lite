@@ -9,9 +9,9 @@ use Attribute;
 class Route {
 
     public function __construct(
-        string $app,
         array|string  $methods,
         string $title,
+        string $app = "",
         string $pattern = "",
         string $name = "") {
     }
