@@ -91,7 +91,7 @@ class Register {
                         $group = $this->get($params["app"]);
                     }
                     $group->map(
-                        methods: $params["methods"],
+                        methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
                         pattern: $params["pattern"] ?: $pattern . ($methodName ? "/" . lcfirst($methodName) : ""),
                         callable: $class,
                         name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),

@@ -10,7 +10,7 @@ class Route {
 
     public function __construct(
         string $app,
-        array  $methods,
+        array|string  $methods,
         string $title,
         string $pattern = "",
         string $name = "") {
