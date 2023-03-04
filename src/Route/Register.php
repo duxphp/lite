@@ -54,19 +54,19 @@ class Register {
             foreach ($list as $vo) {
                 $params = $vo["params"];
                 $class = $vo["class"];
-                $classArr = explode("\\", $class);
+                [$className, $methodName] = explode(":", $class, 2);
+                $classArr = explode("\\", $className);
                 $layout = array_slice($classArr, -3, 1)[0];
                 $name = lcfirst($layout) . "." . lcfirst(end($classArr));
-                $pattern = "/" . str_replace(".", "/", $name);
                 // group
                 if ($attribute == RouteGroup::class) {
-                    $group = $this->get($params["app"])->group($params["pattern"] ?: $pattern, $params["title"], ...($params["middleware"] ?? []));
+                    $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
                     $groupClass[$class] = $group;
                 }
                 // manage
                 if ($attribute == RouteManage::class) {
                     $this->get($params["app"])->manage(
-                        pattern: $params["pattern"] ?: $pattern,
+                        pattern: $params["pattern"],
                         class: $class,
                         name: $params["name"] ?: $name,
                         title: $params["title"],
@@ -75,10 +75,8 @@ class Register {
                 }
                 // route
                 if ($attribute == \Dux\Route\Attribute\Route::class) {
-                    $methodName = "";
                     if (str_contains($class, ":")) {
                         // method
-                        [$className, $methodName] = explode(":", $class, 2);
                         if (!$params["app"] && !isset($groupClass[$className])) {
                             throw new \Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
                         }
@@ -92,7 +90,7 @@ class Register {
                     }
                     $group->map(
                         methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
-                        pattern: $params["pattern"] ?: $pattern . ($methodName ? "/" . lcfirst($methodName) : ""),
+                        pattern: $params["pattern"] ?: lcfirst($layout) . ($methodName ? "/" . lcfirst($methodName) : ""),
                         callable: $class,
                         name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),
                         title: $params["title"] ?? ""
