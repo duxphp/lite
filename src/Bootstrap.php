@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux;
 
 
+use Carbon\Carbon;
 use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
@@ -105,6 +106,9 @@ class Bootstrap
             'public_path' => App::$publicPath,
             'domain' => App::config("app")->get("app.domain"),
         ]);
+
+        $timezone = App::config("app")->get("app.timezone", 'zh');
+        Carbon::setLocale($timezone);
     }
 
     /**
