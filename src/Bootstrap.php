@@ -252,7 +252,7 @@ class Bootstrap
         }
 
         // 注解路由注册
-        $this->route->registerAttribute();
+        $this->route->registerAttribute($this);
 
         // 普通路由注册
         foreach ($this->route->app as $route) {

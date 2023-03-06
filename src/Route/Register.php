@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Route;
 
 use Dux\App;
+use Dux\Bootstrap;
 use Dux\Handlers\Exception;
 use Dux\Route\Attribute\RouteGroup;
 use Dux\Route\Attribute\RouteManage;
@@ -43,10 +44,14 @@ class Register
      * 注解路由注册
      * @return void
      */
-    public function registerAttribute(): void
+    public function registerAttribute(Bootstrap $bootstrap): void
     {
-        $groupClass = [];
         $attributes = (array)App::di()->get("attributes");
+
+        $permission = $bootstrap->getPermission();
+        $groupClass = [];
+        $permissionClass = [];
+
         foreach ($attributes as $attribute => $list) {
             if (
                 $attribute != RouteManage::class &&
@@ -73,6 +78,9 @@ class Register
                         ways: $params["ways"] ?? []
                     );
                     $groupClass[$className] = $group;
+                }
+                if ($params['permission']) {
+                    $permissionClass[$class] = $permission->get($params['permission'])->group($name, $params["title"]);
                 }
             }
         }
@@ -101,13 +109,19 @@ class Register
                     }
                     $group = $this->get($params["app"]);
                 }
+                $name = $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : "");
                 $group->map(
                     methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
                     pattern: $params["pattern"] ?: '',
                     callable: $class,
-                    name: $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : ""),
+                    name: $name,
                     title: $group->title . $params["title"]
                 );
+
+                if ($permissionClass[$className]) {
+                    $permissionClass[$class]->add($params["title"], $name);
+                }
+
             }
         }
     }
