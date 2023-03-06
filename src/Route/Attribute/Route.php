@@ -6,7 +6,8 @@ namespace Dux\Route\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Route {
+class Route
+{
 
     /**
      * @param array|string $methods 请求方法
@@ -16,10 +17,11 @@ class Route {
      * @param string $name 路由名称
      */
     public function __construct(
-        array|string  $methods,
-        string $title,
-        string $app = "",
-        string $pattern = "",
-        string $name = "") {
+        array|string $methods,
+        string       $title,
+        string       $pattern,
+        string       $name = '',
+        string       $app = "")
+    {
     }
 }

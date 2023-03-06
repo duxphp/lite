@@ -11,7 +11,7 @@ class RouteManage {
     public function __construct(
         string $app,
         string $title,
-        string $pattern = "",
-        string $name = "",
+        string $pattern,
+        string $name = '',
         array  $ways = []) {}
 }

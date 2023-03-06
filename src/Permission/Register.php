@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Dux\Permission;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App;
 use Dux\Handlers\Exception;
 use \Dux\Permission\Attribute\PermissionGroup;
@@ -39,6 +41,8 @@ class Register {
     /**
      * 注解权限注册
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function registerAttribute(): void {
         $groupClass = [];
