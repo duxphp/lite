@@ -26,6 +26,16 @@ class PermissionGroup {
     }
 
 
+
+    public function addLabel(string $label, string $name): self {
+        $this->data[] = [
+            "label" => $label,
+            "name" => $name,
+        ];
+        return $this;
+    }
+
+
     public function softDelete(): self {
         $this->add("restore", '恢复');
         $this->add("trashed", '清除');

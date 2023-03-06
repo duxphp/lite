@@ -67,6 +67,9 @@ class Register
                 if ($attribute == RouteGroup::class) {
                     $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
                     $groupClass[$className] = $group;
+                    if ($params['permission']) {
+                        $permissionClass[$class] = $permission->get($params['permission'])->group($params["title"], $name);
+                    }
                 }
                 // manage
                 if ($attribute == RouteManage::class) {
@@ -78,9 +81,9 @@ class Register
                         ways: $params["ways"] ?? []
                     );
                     $groupClass[$className] = $group;
-                }
-                if ($params['permission']) {
-                    $permissionClass[$class] = $permission->get($params['permission'])->group($name, $params["title"]);
+                    if ($params['permission']) {
+                        $permissionClass[$class] = $permission->get($params['permission'])->manage($params["title"], $name, 0, $params["ways"] ?? []);
+                    }
                 }
             }
         }
@@ -118,8 +121,9 @@ class Register
                     title: $group->title . $params["title"]
                 );
 
+                // 权限处理
                 if ($permissionClass[$className]) {
-                    $permissionClass[$class]->add($params["title"], $name);
+                    $permissionClass[$className]->addLabel($name, $params["title"]);
                 }
 
             }
