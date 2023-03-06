@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Helpers;
 
 use Dux\App;
+use Dux\Route\Attribute\RouteManage;
 use Dux\Validator\Data;
 use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
@@ -58,7 +59,18 @@ class ManageCommand extends Command {
         $namespace->addUse(\Dux\Manage\Manage::class);
         $namespace->addUse(Data::class);
         $namespace->addUse(\Illuminate\Database\Eloquent\Model::class);
+        $namespace->addUse(RouteManage::class);
         $class = $namespace->addClass($className);
+
+        $name = lcfirst($appName) . "." . lcfirst($className);
+        $pattern = "/" . str_replace(".", "/", $name);
+        $class->addAttribute(RouteManage::class, [
+            'app' => lcfirst($layerName) . 'Auth',
+            'title' => '',
+            'pattern' => $pattern,
+            'name' => $name,
+            'permission' => lcfirst($layerName)
+        ]);
         $class->addProperty("model", "")->setType("string")->setProtected();
         $class->addProperty("name", "业务名")->setType("string")->setProtected();
         $class->setExtends(\Dux\Manage\Manage::class);
@@ -86,75 +98,12 @@ class ManageCommand extends Command {
         $method->addParameter("id")->setType("int");
         FileSystem::write($managePath, (string)$file);
 
-        // route
-        $this->createRoute($appName, $appDir, $layerName, $className);
-
-        // permission
-        $this->createPermission($appName, $appDir, $layerName, $className);
-
         // jsx
         $this->createJsx($appName, $appDir, $layerName, $className);
 
         $output->writeln("<info>Generate manage successfully</info>");
         return Command::SUCCESS;
     }
-
-    private function createRoute($appName, $appDir, $layerName, $className) {
-        $filePath = "$appDir/Config/Route.php";
-        $methodName = "Auth" . $layerName;
-        $method = null;
-        if (is_file($filePath)) {
-            $file = \Nette\PhpGenerator\PhpFile::fromCode(file_get_contents($filePath));
-            $classList = $file->getClasses();
-            $class = $classList["App\\$appName\\Config\\Route"];
-            if ($class->hasMethod($methodName)) {
-                $method = $class->getMethod($methodName);
-            }
-        } else {
-            $file = new \Nette\PhpGenerator\PhpFile;
-            $file->setStrictTypes();
-            $namespace = $file->addNamespace("App\\$appName\\Config");
-            $namespace->addUse(\Dux\Route\Route::class, "DuxRoute");
-            $class = $namespace->addClass("Route");
-        }
-        if (!$method) {
-            $method = $class->addMethod($methodName)->setReturnType("void")->setStatic();
-            $method->addParameter("route")->setType(\Dux\Route\Route::class);
-        }
-        $classNamespace = "App\\$appName\\$layerName\\$className";
-        $name = lcfirst($appName) . "." . lcfirst($className);
-        $pattern = "/" . str_replace(".", "/", $name);
-        $method->addBody("\n" . '$route->manage(pattern: "' . $pattern . '", class: \\' . $classNamespace . '::class, name: "' . $name . '", title: "");');
-        FileSystem::write($filePath, (string)$file);
-    }
-
-    private function createPermission($appName, $appDir, $layerName, $className) {
-        $filePath = "$appDir/Config/Permission.php";
-        $methodName = $layerName;
-        $method = null;
-        if (is_file($filePath)) {
-            $file = \Nette\PhpGenerator\PhpFile::fromCode(file_get_contents($filePath));
-            $classList = $file->getClasses();
-            $class = $classList["App\\$appName\\Config\\Permission"];
-            if ($class->hasMethod($methodName)) {
-                $method = $class->getMethod($methodName);
-            }
-        } else {
-            $file = new \Nette\PhpGenerator\PhpFile;
-            $file->setStrictTypes();
-            $namespace = $file->addNamespace("App\\$appName\\Config");
-            $namespace->addUse(\Dux\Permission\Permission::class, "DuxPermission");
-            $class = $namespace->addClass("Permission");
-        }
-        if (!$method) {
-            $method = $class->addMethod($methodName)->setReturnType("void")->setStatic();
-            $method->addParameter("permission")->setType(\Dux\Permission\Permission::class);
-        }
-        $name = lcfirst($appName) . "." . lcfirst($className);
-        $method->addBody("\n\n" . '$group = $permission->manage("", "' . $name . '");');
-        FileSystem::write($filePath, (string)$file);
-    }
-
 
     private function createJsx($appName, $appDir, $layerName, $className) {
         $fileDir = "$appDir/Client/" . lcfirst($layerName) . "/" . lcfirst($className);
