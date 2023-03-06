@@ -5,7 +5,7 @@ namespace Dux\Route\Attribute;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class RouteGroup {
 
     /**
