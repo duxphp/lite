@@ -48,11 +48,11 @@ function url(string $name, array $params): string {
 }
 
 /**
- * @param Collection|LengthAwarePaginator $data
+ * @param Collection|LengthAwarePaginator|Model|null $data
  * @param callable $callback
  * @return array
  */
-function format_data(Collection|LengthAwarePaginator|Model $data, callable $callback): array {
+function format_data(Collection|LengthAwarePaginator|Model|null $data, callable $callback): array {
     $pageStatus = false;
     $page = 1;
     $total = 0;
@@ -65,6 +65,9 @@ function format_data(Collection|LengthAwarePaginator|Model $data, callable $call
 
     if ($data instanceof Model) {
         return $callback($data);
+    }
+    if (!$data) {
+        $data = collect();
     }
 
     $list = $data->map($callback)->filter();
