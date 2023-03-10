@@ -150,8 +150,6 @@ class Websocket
 
         // 卸载客户端数据
         unset($this->pings[$connection->id], $this->clients[$client->sub][$client->id], $this->clientMaps[$connection->id]);
-
-        dux_debug($this->pings, $this->clients, $this->clientMaps);
     }
 
 
