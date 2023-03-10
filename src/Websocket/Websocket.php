@@ -6,6 +6,7 @@ namespace Dux\Websocket;
 use Dux\Websocket\Handler\Client;
 use Dux\Websocket\Handler\Event;
 use Dux\App;
+use Dux\Websocket\Handler\EventService;
 use Firebase\JWT\JWT;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
@@ -49,6 +50,8 @@ class Websocket
                 }
             }
         });
+
+        App::event()->dispatch(new EventService($this), 'websocket.start');
     }
 
     public function onConnect(TcpConnection $connection): void
