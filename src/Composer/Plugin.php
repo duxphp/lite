@@ -16,24 +16,16 @@ use Dux\App\AppHandler;
 
 class Plugin implements PluginInterface, EventSubscriberInterface {
 
-    protected Composer $composer;
-    protected IOInterface $io;
     public function activate(Composer $composer, IOInterface $io): void
     {
-        $this->composer = $composer;
-        $this->io = $io;
     }
 
     public function deactivate(Composer $composer, IOInterface $io): void
     {
-        $this->composer = $composer;
-        $this->io = $io;
     }
 
     public function uninstall(Composer $composer, IOInterface $io): void
     {
-        $this->composer = $composer;
-        $this->io = $io;
     }
 
     public static function getSubscribedEvents(): array
