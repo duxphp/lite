@@ -107,8 +107,9 @@ class Bootstrap
             'domain' => App::config("app")->get("app.domain"),
         ]);
 
-        $timezone = App::config("app")->get("app.timezone", 'zh');
-        Carbon::setLocale($timezone);
+        $timezone = App::config("app")->get("app.timezone", 'PRC');
+
+        date_default_timezone_set($timezone);
     }
 
     /**
