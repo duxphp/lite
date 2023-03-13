@@ -43,6 +43,7 @@ class Websocket
             foreach ($worker->connections as $connection) {
                 $ping = $this->pings[$connection->id];
                 if ($time - $ping > $this->pingTime) {
+                    App::log('websocket')->error('connection timeout');
                     self::send($connection, 'offline', 'connection timeout');
                     $connection->close();
                 } else {
@@ -94,6 +95,7 @@ class Websocket
                     'has_id' => $jwt->id
                 ]);
             } catch (\Exception $e) {
+                App::log('websocket')->error($e->getMessage());
                 self::send($connection, 'error', $e->getMessage());
                 $connection->close();
             }
