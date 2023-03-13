@@ -42,7 +42,7 @@ class Websocket
             $time = time();
             foreach ($worker->connections as $connection) {
                 $ping = $this->pings[$connection->id];
-                if ($time - $ping > $this->pingTime) {
+                if ($time - $ping > $this->pingTime + 5) {
                     App::log('websocket')->error('connection timeout');
                     self::send($connection, 'offline', 'connection timeout');
                     $connection->close();
