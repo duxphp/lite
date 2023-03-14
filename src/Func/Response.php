@@ -70,7 +70,7 @@ function format_data(Collection|LengthAwarePaginator|Model|null $data, callable 
         $data = collect();
     }
 
-    $list = $data->map($callback)->filter();
+    $list = $data->map($callback)->filter()->values();
     $result = [
         'list' => $list->toArray(),
     ];
