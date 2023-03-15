@@ -10,7 +10,7 @@ use Nette\Utils\Finder;
 class Attribute {
 
     static function load(array $apps): array {
-        $status = App::config("app")->get("app.cache", false);
+        $status = App::config("use")->get("app.cache", false);
         $cachePath = data_path("cache/app/attribute.json");
         if (!$status) {
             return self::get($apps);

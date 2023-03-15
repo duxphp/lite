@@ -16,7 +16,7 @@ class AuthMiddleware {
     }
 
     public function __invoke(Request $request, RequestHandler $handler): Response {
-        $secret = \Dux\App::config("app")->get("app.secret");
+        $secret = \Dux\App::config("use")->get("app.secret");
         $renewal = $this->renewal;
         $app = $this->app;
         $jwt = new \Tuupola\Middleware\JwtAuthentication([

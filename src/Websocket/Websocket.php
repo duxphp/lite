@@ -67,7 +67,7 @@ class Websocket
             }
             try {
                 // 授权解码
-                $jwt = JWT::decode($token, \Dux\App::config("app")->get("app.secret"), ["HS256", "HS512", "HS384"]);
+                $jwt = JWT::decode($token, \Dux\App::config("use")->get("app.secret"), ["HS256", "HS512", "HS384"]);
                 if (!$jwt->sub || !$jwt->id) {
                     self::send($connection, 'error', '授权参数有误');
                     $connection->close();
