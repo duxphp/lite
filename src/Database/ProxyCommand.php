@@ -107,7 +107,7 @@ class ProxyCommand extends Command
             $output->writeln("<error>This cpu architecture is not supported</>");
             return null;
         }
-        $binFile = __DIR__ . "/bin/" . explode('-', $binNames);
+        $binFile = __DIR__ . "/bin/" . implode('-', $binNames);
 
         if (!file_exists($binFile)) {
             $output->writeln("<error>This system environment is not supported</>");
