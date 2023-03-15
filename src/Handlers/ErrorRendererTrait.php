@@ -8,10 +8,6 @@ trait ErrorRendererTrait
 {
 
     protected function getErrorTitle(Throwable $exception): string {
-        $defaultTitle = parent::getErrorTitle($exception);
-        if ($exception instanceof Exception) {
-            $defaultTitle = $exception->getMessage();
-        }
-        return $defaultTitle;
+        return $exception->getMessage() ?: parent::getErrorTitle($exception);
     }
 }
