@@ -12,6 +12,7 @@ use Dux\Config\Config;
 use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
+use Dux\Database\ProxyCommand;
 use Dux\Event\Event;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
@@ -135,6 +136,7 @@ class Bootstrap
         $commands[] = EventCommand::class;
         $commands[] = AppCommand::class;
         $commands[] = ModelCommand::class;
+        $commands[] = ProxyCommand::class;
         $commands[] = ManageCommand::class;
         $commands[] = CtrCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
