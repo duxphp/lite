@@ -15,7 +15,6 @@ use function DI\string;
 
 class Websocket
 {
-    public int $pingTime = 55;
 
     /**
      * PING 端
@@ -38,11 +37,11 @@ class Websocket
     public function onWorkerStart(Worker $worker): void
     {
         // 心跳连接
-        Timer::add($this->pingTime, function () use ($worker) {
+        Timer::add(30, function () use ($worker) {
             $time = time();
             foreach ($worker->connections as $connection) {
                 $ping = $this->pings[$connection->id];
-                if ($time - $ping > $this->pingTime) {
+                if ($time - $ping > 60) {
                     App::log('websocket')->error('connection timeout');
                     self::send($connection, 'offline', 'connection timeout');
                     $connection->close();
