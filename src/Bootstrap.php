@@ -99,7 +99,6 @@ class Bootstrap
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
         $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
 
-        $cache = (bool)App::config("use")->get("app.cache");
 
         Config::setValues([
             'base_path' => App::$basePath,
@@ -112,11 +111,6 @@ class Bootstrap
 
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
-
-        if ($cache) {
-            $routeCollector = $this->web->getRouteCollector();
-            $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
-        }
 
     }
 
@@ -218,6 +212,13 @@ class Bootstrap
                 ->withHeader('Access-Control-Expose-Methods', '*')
                 ->withHeader('Access-Control-Allow-Credentials', 'true');
         });
+
+
+        $cache = (bool)App::config("use")->get("app.cache");
+        if ($cache) {
+            $routeCollector = $this->web->getRouteCollector();
+            $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
+        }
 
     }
 
