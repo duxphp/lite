@@ -12,7 +12,7 @@ class Client
     {
     }
 
-    public function send(string $type, string $message = '', array $data = []): ?bool
+    public function send(string $type, string|array $message = '', array $data = []): ?bool
     {
         $content = json_encode(['type' => $type, 'message' => $message, 'data' => $data], JSON_UNESCAPED_UNICODE);
         return $this->connection->send($content);
