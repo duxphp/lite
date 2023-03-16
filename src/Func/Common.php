@@ -119,3 +119,19 @@ if (!function_exists('decryption')) {
         return openssl_decrypt(hex2bin($str), $method, $key, OPENSSL_RAW_DATA, $iv);
     }
 }
+
+
+if (!function_exists('start_time')) {
+
+    $start_time = microtime(true);
+}
+
+
+
+if (!function_exists('end_time')) {
+
+    function end_time() {
+        $end_time = microtime(true);
+        $execution_time = ($end_time - $start_time) * 1000;
+    }
+}

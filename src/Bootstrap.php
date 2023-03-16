@@ -99,6 +99,8 @@ class Bootstrap
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
         $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
 
+        $cache = (bool)App::config("use")->get("app.cache");
+
         Config::setValues([
             'base_path' => App::$basePath,
             'app_path' => App::$appPath,
@@ -109,8 +111,13 @@ class Bootstrap
         ]);
 
         $timezone = App::config("use")->get("app.timezone", 'PRC');
-
         date_default_timezone_set($timezone);
+
+        if ($cache) {
+            $routeCollector = $this->web->getRouteCollector();
+            $routeCollector->setCacheFile('/path/to/cache.file');
+        }
+
     }
 
     /**
