@@ -115,7 +115,7 @@ class Bootstrap
 
         if ($cache) {
             $routeCollector = $this->web->getRouteCollector();
-            $routeCollector->setCacheFile('/path/to/cache.file');
+            $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
         }
 
     }
