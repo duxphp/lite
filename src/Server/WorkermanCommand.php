@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 
 use Chubbyphp\WorkermanRequestHandler\OnMessage;
@@ -18,6 +17,9 @@ use Chubbyphp\WorkermanRequestHandler\WorkermanResponseEmitter;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Factory\UploadedFileFactory;
+use Workerman\Connection\TcpConnection as WorkermanTcpConnection;
+use Workerman\Protocols\Http\Request as WorkermanRequest;
+use Workerman\Protocols\Http\Response;
 use Workerman\Worker;
 
 class WorkermanCommand extends Command {
@@ -48,15 +50,32 @@ class WorkermanCommand extends Command {
             App::$server = ServerEnum::WORKERMAN;
             App::event()->dispatch(new ServerEvent(ServerEnum::WORKERMAN), 'server.start');
         };
-        $http->onMessage = new OnMessage(
-            new PsrRequestFactory(
-                new ServerRequestFactory(),
-                new StreamFactory(),
-                new UploadedFileFactory()
-            ),
-            new WorkermanResponseEmitter(),
-            App::app()
+
+        $request = new PsrRequestFactory(
+            new ServerRequestFactory(),
+            new StreamFactory(),
+            new UploadedFileFactory()
         );
+        $emit = new WorkermanResponseEmitter();
+
+        $http->onMessage = function(WorkermanTcpConnection $workermanTcpConnection, WorkermanRequest $workermanRequest) use ($request, $emit) {
+            $filePath = App::$publicPath . $workermanRequest->path();
+            if (is_dir($filePath)) {
+                $filePath = rtrim($filePath, '/') . '/index.html';
+            }
+            if (is_file($filePath)) {
+                $response = new Response();
+                $response->withFile($filePath);
+                $workermanTcpConnection->send($response);
+                return;
+            }
+
+            $emit->emit(
+                App::app()->handle($request->create($workermanTcpConnection, $workermanRequest)),
+                $workermanTcpConnection
+            );
+        };
+
         Worker::runAll();
         return Command::SUCCESS;
     }
