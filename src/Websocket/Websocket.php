@@ -82,16 +82,19 @@ class Websocket
                 $client = new Client($connection, $jwt->sub, $jwt->id);
                 $client->platform = $platform;
 
+                // 链接消息
+                self::send($connection, 'connect', '', [
+                    'has' => $jwt->sub,
+                    'has_id' => $jwt->id
+                ]);
+
                 // 设置客户端信息
                 $this->pings[$connection->id] = time();
                 $this->clients[$jwt->sub][$jwt->id] = $client;
                 $this->clientMaps[$connection->id] = $client;
                 App::event()->dispatch(new Event($this, $connection), 'websocket.online');
 
-                self::send($connection, 'connect', '', [
-                    'has' => $jwt->sub,
-                    'has_id' => $jwt->id
-                ]);
+
             } catch (\Exception $e) {
                 App::log('websocket')->error($e->getMessage());
                 self::send($connection, 'error', $e->getMessage());
