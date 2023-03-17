@@ -51,7 +51,7 @@ class WebsocketCommand extends Command
                 return;
             }
 
-            $lastMtime = time();
+            /*$lastMtime = time();
             Timer::add(1, function () use (&$lastMtime, $console) {
                 $dirIterator = new RecursiveDirectoryIterator(App::$appPath);
                 $iterator = new RecursiveIteratorIterator($dirIterator);
@@ -67,7 +67,7 @@ class WebsocketCommand extends Command
                     }
                 }
 
-            }, [App::$appPath]);
+            }, [App::$appPath]);*/
             $handler->onWorkerStart($worker);
         };
         $worker->onConnect = [$handler, 'onConnect'];

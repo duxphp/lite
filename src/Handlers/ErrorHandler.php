@@ -31,6 +31,10 @@ class ErrorHandler extends slimErrorHandler
         ) {
             return;
         }
-        App::log()->error($error);
+
+        App::log()->error($error, [
+            'uri' => $this->request->getUri(),
+            'query' => $this->request->getQueryParams()
+        ]);
     }
 }

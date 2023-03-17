@@ -106,7 +106,7 @@ if (!function_exists('bc_comp')) {
 
 if (!function_exists('encryption')) {
     function encryption(string $str, string $key = '', string $iv = '', $method = 'DES-CBC'): string {
-        $key = $key ?: \Dux\App::config('app')->get('app.secret');
+        $key = $key ?: \Dux\App::config('use')->get('app.secret');
         $data = openssl_encrypt($str, $method, $key, OPENSSL_RAW_DATA, $iv);
         return strtolower(bin2hex($data));
     }
@@ -115,7 +115,23 @@ if (!function_exists('encryption')) {
 
 if (!function_exists('decryption')) {
     function decryption(string $str, string $key = '', string $iv = '', $method = 'DES-CBC'): string {
-        $key = $key ?: \Dux\App::config('app')->get('app.secret');
+        $key = $key ?: \Dux\App::config('use')->get('app.secret');
         return openssl_decrypt(hex2bin($str), $method, $key, OPENSSL_RAW_DATA, $iv);
+    }
+}
+
+
+if (!function_exists('start_time')) {
+
+    $start_time = microtime(true);
+}
+
+
+
+if (!function_exists('end_time')) {
+
+    function end_time() {
+        $end_time = microtime(true);
+        $execution_time = ($end_time - $start_time) * 1000;
     }
 }

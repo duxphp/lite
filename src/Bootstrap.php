@@ -12,6 +12,7 @@ use Dux\Config\Config;
 use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
+use Dux\Database\ProxyCommand;
 use Dux\Event\Event;
 use Dux\Event\EventCommand;
 use Dux\Helpers\AppCommand;
@@ -93,10 +94,11 @@ class Bootstrap
      */
     public function loadConfig(): void
     {
-        $this->debug = (bool)App::config("app")->get("app.debug");
-        $this->exceptionTitle = App::config("app")->get("exception.title", $this->exceptionTitle);
-        $this->exceptionDesc = App::config("app")->get("exception.desc", $this->exceptionDesc);
-        $this->exceptionBack = App::config("app")->get("exception.back", $this->exceptionBack);
+        $this->debug = (bool)App::config("use")->get("app.debug");
+        $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
+
 
         Config::setValues([
             'base_path' => App::$basePath,
@@ -104,11 +106,12 @@ class Bootstrap
             'data_path' => App::$dataPath,
             'config_path' => App::$configPath,
             'public_path' => App::$publicPath,
-            'domain' => App::config("app")->get("app.domain"),
+            'domain' => App::config("use")->get("app.domain"),
         ]);
 
-        $timezone = App::config("app")->get("app.timezone", 'zh');
-        Carbon::setLocale($timezone);
+        $timezone = App::config("use")->get("app.timezone", 'PRC');
+        date_default_timezone_set($timezone);
+
     }
 
     /**
@@ -134,6 +137,7 @@ class Bootstrap
         $commands[] = EventCommand::class;
         $commands[] = AppCommand::class;
         $commands[] = ModelCommand::class;
+        $commands[] = ProxyCommand::class;
         $commands[] = ManageCommand::class;
         $commands[] = CtrCommand::class;
         $commands[] = \Dux\App\AppCommand::class;
@@ -208,6 +212,13 @@ class Bootstrap
                 ->withHeader('Access-Control-Expose-Methods', '*')
                 ->withHeader('Access-Control-Allow-Credentials', 'true');
         });
+
+
+        $cache = (bool)App::config("use")->get("app.cache");
+        if ($cache) {
+            $routeCollector = $this->web->getRouteCollector();
+            $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
+        }
 
     }
 

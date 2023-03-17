@@ -53,7 +53,8 @@
     "godruoyi/php-snowflake": "^2.2",
     "symfony/event-dispatcher": "^6.2",
     "kalnoy/nestedset": "^6.0",
-    "workerman/workerman": "^4.1"
+    "workerman/workerman": "^4.1",
+    "symfony/process": "^6.2"
   },
   "require-dev": {
     "composer/composer": "^2.0",

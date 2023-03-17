@@ -6,6 +6,7 @@ namespace Dux\Websocket;
 use Dux\Websocket\Handler\Client;
 use Dux\Websocket\Handler\Event;
 use Dux\App;
+use Dux\Websocket\Handler\EventService;
 use Firebase\JWT\JWT;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
@@ -14,7 +15,6 @@ use function DI\string;
 
 class Websocket
 {
-    public int $pingTime = 55;
 
     /**
      * PING 端
@@ -37,11 +37,12 @@ class Websocket
     public function onWorkerStart(Worker $worker): void
     {
         // 心跳连接
-        Timer::add($this->pingTime, function () use ($worker) {
+        Timer::add(30, function () use ($worker) {
             $time = time();
             foreach ($worker->connections as $connection) {
                 $ping = $this->pings[$connection->id];
-                if ($time - $ping > $this->pingTime) {
+                if ($time - $ping > 60) {
+                    App::log('websocket')->error('connection timeout');
                     self::send($connection, 'offline', 'connection timeout');
                     $connection->close();
                 } else {
@@ -49,6 +50,8 @@ class Websocket
                 }
             }
         });
+
+        App::event()->dispatch(new EventService($this), 'websocket.start');
     }
 
     public function onConnect(TcpConnection $connection): void
@@ -63,7 +66,7 @@ class Websocket
             }
             try {
                 // 授权解码
-                $jwt = JWT::decode($token, \Dux\App::config("app")->get("app.secret"), ["HS256", "HS512", "HS384"]);
+                $jwt = JWT::decode($token, \Dux\App::config("use")->get("app.secret"), ["HS256", "HS512", "HS384"]);
                 if (!$jwt->sub || !$jwt->id) {
                     self::send($connection, 'error', '授权参数有误');
                     $connection->close();
@@ -72,13 +75,18 @@ class Websocket
 
                 // 判断单点登录
                 if ($this->clients[$jwt->sub][$jwt->id]) {
-                    self::send($this->clients[$jwt->sub][$jwt->id]->connection, 'offline.login', '您的账号在其他地方登录');
-                    $this->clients[$jwt->sub][$jwt->id]->connection->close();
+                    $this->clients[$jwt->sub][$jwt->id]->connection->close("\x88\x02\x27\x10", true);
                 }
 
                 // 设置功能类型与用户id
                 $client = new Client($connection, $jwt->sub, $jwt->id);
                 $client->platform = $platform;
+
+                // 链接消息
+                self::send($connection, 'connect', '', [
+                    'has' => $jwt->sub,
+                    'has_id' => $jwt->id
+                ]);
 
                 // 设置客户端信息
                 $this->pings[$connection->id] = time();
@@ -86,11 +94,9 @@ class Websocket
                 $this->clientMaps[$connection->id] = $client;
                 App::event()->dispatch(new Event($this, $connection), 'websocket.online');
 
-                self::send($connection, 'connect', '', [
-                    'has' => $jwt->sub,
-                    'has_id' => $jwt->id
-                ]);
+
             } catch (\Exception $e) {
+                App::log('websocket')->error($e->getMessage());
                 self::send($connection, 'error', $e->getMessage());
                 $connection->close();
             }
@@ -150,12 +156,10 @@ class Websocket
 
         // 卸载客户端数据
         unset($this->pings[$connection->id], $this->clients[$client->sub][$client->id], $this->clientMaps[$connection->id]);
-
-        dux_debug($this->pings, $this->clients, $this->clientMaps);
     }
 
 
-    public static function send(TcpConnection $connection, string $type, string $message = '', array $data = []): ?bool
+    public static function send(TcpConnection $connection, string $type, string|array $message = '', array $data = []): ?bool
     {
         $content = json_encode(['type' => $type, 'message' => $message, 'data' => $data], JSON_UNESCAPED_UNICODE);
         return $connection->send($content);
