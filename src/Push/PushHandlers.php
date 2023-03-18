@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Dux\Push;
 
 use DateTime;
-use Dux\App;
 use Enqueue\Consumption\ChainExtension;
 use Enqueue\Consumption\Extension\LimitConsumedMessagesExtension;
 use Enqueue\Consumption\Extension\LimitConsumptionTimeExtension;
@@ -31,7 +30,6 @@ class PushHandlers
      */
     public function send(string $type, string|array $message, array $data): void
     {
-        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, []), "subscribe.$this->name.ping");
         $messageCtx = $this->context->createMessage([
             'type' => $type,
             'message' => $message,
@@ -42,7 +40,6 @@ class PushHandlers
 
     public function consume(): array
     {
-        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, []), "subscribe.$this->name.ping", []);
         $queueConsumer = new QueueConsumer($this->context, new ChainExtension([
             new LimitConsumptionTimeExtension(new DateTime('now + 3 sec')),
             new LimitConsumedMessagesExtension(1)
