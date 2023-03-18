@@ -31,7 +31,7 @@ class PushHandlers
      */
     public function send(string $type, array $data): void
     {
-        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping");
+        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping", []);
         $message = $this->context->createMessage([
             'type' => $type,
             'data' => $data
@@ -41,7 +41,7 @@ class PushHandlers
 
     public function consume(): array
     {
-        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping");
+        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping", []);
         $queueConsumer = new QueueConsumer($this->context, new ChainExtension([
             new LimitConsumptionTimeExtension(new DateTime('now + 3 sec')),
             new LimitConsumedMessagesExtension(1)
