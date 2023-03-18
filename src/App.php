@@ -347,7 +347,7 @@ class App
             $type = self::config("push")->get("type");
         }
         if (!self::$di->has("push." . $type)) {
-            $config = self::config("queue")->get("drivers." . $type);
+            $config = self::config("push")->get("drivers." . $type);
             $queueType = $config["type"];
             unset($config["type"]);
             self::$di->set(
