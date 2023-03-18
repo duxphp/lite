@@ -29,6 +29,8 @@ class PushProcessor implements Processor
         if (!$type) {
             throw new ExceptionBusiness('Message type error');
         }
+
+        return self::ACK;
     }
 
     public function get(): array
