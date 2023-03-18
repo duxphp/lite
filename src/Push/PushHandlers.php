@@ -28,7 +28,7 @@ class PushHandlers
      * @param array $data 消息数据
      * @return void
      */
-    public function send(string $type, string|array $message, array $data): void
+    public function send(string $type, string|array|null $message, ?array $data): void
     {
         $messageCtx = $this->context->createMessage([
             'type' => $type,
