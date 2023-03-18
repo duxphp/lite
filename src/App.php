@@ -337,11 +337,11 @@ class App
     /**
      * push
      * @param string $type
-     * @return Queue
+     * @return Push
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function push(string $type = ""): Queue
+    public static function push(string $type = ""): Push
     {
         if (!$type) {
             $type = self::config("push")->get("type");
