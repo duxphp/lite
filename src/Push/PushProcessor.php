@@ -24,7 +24,7 @@ class PushProcessor implements Processor
 
     public function process(Message $message, Context $context): object|string
     {
-        //$data = ['type' => 'type', 'data' => []];
+        //$data = ['type' => 'type', 'message' => '', 'data' => []];
         $this->data = json_decode($message->getBody(), true);
 
         $type = $this->data['type'];
