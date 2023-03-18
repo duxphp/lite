@@ -351,7 +351,7 @@ class App
             $queueType = $config["type"];
             unset($config["type"]);
             self::$di->set(
-                "queue." . $type,
+                "push." . $type,
                 new Push($queueType, $config)
             );
         }

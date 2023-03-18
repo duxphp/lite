@@ -28,7 +28,7 @@ class PushProcessor implements Processor
         // 事件触发
         App::db()->getConnection()->beginTransaction();
         try {
-            App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, $this->data));
+            App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, $this->data), "push.$this->name");
             App::db()->getConnection()->commit();
             return self::ACK;
         } catch (Exception $e) {
