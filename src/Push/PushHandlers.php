@@ -29,7 +29,7 @@ class PushHandlers
      * @param array $data 消息数据
      * @return void
      */
-    public function send(string $type, string $message, array $data): void
+    public function send(string $type, string|array $message, array $data): void
     {
         App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, []), "subscribe.$this->name.ping");
         $messageCtx = $this->context->createMessage([
