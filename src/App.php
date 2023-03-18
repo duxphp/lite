@@ -6,32 +6,35 @@ declare(strict_types=1);
 namespace Dux;
 
 use DI\Container;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App\AppExtend;
+use Dux\Config\Yaml;
 use Dux\Database\Db;
 use Dux\Database\Migrate;
 use Dux\Event\Event;
 use Dux\Handlers\Exception;
+use Dux\Logs\LogHandler;
+use Dux\Push\Push;
+use Dux\Queue\Queue;
 use Dux\Server\ServerEnum;
 use Dux\Storage\Storage;
 use Dux\Validator\Data;
+use Dux\Validator\Validator;
 use Dux\View\View;
 use Illuminate\Database\Capsule\Manager;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
-use Redis;
-use \Slim\App as SlimApp;
-use Dux\Logs\LogHandler;
-use Dux\Queue\Queue;
-use Dux\Validator\Validator;
-use DI\DependencyException;
-use DI\NotFoundException;
 use Monolog\Level;
 use Monolog\Logger;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
+use Redis;
+use Slim\App as SlimApp;
 use Symfony\Component\Console\Application;
 
-class App {
+class App
+{
     public static string $basePath;
     public static string $configPath;
     public static string $dataPath;
@@ -43,12 +46,14 @@ class App {
     public static array $registerApp = [];
 
     public static ServerEnum $server = ServerEnum::FPM;
+
     /**
      * create
      * @param $basePath
      * @return Bootstrap
      */
-    public static function create($basePath): Bootstrap {
+    public static function create($basePath): Bootstrap
+    {
         self::$basePath = $basePath;
         self::$configPath = $basePath . '/config';
         self::$dataPath = $basePath . '/data';
@@ -71,7 +76,8 @@ class App {
         return $app;
     }
 
-    public static function createCli($basePath): Bootstrap {
+    public static function createCli($basePath): Bootstrap
+    {
         $app = self::create($basePath);
         $app->loadCommand();
         return $app;
@@ -80,7 +86,8 @@ class App {
     /**
      * @return SlimApp
      */
-    public static function app(): SlimApp {
+    public static function app(): SlimApp
+    {
         return self::$bootstrap->web;
     }
 
@@ -89,7 +96,8 @@ class App {
      * @param array $class
      * @return void
      */
-    public static function registerApp(array $class): void {
+    public static function registerApp(array $class): void
+    {
         foreach ($class as $vo) {
             if (!$vo instanceof AppExtend) {
                 throw new Exception("The application $vo could not be registered");
@@ -104,11 +112,12 @@ class App {
      * @param string $app
      * @return Config
      */
-    public static function config(string $name): Config {
+    public static function config(string $name): Config
+    {
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
-        $config = new Config(App::$configPath . "/$name.yaml", new \Dux\Config\Yaml());
+        $config = new Config(App::$configPath . "/$name.yaml", new Yaml());
         self::$di->set("config." . $name, $config);
         return $config;
     }
@@ -118,7 +127,8 @@ class App {
      * @source PHPSocialNetwork/phpfastcache
      * @return Psr16Adapter
      */
-    public static function cache(): Psr16Adapter {
+    public static function cache(): Psr16Adapter
+    {
         return self::$bootstrap->cache;
     }
 
@@ -126,7 +136,8 @@ class App {
      * event
      * @return Event
      */
-    public static function event(): Event {
+    public static function event(): Event
+    {
         return self::$bootstrap->event;
     }
 
@@ -134,7 +145,8 @@ class App {
      * di
      * @return Container
      */
-    public static function di(): Container {
+    public static function di(): Container
+    {
         return self::$di;
     }
 
@@ -142,7 +154,8 @@ class App {
      * command
      * @return Application
      */
-    public static function command(): Application {
+    public static function command(): Application
+    {
         return self::$bootstrap->command;
     }
 
@@ -150,7 +163,8 @@ class App {
      * getDebug
      * @return bool
      */
-    public static function getDebug(): bool {
+    public static function getDebug(): bool
+    {
         return self::$bootstrap->debug;
     }
 
@@ -161,7 +175,8 @@ class App {
      * @param array $rules ["name", "rule", "message"]
      * @return Data
      */
-    public static function validator(array $data, array $rules): Data {
+    public static function validator(array $data, array $rules): Data
+    {
         return Validator::parser($data, $rules);
     }
 
@@ -170,7 +185,8 @@ class App {
      * @source illuminate/database
      * @return Manager
      */
-    public static function db(): Manager {
+    public static function db(): Manager
+    {
         if (!self::$di->has("db")) {
             self::$di->set(
                 "db",
@@ -184,7 +200,8 @@ class App {
      * dbMigrate
      * @return Migrate
      */
-    public static function dbMigrate(): Migrate {
+    public static function dbMigrate(): Migrate
+    {
         if (!self::$di->has("db.migrate")) {
             self::$di->set(
                 "db.migrate",
@@ -202,7 +219,8 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function log(string $app = "default"): Logger {
+    public static function log(string $app = "default"): Logger
+    {
         if (!self::$di->has("logger." . $app)) {
             self::$di->set(
                 "logger." . $app,
@@ -219,7 +237,8 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function queue(string $type = ""): Queue {
+    public static function queue(string $type = ""): Queue
+    {
         if (!$type) {
             $type = self::config("queue")->get("type");
         }
@@ -242,7 +261,8 @@ class App {
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function view(string $name): Engine {
+    public static function view(string $name): Engine
+    {
         if (!self::$di->has("view." . $name)) {
             self::$di->set(
                 "view." . $name,
@@ -257,7 +277,8 @@ class App {
      * @param string $type
      * @return Filesystem
      */
-    public static function storage(string $type = ""): Filesystem {
+    public static function storage(string $type = ""): Filesystem
+    {
         if (!$type) {
             $type = self::config("storage")->get("type");
         }
@@ -278,7 +299,8 @@ class App {
      * @param string $name
      * @return Menu\Menu
      */
-    public static function menu(string $name): Menu\Menu {
+    public static function menu(string $name): Menu\Menu
+    {
         return self::$bootstrap->getMenu()->get($name);
     }
 
@@ -287,7 +309,8 @@ class App {
      * @param string $name
      * @return Permission\Permission
      */
-    public static function permission(string $name): Permission\Permission {
+    public static function permission(string $name): Permission\Permission
+    {
         return self::$bootstrap->getPermission()->get($name);
     }
 
@@ -296,10 +319,11 @@ class App {
      * @param string $name
      * @return Redis
      */
-    public static function redis($database = 0, string $name = "default"): Redis {
+    public static function redis($database = 0, string $name = "default"): Redis
+    {
         if (!self::$di->has("redis." . $name)) {
             $config = self::config("database")->get("redis.drivers." . $name);
-            $redis = (new \Dux\Database\Redis($config))->connect();
+            $redis = (new Database\Redis($config))->connect();
             self::$di->set(
                 "redis." . $name,
                 $redis
@@ -310,5 +334,27 @@ class App {
         return $redis;
     }
 
-
+    /**
+     * push
+     * @param string $type
+     * @return Queue
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public static function push(string $type = ""): Queue
+    {
+        if (!$type) {
+            $type = self::config("push")->get("type");
+        }
+        if (!self::$di->has("push." . $type)) {
+            $config = self::config("queue")->get("drivers." . $type);
+            $queueType = $config["type"];
+            unset($config["type"]);
+            self::$di->set(
+                "queue." . $type,
+                new Push($queueType, $config)
+            );
+        }
+        return self::$di->get("push." . $type);
+    }
 }
