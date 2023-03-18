@@ -24,16 +24,24 @@ class PushHandlers
     {
     }
 
-    public function send(string $content): void
+    /**
+     * @param string $type 事件类型
+     * @param array $data 消息数据
+     * @return void
+     */
+    public function send(string $type, array $data): void
     {
-        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "push.$this->name");
-        $message = $this->context->createMessage($content);
+        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping");
+        $message = $this->context->createMessage([
+            'type' => $type,
+            'data' => $data
+        ]);
         $this->context->createProducer()->send($this->topic, $message);
     }
 
     public function consume(): array
     {
-        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "push.$this->name");
+        App::event()->dispatch(new PingEvent($this->name, $this->clientApp, $this->clientId), "subscribe.$this->name.ping");
         $queueConsumer = new QueueConsumer($this->context, new ChainExtension([
             new LimitConsumptionTimeExtension(new DateTime('now + 3 sec')),
             new LimitConsumedMessagesExtension(1)
