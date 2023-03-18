@@ -2,9 +2,7 @@
 
 namespace Dux\Push;
 
-use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
-use Exception;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
@@ -30,17 +28,6 @@ class PushProcessor implements Processor
         $type = $this->data['type'];
         if (!$type) {
             throw new ExceptionBusiness('Message type error');
-        }
-
-        // 事件触发
-        App::db()->getConnection()->beginTransaction();
-        try {
-            App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, $this->data), "subscribe.$this->name.$type");
-            App::db()->getConnection()->commit();
-            return self::ACK;
-        } catch (Exception $e) {
-            App::db()->getConnection()->rollBack();
-            return self::REJECT;
         }
     }
 
