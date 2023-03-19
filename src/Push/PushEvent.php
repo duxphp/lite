@@ -23,9 +23,9 @@ class PushEvent extends Event
     {
     }
 
-    public function send()
+    public function send(string $type, string|array|null $message, ?array $data = [])
     {
-        App::push()->topic($this->topic, $this->clientApp, $this->clientId)->send($this->data['type'], $this->data['message'], $this->data['data']);
+        App::push()->topic($this->topic, $this->clientApp, $this->clientId)->send($type, $message, $data);
     }
 
 }
