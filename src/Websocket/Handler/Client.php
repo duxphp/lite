@@ -6,17 +6,7 @@ use Workerman\Connection\TcpConnection;
 
 class Client
 {
-    public string $platform = '';
-
-    public function __construct(public TcpConnection $connection, public string $sub, public int|string $id)
+    public function __construct(public TcpConnection $connection, public string $sub, public int|string $id, public string $platform = 'web')
     {
     }
-
-    public function send(string $type, string|array $message = '', array $data = []): ?bool
-    {
-        $content = json_encode(['type' => $type, 'message' => $message, 'data' => $data], JSON_UNESCAPED_UNICODE);
-        return $this->connection->send($content);
-    }
-
-
 }

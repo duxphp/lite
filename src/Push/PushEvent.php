@@ -8,14 +8,14 @@ class PushEvent extends Event
 {
 
     public function __construct(
-        // 订阅名称
-        public string $name,
         // 用户应用
         public string $clientApp,
         // 用户ID
         public string $clientId,
         // 消息数据
-        public array  $data
+        public array  $data = [],
+        // 平台信息
+        public string $platform = 'web',
     )
     {
     }

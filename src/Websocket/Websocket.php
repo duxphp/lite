@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Dux\Websocket;
 
-use Dux\Websocket\Handler\Client;
-use Dux\Websocket\Handler\Event;
 use Dux\App;
+use Dux\Push\PushEvent;
+use Dux\Websocket\Handler\Client;
 use Dux\Websocket\Handler\EventService;
+use Exception;
 use Firebase\JWT\JWT;
 use Workerman\Connection\TcpConnection;
-use Workerman\Worker;
 use Workerman\Lib\Timer;
-use function DI\string;
+use Workerman\Worker;
 
 class Websocket
 {
@@ -50,13 +50,12 @@ class Websocket
                 }
             }
         });
-
         App::event()->dispatch(new EventService($this), 'websocket.start');
     }
 
     public function onConnect(TcpConnection $connection): void
     {
-        $connection->onWebSocketConnect = function ($connection, $httpBuffer) {
+        $connection->onWebSocketConnect = function (TcpConnection $connection, $httpBuffer) {
             $platform = (string)$_SERVER['PLATFORM'];
             $token = $_GET['token'];
             if (!$token) {
@@ -66,7 +65,7 @@ class Websocket
             }
             try {
                 // 授权解码
-                $jwt = JWT::decode($token, \Dux\App::config("use")->get("app.secret"), ["HS256", "HS512", "HS384"]);
+                $jwt = JWT::decode($token, App::config("use")->get("app.secret"), ["HS256", "HS512", "HS384"]);
                 if (!$jwt->sub || !$jwt->id) {
                     self::send($connection, 'error', '授权参数有误');
                     $connection->close();
@@ -79,10 +78,9 @@ class Websocket
                 }
 
                 // 设置功能类型与用户id
-                $client = new Client($connection, $jwt->sub, $jwt->id);
-                $client->platform = $platform;
+                $client = new Client($connection, $jwt->sub, $jwt->id, $platform);
 
-                // 链接消息
+                // 发送连接消息
                 self::send($connection, 'connect', '', [
                     'has' => $jwt->sub,
                     'has_id' => $jwt->id
@@ -92,10 +90,15 @@ class Websocket
                 $this->pings[$connection->id] = time();
                 $this->clients[$jwt->sub][$jwt->id] = $client;
                 $this->clientMaps[$connection->id] = $client;
-                App::event()->dispatch(new Event($this, $connection), 'websocket.online');
+                App::event()->dispatch(new PushEvent($client->sub, (string)$client->id, [], $client->platform), 'message.online');
 
+                // 消费订阅
+                while (true) {
+                    $data = App::push()->topic("message", (string)$jwt->sub, (string)$jwt->id)->consume();
+                    self::send(...$data);
+                }
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 App::log('websocket')->error($e->getMessage());
                 self::send($connection, 'error', $e->getMessage());
                 $connection->close();
@@ -130,10 +133,22 @@ class Websocket
                     self::send($connection, 'error', '请先授权登录');
                     break;
                 }
-                // 触发消息事件
                 try {
-                    App::event()->dispatch(new Event($this, $connection, $params), 'websocket.' . $params['type']);
-                } catch (\Exception $e) {
+                    $client = $this->clientMaps[$connection->id];
+
+                    $data = [
+                        'type' => $params['type'],
+                        'message' => $params['message'] ?: null,
+                        'data' => $params['data'] ?: null
+                    ];
+
+                    // 触发消息事件
+                    App::event()->dispatch(new PushEvent($client->sub, (string)$client->id, $data, $client->platform), "message." . $params['type']);
+
+                    // 消息推送
+                    App::push()->topic('message', $client->sub, (string)$client->id)->send(...$data);
+                    // App::event()->dispatch(new Event($this, $connection, $params), 'websocket.' . $params['type']);
+                } catch (Exception $e) {
                     self::send($connection, 'error', $e->getMessage());
                 }
         }
@@ -147,10 +162,13 @@ class Websocket
             return;
         }
 
-        // 触发事件
         try {
-            App::event()->dispatch(new Event($this, $connection), 'websocket.offline');
-        } catch (\Exception $e) {
+            // 触发事件
+            App::event()->dispatch(new PushEvent($client->sub, (string)$client->id), 'message.online', [], $client->platform);
+            // 取消订阅
+            App::push()->topic('message', $client->sub, (string)$client->id)->unsubscribe();
+
+        } catch (Exception $e) {
             App::log("websocket")->error($e->getMessage(), $e->getTrace());
         }
 

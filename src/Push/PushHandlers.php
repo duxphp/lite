@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Dux\Push;
 
 use DateTime;
-use Dux\App;
 use Enqueue\Consumption\ChainExtension;
 use Enqueue\Consumption\Extension\LimitConsumedMessagesExtension;
 use Enqueue\Consumption\Extension\LimitConsumptionTimeExtension;
@@ -36,33 +35,34 @@ class PushHandlers
      * @throws InvalidDestinationException
      * @throws InvalidMessageException
      */
-    public function send(string $type, string|array|null $message, ?array $data): void
+    public function send(string $type, string|array|null $message, ?array $data = []): void
     {
-        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, [
-            'type' => $type,
-            'message' => $message,
-            'data' => $data
-        ]), "subscribe.$this->name.$type");
         $messageCtx = $this->context->createMessage(json_encode([
             'type' => $type,
             'message' => $message,
             'data' => $data
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-        $this->context->createProducer()->send($this->topic, $messageCtx);
+        $this->context->createProducer()->setTimeToLive(null)->send($this->topic, $messageCtx);
     }
 
-    public function consume(): array
+    public function consume(int $timeout = 0): array
     {
-        App::event()->dispatch(new PushEvent($this->name, $this->clientApp, $this->clientId, []), "subscribe.$this->name.ping");
-
-        $queueConsumer = new QueueConsumer($this->context, new ChainExtension([
-            new LimitConsumptionTimeExtension(new DateTime('now + 10 sec')),
+        $middle = [
             new LimitConsumedMessagesExtension(1)
-        ]));
+        ];
+        if ($timeout) {
+            $middle[] = new LimitConsumptionTimeExtension(new DateTime("now + $timeout sec"));
+        }
+        $queueConsumer = new QueueConsumer($this->context, new ChainExtension($middle));
         $processor = new PushProcessor($this->name, $this->clientApp, $this->clientId);
         $queueConsumer->bind($this->topic->getTopicName(), $processor);
         $queueConsumer->consume();
         return $processor->get();
+    }
+
+    public function unsubscribe(): void
+    {
+        $this->context->deleteTopic($this->topic);
     }
 
 }
