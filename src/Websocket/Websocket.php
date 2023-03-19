@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Dux\Websocket;
 
 use Dux\App;
-use Dux\Push\PushEvent;
 use Dux\Websocket\Handler\Client;
 use Dux\Websocket\Handler\EventService;
 use Exception;
@@ -36,6 +35,7 @@ class Websocket
 
     public function onWorkerStart(Worker $worker): void
     {
+
         // 心跳连接
         Timer::add(30, function () use ($worker) {
             $time = time();
@@ -51,6 +51,7 @@ class Websocket
             }
         });
         App::event()->dispatch(new EventService($this), 'websocket.start');
+
     }
 
     public function onConnect(TcpConnection $connection): void
@@ -81,7 +82,8 @@ class Websocket
                 $client = new Client($connection, $jwt->sub, $jwt->id, $platform);
 
                 // 发送连接消息
-                self::send($connection, 'connect', '', [
+
+                Message::send((string)$jwt->sub, (string)$jwt->id, 'connect', '', [
                     'has' => $jwt->sub,
                     'has_id' => $jwt->id
                 ]);
@@ -90,17 +92,18 @@ class Websocket
                 $this->pings[$connection->id] = time();
                 $this->clients[$jwt->sub][$jwt->id] = $client;
                 $this->clientMaps[$connection->id] = $client;
-                App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
 
-                // 消费订阅
-                while (true) {
-                    try {
-                        $data = App::push()->topic("message", (string)$jwt->sub, (string)$jwt->id)->consume();
-                        self::send(...$data);
-                    } catch (Exception $e) {
-                        App::log('message')->error($e->getMessage());
+                // 触发上线事件
+                App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
+
+
+                // 消息订阅
+                Message::$redisClient->subscribe("message.$jwt->sub.$jwt->id", function ($data) use ($connection) {
+                    if (!$data['type']) {
+                        return;
                     }
-                }
+                    self::send($connection, (string)$data['type'], $data['message'] ?: '', $data['data'] ?: []);
+                });
 
             } catch (Exception $e) {
                 App::log('websocket')->error($e->getMessage());
@@ -137,21 +140,16 @@ class Websocket
                     self::send($connection, 'error', '请先授权登录');
                     break;
                 }
+
+                // 触发消息事件
                 try {
                     $client = $this->clientMaps[$connection->id];
-
                     $data = [
                         'type' => $params['type'],
                         'message' => $params['message'] ?: null,
                         'data' => $params['data'] ?: null
                     ];
-
-                    // 触发消息事件
-                    App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, $data, $client->platform), "message." . $params['type']);
-
-                    // 消息推送
-                    App::push()->topic('message', $client->sub, (string)$client->id)->send(...$data);
-                    // App::event()->dispatch(new Event($this, $connection, $params), 'websocket.' . $params['type']);
+                    App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, $data, $client->platform), "message." . $params['type']);
                 } catch (Exception $e) {
                     self::send($connection, 'error', $e->getMessage());
                 }
@@ -168,10 +166,9 @@ class Websocket
 
         try {
             // 触发事件
-            App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
+            App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
             // 取消订阅
-            App::push()->topic('message', $client->sub, (string)$client->id)->unsubscribe();
-
+            Message::$redisClient->unsubscribe("message.$client->sub.$client->id");
         } catch (Exception $e) {
             App::log("websocket")->error($e->getMessage(), $e->getTrace());
         }
