@@ -90,7 +90,7 @@ class Websocket
                 $this->pings[$connection->id] = time();
                 $this->clients[$jwt->sub][$jwt->id] = $client;
                 $this->clientMaps[$connection->id] = $client;
-                App::event()->dispatch(new PushEvent($client->sub, (string)$client->id, [], $client->platform), 'message.online');
+                App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
 
                 // 消费订阅
                 while (true) {
@@ -147,7 +147,7 @@ class Websocket
                     ];
 
                     // 触发消息事件
-                    App::event()->dispatch(new PushEvent($client->sub, (string)$client->id, $data, $client->platform), "message." . $params['type']);
+                    App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, $data, $client->platform), "message." . $params['type']);
 
                     // 消息推送
                     App::push()->topic('message', $client->sub, (string)$client->id)->send(...$data);
@@ -168,7 +168,7 @@ class Websocket
 
         try {
             // 触发事件
-            App::event()->dispatch(new PushEvent($client->sub, (string)$client->id), 'message.online', [], $client->platform);
+            App::event()->dispatch(new PushEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
             // 取消订阅
             App::push()->topic('message', $client->sub, (string)$client->id)->unsubscribe();
 
