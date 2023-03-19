@@ -12,7 +12,7 @@ class PushEvent extends Event
         public string $clientApp,
         // 用户ID
         public string $clientId,
-        // 消息数据
+        // 消息数据 ['type' => '', 'message' => '', 'data' => []]
         public array  $data = [],
         // 平台信息
         public string $platform = 'web',

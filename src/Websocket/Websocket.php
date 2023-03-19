@@ -94,8 +94,12 @@ class Websocket
 
                 // 消费订阅
                 while (true) {
-                    $data = App::push()->topic("message", (string)$jwt->sub, (string)$jwt->id)->consume();
-                    self::send(...$data);
+                    try {
+                        $data = App::push()->topic("message", (string)$jwt->sub, (string)$jwt->id)->consume();
+                        self::send(...$data);
+                    } catch (Exception $e) {
+                        App::log('message')->error($e->getMessage());
+                    }
                 }
 
             } catch (Exception $e) {
