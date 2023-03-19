@@ -40,10 +40,6 @@ class WebsocketCommand extends Command
         $worker = new Worker("websocket://0.0.0.0:$port");
         App::di()->set('ws.worker', $worker);
 
-        // 初始化消息
-        $config = App::config("database")->get("redis.drivers.default", []);
-        Message::connect($config);
-
         $handler = new Websocket();
 
         $worker->onWorkerStart = [$handler, 'onWorkerStart'];
