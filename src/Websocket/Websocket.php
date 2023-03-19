@@ -19,28 +19,27 @@ class Websocket
      * PING 端
      * @var array
      */
-    public array $pings = [];
+    public static array $pings = [];
 
     /**
      * 客户端
      * @var $clients Client[][]
      */
-    public array $clients = [];
+    public static array $clients = [];
 
     /**
      * 客户端映射
      * @var $clients Client[]
      */
-    public array $clientMaps = [];
+    public static array $clientMaps = [];
 
     public function onWorkerStart(Worker $worker): void
     {
-
         // 心跳连接
         Timer::add(30, function () use ($worker) {
             $time = time();
             foreach ($worker->connections as $connection) {
-                $ping = $this->pings[$connection->id];
+                $ping = self::$pings[$connection->id];
                 if ($time - $ping > 60) {
                     App::log('websocket')->error('connection timeout');
                     self::send($connection, 'offline', 'connection timeout');
@@ -74,36 +73,27 @@ class Websocket
                 }
 
                 // 判断单点登录
-                if ($this->clients[$jwt->sub][$jwt->id]) {
-                    $this->clients[$jwt->sub][$jwt->id]->connection->close("\x88\x02\x27\x10", true);
+                if (self::$clients[$jwt->sub][$jwt->id]) {
+                    self::$clients[$jwt->sub][$jwt->id]->connection->close("\x88\x02\x27\x10", true);
                 }
 
                 // 设置功能类型与用户id
                 $client = new Client($connection, $jwt->sub, $jwt->id, $platform);
 
                 // 发送连接消息
-
                 Message::send((string)$jwt->sub, (string)$jwt->id, 'connect', '', [
                     'has' => $jwt->sub,
                     'has_id' => $jwt->id
                 ]);
 
                 // 设置客户端信息
-                $this->pings[$connection->id] = time();
-                $this->clients[$jwt->sub][$jwt->id] = $client;
-                $this->clientMaps[$connection->id] = $client;
+                self::$pings[$connection->id] = time();
+                self::$clients[$jwt->sub][$jwt->id] = $client;
+                self::$clientMaps[$connection->id] = $client;
 
                 // 触发上线事件
                 App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
 
-
-                // 消息订阅
-                Message::$redisClient->subscribe("message.$jwt->sub.$jwt->id", function ($data) use ($connection) {
-                    if (!$data['type']) {
-                        return;
-                    }
-                    self::send($connection, (string)$data['type'], $data['message'] ?: '', $data['data'] ?: []);
-                });
 
             } catch (Exception $e) {
                 App::log('websocket')->error($e->getMessage());
@@ -119,7 +109,7 @@ class Websocket
         $worker = App::di()->get('ws.worker');
 
         // 更新心跳时间
-        $this->pings[$connection->id] = time();
+        self::$pings[$connection->id] = time();
 
         if (!isset($worker->connections[$connection->id])) {
             self::send($connection, 'offline', '连接已断开，请重新登录');
@@ -136,14 +126,14 @@ class Websocket
                 break;
             default:
                 // 判断授权
-                if (!$this->clientMaps[$connection->id]) {
+                if (!self::$clientMaps[$connection->id]) {
                     self::send($connection, 'error', '请先授权登录');
                     break;
                 }
 
                 // 触发消息事件
                 try {
-                    $client = $this->clientMaps[$connection->id];
+                    $client = self::$clientMaps[$connection->id];
                     $data = [
                         'type' => $params['type'],
                         'message' => $params['message'] ?: null,
@@ -159,22 +149,20 @@ class Websocket
 
     public function onClose(TcpConnection $connection): void
     {
-        $client = $this->clientMaps[$connection->id];
+        $client = self::$clientMaps[$connection->id];
         if (!$client) {
             return;
         }
 
         try {
             // 触发事件
-            App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
-            // 取消订阅
-            Message::$redisClient->unsubscribe("message.$client->sub.$client->id");
+            App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.offline');
         } catch (Exception $e) {
             App::log("websocket")->error($e->getMessage(), $e->getTrace());
         }
 
         // 卸载客户端数据
-        unset($this->pings[$connection->id], $this->clients[$client->sub][$client->id], $this->clientMaps[$connection->id]);
+        unset(self::$pings[$connection->id], self::$clients[$client->sub][$client->id], self::$clientMaps[$connection->id]);
     }
 
 

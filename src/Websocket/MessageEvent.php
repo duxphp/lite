@@ -32,7 +32,7 @@ class MessageEvent extends Event
      * @param array|null $data
      * @return void
      */
-    public function send(string $type, string|array|null $message, ?array $data = [])
+    public function send(string $type, string|array|null $message, ?array $data = []): void
     {
         Message::send($this->clientApp, $this->clientId, $type, $message, $data);
     }
