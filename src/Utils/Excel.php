@@ -7,6 +7,7 @@ use Dux\Handlers\ExceptionBusiness;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class Excel
 {
@@ -73,7 +74,7 @@ class Excel
      * @param array $label
      * @param array $data
      */
-    public static function export(string $title, string $subtitle, array $label, array $data)
+    public static function export(string $title, string $subtitle, array $label, array $data, ResponseInterface $response)
     {
         $count = count($label);
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -134,18 +135,18 @@ class Excel
                 $worksheet->setCellValueExplicit([$k + 1, $headRow], $content, DataType::TYPE_STRING);
                 $item = $worksheet->getStyle([$k + 1, $headRow])->applyFromArray($styleArray);
                 if (is_callable($callback)) {
-                    $callback($item,$worksheet);
+                    $callback($item, $worksheet);
                 }
             }
         }
 
         unset($worksheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . rawurlencode($title . '-' . date('YmdHis')) . '.xlsx"');
-        header('Cache-Control: max-age=0');
+
+        $response->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->withHeader('Content-Disposition', 'attachment;filename="' . rawurlencode($title . '-' . date('YmdHis')) . '.xlsx"');
+        $response->withHeader('Cache-Control', 'max-age=0');
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save('php://output');
-        $spreadsheet->disconnectWorksheets();
     }
 
 }

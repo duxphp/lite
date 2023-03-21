@@ -61,7 +61,7 @@ class Manage {
          */
         $query = $this->model::query();
 
-        $key = $queryParams['id'];
+        $key = $queryParams['key'];
         if ($key) {
             $query->where('id', $key);
         }
