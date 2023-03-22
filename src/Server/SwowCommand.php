@@ -44,6 +44,9 @@ class SwowCommand extends Command
         $server->bind('0.0.0.0', $port)->listen(Socket::DEFAULT_BACKLOG);
         $output->writeln("<info>server start http://0.0.0.0:" . $port . "</info>");
 
+
+        App::$server = ServerEnum::SWOW;
+
         Bootstrap::reloadDb();
 
         while (true) {
@@ -51,7 +54,6 @@ class SwowCommand extends Command
                 $connection = null;
                 $connection = $server->acceptConnection();
                 Coroutine::run(static function () use ($connection, $output): void {
-                    App::di()->get("db")->get();
                     try {
                         while (true) {
                             $request = null;
@@ -68,6 +70,7 @@ class SwowCommand extends Command
                             }
                         }
                     } catch (Exception $exception) {
+                        App::log("swow")->error($exception->getMessage(), $exception->getTrace());
                         $output->writeln("<error>" . $exception->getMessage() . "</error>");
                     } finally {
                         App::di()->get("db")->release();

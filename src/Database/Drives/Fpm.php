@@ -19,6 +19,7 @@ class Fpm implements DriveInterface
         $capsule->setEventDispatcher(new Dispatcher(new Container));
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
+        $this->capsule = $capsule;
     }
 
     public function get(): Manager

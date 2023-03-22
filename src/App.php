@@ -10,6 +10,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Dux\App\AppExtend;
 use Dux\Config\Yaml;
+use Dux\Database\Db;
 use Dux\Database\Migrate;
 use Dux\Event\Event;
 use Dux\Handlers\Exception;
@@ -188,6 +189,10 @@ class App
      */
     public static function db(): Manager
     {
+        App::di()->set(
+            "db",
+            new Db(App::config("database")->get("db.drivers"))
+        );
         return self::$di->get("db")->get();
     }
 

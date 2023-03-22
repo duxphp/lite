@@ -11,7 +11,6 @@ use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Config\Config;
-use Dux\Database\Db;
 use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
@@ -241,7 +240,6 @@ class Bootstrap
 
     public function loadDb(): void
     {
-        self::reloadDb();
     }
 
     /**
@@ -323,14 +321,6 @@ class Bootstrap
             $this->permission = new Register();
         }
         return $this->permission;
-    }
-    
-    public static function reloadDb(): void
-    {
-        App::di()->set(
-            "db",
-            new Db(App::config("database")->get("db.drivers"))
-        );
     }
 
 }
