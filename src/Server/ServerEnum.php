@@ -6,4 +6,5 @@ enum ServerEnum: string
 {
     case FPM = "FPM";
     case WORKERMAN = "workerman";
+    case SWOW = "swow";
 }

@@ -184,16 +184,18 @@ class App
      * database
      * @source illuminate/database
      * @return Manager
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public static function db(): Manager
     {
         if (!self::$di->has("db")) {
             self::$di->set(
                 "db",
-                Db::init(self::config("database")->get("db.drivers"))
+                new Db(self::config("database")->get("db.drivers"))
             );
         }
-        return self::$di->get("db");
+        return self::$di->get("db")->get();
     }
 
     /**

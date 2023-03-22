@@ -4,27 +4,29 @@ declare(strict_types=1);
 namespace Dux\Server;
 
 use Dux\App;
+use Exception;
+use Swow\Coroutine;
+use Swow\CoroutineException;
+use Swow\Errno;
+use Swow\Http\Protocol\ProtocolException as HttpProtocolException;
+use Swow\Psr7\Server\Server;
+use Swow\Socket;
+use Swow\SocketException;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-use Swow\Coroutine;
-use Swow\CoroutineException;
-use Swow\Errno;
-use Swow\Http\Protocol\ProtocolException as HttpProtocolException;
-use Swow\Socket;
-use Swow\SocketException;
-
-class SwowCommand extends Command {
+class SwowCommand extends Command
+{
 
     protected static $defaultName = 'server:swow';
     protected static $defaultDescription = 'Use swow to start the web service';
 
 
-    protected function configure(): void {
+    protected function configure(): void
+    {
         $this->addOption(
             'port',
             null,
@@ -33,12 +35,13 @@ class SwowCommand extends Command {
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int {
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
         $port = $input->getOption("port") ?: 8080;
 
-        $server = new \Swow\Psr7\Server\Server();
+        $server = new Server();
         $server->bind('0.0.0.0', $port)->listen(Socket::DEFAULT_BACKLOG);
-        $output->writeln("<info>server start http://0.0.0.0:".$port."</info>");
+        $output->writeln("<info>server start http://0.0.0.0:" . $port . "</info>");
         while (true) {
             try {
                 $connection = null;

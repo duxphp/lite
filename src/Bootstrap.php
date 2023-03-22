@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Dux;
 
 
-use Carbon\Carbon;
+use DI\Container;
+use Dux\App\AppInstallCommand;
+use Dux\App\AppUninstallCommand;
 use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
@@ -15,14 +17,19 @@ use Dux\Database\MigrateCommand;
 use Dux\Database\ProxyCommand;
 use Dux\Event\Event;
 use Dux\Event\EventCommand;
+use Dux\Handlers\ErrorHandler;
+use Dux\Handlers\ErrorHtmlRenderer;
+use Dux\Handlers\ErrorJsonRenderer;
+use Dux\Handlers\ErrorPlainRenderer;
+use Dux\Handlers\ErrorXmlRenderer;
 use Dux\Helpers\AppCommand;
 use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Permission\PermissionCommand;
+use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
-use DI\Container;
 use Dux\Server\SwowCommand;
 use Dux\Server\WorkermanCommand;
 use Dux\View\View;
@@ -30,14 +37,13 @@ use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
-use Slim\App as slimApp;
-use Slim\Factory\AppFactory;
-use Dux\Handlers\ErrorHandler;
-use Slim\Psr7\Request;
-use \Symfony\Component\Console\Application;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\App as slimApp;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Factory\AppFactory;
+use Symfony\Component\Console\Application;
+use const PHP_SAPI;
 
 class Bootstrap
 {
@@ -81,7 +87,7 @@ class Bootstrap
         AppFactory::setContainer($di);
         $this->di = $di;
         $this->web = AppFactory::create();
-        $this->route = new \Dux\Route\Register();
+        $this->route = new Route\Register();
     }
 
     /**
@@ -140,9 +146,9 @@ class Bootstrap
         $commands[] = ProxyCommand::class;
         $commands[] = ManageCommand::class;
         $commands[] = CtrCommand::class;
-        $commands[] = \Dux\App\AppCommand::class;
-        $commands[] = \Dux\App\AppInstallCommand::class;
-        $commands[] = \Dux\App\AppUninstallCommand::class;
+        $commands[] = App\AppCommand::class;
+        $commands[] = AppInstallCommand::class;
+        $commands[] = AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
         $commands[] = WorkermanCommand::class;
@@ -170,7 +176,7 @@ class Bootstrap
     public function loadRoute(): void
     {
         // 注册公共头
-        if (!in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
+        if (!in_array(PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Methods: *');
             header('Access-Control-Allow-Headers: *');
@@ -187,11 +193,11 @@ class Bootstrap
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
         $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
         $errorMiddleware->setDefaultErrorHandler($errorHandler);
-        $errorHandler->registerErrorRenderer("application/json", \Dux\Handlers\ErrorJsonRenderer::class);
-        $errorHandler->registerErrorRenderer("application/xml", \Dux\Handlers\ErrorXmlRenderer::class);
-        $errorHandler->registerErrorRenderer("text/xml", \Dux\Handlers\ErrorXmlRenderer::class);
-        $errorHandler->registerErrorRenderer("text/html", \Dux\Handlers\ErrorHtmlRenderer::class);
-        $errorHandler->registerErrorRenderer("text/plain", \Dux\Handlers\ErrorPlainRenderer::class);
+        $errorHandler->registerErrorRenderer("application/json", ErrorJsonRenderer::class);
+        $errorHandler->registerErrorRenderer("application/xml", ErrorXmlRenderer::class);
+        $errorHandler->registerErrorRenderer("text/xml", ErrorXmlRenderer::class);
+        $errorHandler->registerErrorRenderer("text/html", ErrorHtmlRenderer::class);
+        $errorHandler->registerErrorRenderer("text/plain", ErrorPlainRenderer::class);
 
         // 跨域处理
         $this->web->options('/{routes:.+}', function ($request, $response, $args) {
@@ -234,7 +240,7 @@ class Bootstrap
 
     public function loadDb(): void
     {
-        App::db();
+
     }
 
     /**
@@ -305,7 +311,7 @@ class Bootstrap
     public function getMenu(): Menu\Register
     {
         if (!$this->menu) {
-            $this->menu = new \Dux\Menu\Register();
+            $this->menu = new Menu\Register();
         }
         return $this->menu;
     }
@@ -313,7 +319,7 @@ class Bootstrap
     public function getPermission(): Permission\Register
     {
         if (!$this->permission) {
-            $this->permission = new \Dux\Permission\Register();
+            $this->permission = new Register();
         }
         return $this->permission;
     }
