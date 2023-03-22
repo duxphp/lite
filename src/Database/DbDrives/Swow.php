@@ -2,7 +2,9 @@
 
 namespace Dux\Database\DbDrives;
 
+use Dux\Handlers\ExceptionBusiness;
 use Dux\Server\Context\ContextManage;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Events\Dispatcher;
@@ -33,7 +35,11 @@ class Swow implements DriveInterface
         $ctx = ContextManage::context();
         if (!$ctx->hasData("db")) {
             print_r('new Conn');
-            $ctx->setData("db", $this->getConnection());
+            $conn = $this->getConnection();
+            if (!$conn) {
+                throw new ExceptionBusiness(StatusCodeInterface::STATUS_SERVICE_UNAVAILABLE, StatusCodeInterface::STATUS_SERVICE_UNAVAILABLE);
+            }
+            $ctx->setData("db", $conn);
         }
         return $ctx->getData("db");
     }
@@ -76,9 +82,9 @@ class Swow implements DriveInterface
         return $capsule;
     }
 
-    public function getConnection(): Manager
+    public function getConnection(): ?Manager
     {
-        return $this->channel->pop();
+        return $this->channel->pop(10000);
     }
 
 
