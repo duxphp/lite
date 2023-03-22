@@ -243,7 +243,7 @@ class Bootstrap
     {
         $this->di->set(
             "db",
-            new Db(self::config("database")->get("db.drivers"))
+            new Db(App::config("database")->get("db.drivers"))
         );
     }
 
