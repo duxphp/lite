@@ -175,6 +175,7 @@ class Bootstrap
             header('Access-Control-Allow-Methods: *');
             header('Access-Control-Allow-Headers: *');
             header('Access-Control-Expose-Methods: *');
+            header('Access-Control-Expose-Headers: *');
         }
 
         // 解析内容
@@ -210,6 +211,7 @@ class Bootstrap
                 ->withHeader('Access-Control-Allow-Methods', '*')
                 ->withHeader('Access-Control-Allow-Headers', '*')
                 ->withHeader('Access-Control-Expose-Methods', '*')
+                ->withHeader('Access-Control-Expose-Headers', '*')
                 ->withHeader('Access-Control-Allow-Credentials', 'true');
         });
 
