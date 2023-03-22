@@ -11,6 +11,7 @@ use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Config\Config;
+use Dux\Database\Db;
 use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
@@ -240,7 +241,10 @@ class Bootstrap
 
     public function loadDb(): void
     {
-
+        $this->di->set(
+            "db",
+            new Db(self::config("database")->get("db.drivers"))
+        );
     }
 
     /**
