@@ -241,10 +241,7 @@ class Bootstrap
 
     public function loadDb(): void
     {
-        $this->di->set(
-            "db",
-            new Db(App::config("database")->get("db.drivers"))
-        );
+        self::reloadDb();
     }
 
     /**
@@ -326,6 +323,14 @@ class Bootstrap
             $this->permission = new Register();
         }
         return $this->permission;
+    }
+    
+    public static function reloadDb(): void
+    {
+        App::di()->set(
+            "db",
+            new Db(App::config("database")->get("db.drivers"))
+        );
     }
 
 }

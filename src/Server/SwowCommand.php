@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Server;
 
 use Dux\App;
+use Dux\Bootstrap;
 use Exception;
 use Swow\Coroutine;
 use Swow\CoroutineException;
@@ -42,11 +43,15 @@ class SwowCommand extends Command
         $server = new Server();
         $server->bind('0.0.0.0', $port)->listen(Socket::DEFAULT_BACKLOG);
         $output->writeln("<info>server start http://0.0.0.0:" . $port . "</info>");
+
+        Bootstrap::reloadDb();
+
         while (true) {
             try {
                 $connection = null;
                 $connection = $server->acceptConnection();
                 Coroutine::run(static function () use ($connection, $output): void {
+                    App::di()->get("db")->get();
                     try {
                         while (true) {
                             $request = null;
@@ -65,6 +70,7 @@ class SwowCommand extends Command
                     } catch (Exception $exception) {
                         $output->writeln("<error>" . $exception->getMessage() . "</error>");
                     } finally {
+                        App::di()->get("db")->release();
                         $connection->close();
                     }
                 });
