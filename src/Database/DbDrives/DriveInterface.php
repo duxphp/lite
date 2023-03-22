@@ -1,6 +1,6 @@
 <?php
 
-namespace Dux\Database\Drives;
+namespace Dux\Database\DbDrives;
 
 use Illuminate\Database\Capsule\Manager;
 
@@ -10,5 +10,5 @@ interface DriveInterface
 
     public function get(): Manager;
 
-    public function release();
+    public function release(): void;
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Dux\Database;
 
 use Dux\App;
-use Dux\Database\Drives\DriveInterface;
-use Dux\Database\Drives\Fpm;
-use Dux\Database\Drives\Swow;
+use Dux\Database\DbDrives\DriveInterface;
+use Dux\Database\DbDrives\Fpm;
+use Dux\Database\DbDrives\Swow;
 use Dux\Handlers\Exception;
 use Dux\Server\ServerEnum;
 use Illuminate\Database\Capsule\Manager;

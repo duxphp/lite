@@ -1,6 +1,6 @@
 <?php
 
-namespace Dux\Database\Drives;
+namespace Dux\Database\DbDrives;
 
 use Dux\App;
 use Dux\Handlers\Exception;
@@ -26,7 +26,7 @@ class Drive
     {
         return $this->handler->get();
     }
-    
+
     public function release()
     {
         return $this->handler->release();

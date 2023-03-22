@@ -1,6 +1,6 @@
 <?php
 
-namespace Dux\Database\Drives;
+namespace Dux\Database\DbDrives;
 
 use Dux\Server\Context\ContextManage;
 use Illuminate\Container\Container;
@@ -38,7 +38,7 @@ class Swow implements DriveInterface
         return $ctx->getData("db");
     }
 
-    public function release()
+    public function release(): void
     {
         $ctx = ContextManage::context();
         if ($ctx->getData("db")) {

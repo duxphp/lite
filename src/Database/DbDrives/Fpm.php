@@ -1,6 +1,6 @@
 <?php
 
-namespace Dux\Database\Drives;
+namespace Dux\Database\DbDrives;
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
@@ -26,7 +26,7 @@ class Fpm implements DriveInterface
         return $this->capsule;
     }
 
-    public function release()
+    public function release(): void
     {
     }
 
