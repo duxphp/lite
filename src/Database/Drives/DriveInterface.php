@@ -9,4 +9,6 @@ interface DriveInterface
     public function init(array $configs): void;
 
     public function get(): Manager;
+
+    public function release();
 }

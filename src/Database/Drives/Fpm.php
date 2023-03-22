@@ -26,4 +26,8 @@ class Fpm implements DriveInterface
         return $this->capsule;
     }
 
+    public function release()
+    {
+    }
+
 }

@@ -26,4 +26,9 @@ class Drive
     {
         return $this->handler->get();
     }
+    
+    public function release()
+    {
+        return $this->handler->release();
+    }
 }

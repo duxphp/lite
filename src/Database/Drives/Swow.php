@@ -37,6 +37,12 @@ class Swow implements DriveInterface
         return $ctx->getData("db");
     }
 
+    public function release()
+    {
+        $ctx = ContextManage::context();
+        $this->releaseConnection($ctx->getData("db"));
+    }
+
     public function createConnection(): Capsule
     {
         $capsule = new Manager;
