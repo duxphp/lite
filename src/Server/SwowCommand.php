@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Dux\Server;
 
 use Dux\App;
-use Dux\Bootstrap;
 use Exception;
 use Swow\Coroutine;
 use Swow\CoroutineException;
@@ -38,17 +37,15 @@ class SwowCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        App::$server = ServerEnum::SWOW;
+        
+        App::db();
+
         $port = $input->getOption("port") ?: 8080;
 
         $server = new Server();
         $server->bind('0.0.0.0', $port)->listen(Socket::DEFAULT_BACKLOG);
         $output->writeln("<info>server start http://0.0.0.0:" . $port . "</info>");
-
-
-        App::$server = ServerEnum::SWOW;
-
-        Bootstrap::reloadDb();
-
         while (true) {
             try {
                 $connection = null;
@@ -78,6 +75,9 @@ class SwowCommand extends Command
                     }
                 });
             } catch (SocketException|CoroutineException $exception) {
+
+                $output->writeln("<error>" . $exception->getMessage() . "</error>");
+
                 if (in_array($exception->getCode(), [Errno::EMFILE, Errno::ENFILE, Errno::ENOMEM], true)) {
                     sleep(1);
                 } else {

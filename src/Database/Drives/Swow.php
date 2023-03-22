@@ -84,6 +84,7 @@ class Swow implements DriveInterface
 
     public function releaseConnection(Manager $connection): void
     {
+        print_r('release Conn');
         $this->channel->push($connection);
     }
 }
