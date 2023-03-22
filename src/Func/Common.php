@@ -51,9 +51,18 @@ if (!function_exists('now')) {
 
 if (!function_exists('dux_debug')) {
     function dux_debug(...$args): void {
+
+        // 注册公共头
+        if (!in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+        }
+
         foreach ($args as $v) {
             VarDumper::dump($v);
         }
+        die;
     }
 }
 

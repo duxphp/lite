@@ -169,7 +169,6 @@ class Bootstrap
      */
     public function loadRoute(): void
     {
-
         // 注册公共头
         if (!in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
             header('Access-Control-Allow-Origin: *');
