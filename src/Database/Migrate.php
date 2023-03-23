@@ -59,9 +59,9 @@ class Migrate
         $pre = $connect->getTablePrefix();
         $modelTable = $model->getTable();
         $tempTable = 'table_' . $modelTable;
-        $tableExists = App::db()->schema()->hasTable($modelTable);
-        App::db()->schema()->dropIfExists($tempTable);
-        App::db()->schema()->create($tableExists ? $tempTable : $modelTable, function (Blueprint $table) use ($model) {
+        $tableExists = App::db()->getConnection()->getSchemaBuilder()->hasTable($modelTable);
+        App::db()->getConnection()->getSchemaBuilder()->dropIfExists($tempTable);
+        App::db()->getConnection()->getSchemaBuilder()->create($tableExists ? $tempTable : $modelTable, function (Blueprint $table) use ($model) {
             $model->migration($table);
         });
         if (!$tableExists) {
@@ -82,7 +82,7 @@ class Migrate
         if ($diff) {
             $manager->alterTable($diff);
         }
-        App::db()->schema()->drop($tempTable);
+        App::db()->getConnection()->getSchemaBuilder()->drop($tempTable);
     }
 
 
