@@ -16,6 +16,7 @@ class Fpm implements DriveInterface
         foreach ($configs as $key => $config) {
             $capsule->addConnection($config, $key);
         }
+        $capsule->setAsGlobal();
         $capsule->setEventDispatcher(new Dispatcher(new Container));
         $capsule->bootEloquent();
         $this->capsule = $capsule;
