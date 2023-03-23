@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Dux\Database;
 
+use Doctrine\DBAL\Schema\Comparator;
 use Dux\App;
 use Dux\Database\Attribute\AutoMigrate;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
-use Doctrine\DBAL\Schema\Comparator;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Migrate
@@ -23,7 +23,7 @@ class Migrate
     {
         $name = ucfirst($name);
         $seeds = [];
-        $connect = App::db()->connection();
+        $connect = App::db()->getConnection();
         foreach ($this->migrate as $model) {
             if ($name && !str_contains($model, "\\$name\\Models\\")) {
                 continue;
