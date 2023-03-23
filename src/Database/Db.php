@@ -31,8 +31,8 @@ class Db
         return $this->handler->get();
     }
 
-    public function release()
+    public function release(): void
     {
-        return $this->handler->release();
+        $this->handler->release();
     }
 }

@@ -240,7 +240,6 @@ class Bootstrap
 
     public function loadDb(): void
     {
-        App::db();
     }
 
     /**

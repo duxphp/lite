@@ -189,10 +189,12 @@ class App
      */
     public static function db(): Manager
     {
-        App::di()->set(
-            "db",
-            new Db(App::config("database")->get("db.drivers"))
-        );
+        if (!self::$di->has("db")) {
+            self::di()->set(
+                "db",
+                new Db(App::config("database")->get("db.drivers"))
+            );
+        }
         return self::$di->get("db")->get();
     }
 
