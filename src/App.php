@@ -15,9 +15,7 @@ use Dux\Database\Migrate;
 use Dux\Event\Event;
 use Dux\Handlers\Exception;
 use Dux\Logs\LogHandler;
-use Dux\Push\Push;
 use Dux\Queue\Queue;
-use Dux\Server\ServerEnum;
 use Dux\Storage\Storage;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
@@ -44,8 +42,6 @@ class App
     public static Container $di;
     public static array $config;
     public static array $registerApp = [];
-
-    public static ServerEnum $server = ServerEnum::FPM;
 
     /**
      * create
