@@ -3,36 +3,22 @@ declare(strict_types=1);
 
 namespace Dux\Database;
 
-use Dux\App;
-use Dux\Database\DbDrives\DriveInterface;
-use Dux\Database\DbDrives\Fpm;
-use Dux\Database\DbDrives\Swow;
-use Dux\Handlers\Exception;
-use Dux\Server\ServerEnum;
+use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Events\Dispatcher;
 
 class Db
 {
-
-    public DriveInterface $handler;
-
-    public function __construct(array $config)
+    
+    public static function init(array $configs): Manager
     {
-        $this->handler = match (App::$server) {
-            ServerEnum::FPM => new Fpm(),
-            ServerEnum::SWOW => new Swow(),
-            default => throw new Exception('Database driver does not exist'),
-        };
-        $this->handler->init($config);
-    }
+        $capsule = new Manager;
+        foreach ($configs as $key => $config) {
+            $capsule->addConnection($config, $key);
+        }
+        $capsule->setEventDispatcher(new Dispatcher(new Container));
+        $capsule->bootEloquent();
 
-    public function get(): Manager
-    {
-        return $this->handler->get();
-    }
-
-    public function release(): void
-    {
-        $this->handler->release();
+        return $capsule;
     }
 }

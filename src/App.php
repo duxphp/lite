@@ -192,10 +192,10 @@ class App
         if (!self::$di->has("db")) {
             self::di()->set(
                 "db",
-                new Db(App::config("database")->get("db.drivers"))
+                Db::init(App::config("database")->get("db.drivers"))
             );
         }
-        return self::$di->get("db")->get();
+        return self::$di->get("db");
     }
 
     /**
