@@ -189,6 +189,7 @@ class Bootstrap
         // 注册路由中间件
         $this->web->addRoutingMiddleware();
 
+
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
         $errorHandler = new ErrorHandler($this->web->getCallableResolver(), $this->web->getResponseFactory());
@@ -221,7 +222,6 @@ class Bootstrap
                 ->withHeader('Access-Control-Allow-Credentials', 'true');
         });
 
-
         $cache = (bool)App::config("use")->get("app.cache");
         if ($cache) {
             $routeCollector = $this->web->getRouteCollector();
@@ -233,9 +233,6 @@ class Bootstrap
     public function loadEvent(): void
     {
         $this->event = new Event();
-
-        // 注册服务事件
-        $this->event->addListener('server.start', [new DbListener(), 'start']);
     }
 
     public function loadDb(): void
