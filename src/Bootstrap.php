@@ -151,8 +151,6 @@ class Bootstrap
         $commands[] = AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
-        $commands[] = WorkermanCommand::class;
-        $commands[] = SwowCommand::class;
         $commands[] = WebsocketCommand::class;
         $this->command = Command::init($commands);
 
