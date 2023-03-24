@@ -4,6 +4,10 @@ declare(strict_types=1);
 namespace Dux;
 
 
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Clockwork;
+use Clockwork\Storage\FileStorage;
+use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
 use Dux\App\AppInstallCommand;
 use Dux\App\AppUninstallCommand;
@@ -11,7 +15,6 @@ use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
 use Dux\Config\Config;
-use Dux\Database\DbListener;
 use Dux\Database\ListCommand;
 use Dux\Database\MigrateCommand;
 use Dux\Database\ProxyCommand;
@@ -30,8 +33,6 @@ use Dux\Permission\PermissionCommand;
 use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
-use Dux\Server\SwowCommand;
-use Dux\Server\WorkermanCommand;
 use Dux\View\View;
 use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
@@ -43,7 +44,6 @@ use Slim\App as slimApp;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Symfony\Component\Console\Application;
-use const PHP_SAPI;
 
 class Bootstrap
 {
@@ -173,20 +173,20 @@ class Bootstrap
      */
     public function loadRoute(): void
     {
-        // 注册公共头
-        if (!in_array(PHP_SAPI, ['cli', 'phpdbg'], true) && !headers_sent()) {
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Methods: *');
-            header('Access-Control-Allow-Headers: *');
-            header('Access-Control-Expose-Methods: *');
-            header('Access-Control-Expose-Headers: *');
-        }
+
+
+        $this->di->set('clock', function () {
+            $clockwork = new Clockwork();
+            $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
+            $clockwork->authenticator(new NullAuthenticator);
+            return $clockwork;
+        });
+
 
         // 解析内容
         $this->web->addBodyParsingMiddleware();
         // 注册路由中间件
         $this->web->addRoutingMiddleware();
-
 
         // 注册异常处理
         $errorMiddleware = $this->web->addErrorMiddleware($this->debug, true, true);
@@ -225,6 +225,10 @@ class Bootstrap
             $routeCollector = $this->web->getRouteCollector();
             $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
         }
+
+
+        // 注册 clockwork
+        $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
 
     }
 
