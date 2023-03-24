@@ -1,0 +1,18 @@
+version: '2.7'
+server:
+  command: 'php Worker.php'
+  relay: pipes
+http:
+  address: '0.0.0.0:8080'
+  middleware:
+    - gzip
+    - static
+  static:
+    dir: public
+    forbid:
+      - .php
+      - .htaccess
+  pool:
+    num_workers: 100
+    supervisor:
+      max_worker_memory: 100

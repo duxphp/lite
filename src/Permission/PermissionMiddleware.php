@@ -10,15 +10,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
-class PermissionMiddleware {
+class PermissionMiddleware
+{
 
     public function __construct(
         public string $name,
         public string $model
-    ) {
+    )
+    {
     }
 
-    public function __invoke(Request $request, RequestHandler $handler): Response {
+    public function __invoke(Request $request, RequestHandler $handler): Response
+    {
         $auth = $request->getAttribute("auth");
         $route = RouteContext::fromRequest($request)->getRoute();
         $routeName = $route->getName();
@@ -26,7 +29,7 @@ class PermissionMiddleware {
         if (!$allPermission || !in_array($routeName, $allPermission)) {
             return $handler->handle($request);
         }
-        $userInfo = $this->model::query()->find($auth["id"]);
+        $userInfo = $this->model::query()->with('roles')->find($auth["id"]);
         $permission = (array)$userInfo->permission;
         if ($permission && !in_array($routeName, $permission)) {
             throw new ExceptionBusiness("Forbidden", 403);
