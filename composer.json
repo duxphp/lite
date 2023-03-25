@@ -2,7 +2,12 @@
   "name": "duxphp/lite",
   "type": "composer-plugin",
   "description": "The lightweight framework based on slim php",
-  "keywords": ["PHP framework", "PHP", "slim", "duxphp"],
+  "keywords": [
+    "PHP framework",
+    "PHP",
+    "slim",
+    "duxphp"
+  ],
   "homepage": "https://github.com/duxphp",
   "license": "MIT",
   "support": {
@@ -10,7 +15,10 @@
     "source": "https://github.com/duxphp/lite"
   },
   "authors": [
-    {"name": "duxphp", "email": "admin@duxphp.com"}
+    {
+      "name": "duxphp",
+      "email": "admin@duxphp.com"
+    }
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -56,7 +64,8 @@
     "workerman/workerman": "^4.1",
     "symfony/process": "^6.2",
     "workerman/redis-queue": "^1.0",
-    "itsgoingd/clockwork": "^5.1"
+    "itsgoingd/clockwork": "^5.1",
+    "intervention/image": "^2.7"
   },
   "require-dev": {
     "composer/composer": "^2.0",
@@ -69,7 +78,6 @@
     "psr-4": {
       "Dux\\": "src/",
       "Dux\\Tests\\": "tests"
-
     }
   }
 }
