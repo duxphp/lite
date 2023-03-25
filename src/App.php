@@ -120,7 +120,7 @@ class App
         }
 
         $file = App::$configPath . "/$name.dev.yaml";
-        if (!$file) {
+        if (!is_file($file)) {
             $file = App::$configPath . "/$name.yaml";
         }
         $config = new Config($file, new Yaml());
