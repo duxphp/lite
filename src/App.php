@@ -350,7 +350,7 @@ class App
      */
     public static function clock($message = null): ?Clockwork
     {
-        if (self::config('use')->get('clock')) {
+        if (!self::config('use')->get('clock')) {
             return null;
         }
         if (!self::$di->has("clock")) {
