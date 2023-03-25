@@ -6,6 +6,8 @@ namespace Dux;
 
 use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App\AppInstallCommand;
 use Dux\App\AppUninstallCommand;
 use Dux\App\Attribute;
@@ -69,7 +71,7 @@ class Bootstrap
         error_reporting(E_ALL ^ E_DEPRECATED ^ E_WARNING);
     }
 
-    public function loadFunc()
+    public function loadFunc(): void
     {
         require_once "Func/Response.php";
         require_once "Func/Common.php";
@@ -77,6 +79,7 @@ class Bootstrap
 
     /**
      * loadWeb
+     * @param Container $di
      * @return void
      */
     public function loadWeb(Container $di): void
@@ -90,13 +93,12 @@ class Bootstrap
     /**
      * loadConfig
      * @return void
-     */
-    /**
-     * loadConfig
-     * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadConfig(): void
     {
+
         $this->debug = (bool)App::config("use")->get("app.debug");
         $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
@@ -120,6 +122,8 @@ class Bootstrap
     /**
      * loadCache
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadCache(): void
     {
@@ -130,6 +134,8 @@ class Bootstrap
     /**
      * loadCommand
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadCommand(): void
     {
@@ -159,7 +165,7 @@ class Bootstrap
      * loadView
      * @return void
      */
-    public function loadView()
+    public function loadView(): void
     {
         $this->view = View::init("app");
     }
@@ -167,12 +173,14 @@ class Bootstrap
     /**
      * loadRoute
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadRoute(): void
     {
-        
-        $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
-
+        if (App::config('use')->get('clock')) {
+            $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
+        }
         // 解析内容
         $this->web->addBodyParsingMiddleware();
         // 注册路由中间件
@@ -228,8 +236,10 @@ class Bootstrap
     }
 
     /**
-     * 载入应用
+     * load app
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadApp(): void
     {

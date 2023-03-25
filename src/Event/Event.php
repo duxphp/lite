@@ -12,12 +12,15 @@ class Event extends EventDispatcher
 {
 
     public array $registers = [];
-    private EventDataSource $source;
+    private ?EventDataSource $source = null;
 
     public function __construct()
     {
-        $this->source = new EventDataSource($this);
-        App::clock()->addDataSource($this->source);
+        $status = App::config('use')->get('clock');
+        if ($status) {
+            $this->source = new EventDataSource($this);
+            App::clock()->addDataSource($this->source);
+        }
         parent::__construct();
     }
 
@@ -31,7 +34,9 @@ class Event extends EventDispatcher
     {
         $startTime = microtime(true);
         $result = parent::dispatch($event, $eventName);
-        $this->source->addEvent($event, $eventName, $startTime, microtime(true));
+        if ($this->source) {
+            $this->source->addEvent($event, $eventName, $startTime, microtime(true));
+        }
         return $result;
     }
 

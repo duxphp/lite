@@ -108,8 +108,10 @@ class App
     /**
      * config
      * @source noodlehaus/config
-     * @param string $app
+     * @param string $name
      * @return Config
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public static function config(string $name): Config
     {
@@ -336,13 +338,16 @@ class App
     }
 
     /**
-     * @param $message
-     * @return Clockwork
+     * @param null $message
+     * @return Clockwork|null
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function clock($message = null): Clockwork
+    public static function clock($message = null): ?Clockwork
     {
+        if (self::config('clock')->get('status')) {
+            return null;
+        }
         if (!self::$di->has("clock")) {
             $clockwork = new Clockwork();
             $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
