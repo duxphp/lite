@@ -36,7 +36,7 @@ class Menu
         $menuData = [];
         foreach ($this->data as $name => $app) {
             $appData = $app->get();
-            if ($auth && $app["auth"] && !in_array($app["auth"], $auth)) {
+            if ($auth && $appData["auth"] && !in_array($appData["auth"], $auth)) {
                 continue;
             }
             if ($this->push[$name]) {
