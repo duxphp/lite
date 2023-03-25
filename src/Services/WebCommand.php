@@ -33,7 +33,11 @@ class WebCommand extends Command
         while (true) {
             try {
                 $connection = $server->acceptConnection();
+
+
                 Coroutine::run(static function () use ($connection): void {
+
+                    
                     try {
                         $request = null;
                         try {

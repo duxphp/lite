@@ -22,7 +22,7 @@ class DbMysql extends MySqlConnector implements ConnectorInterface
         if (!isset(self::$pool)) {
             dump('new link');
             self::$pool = DbPool::getInstance();
-            self::$pool->start(10, $dsn, $username, $password, $options);
+            DbPool::getInstance()->start(100, $dsn, $username, $password, $options);
         }
         return parent::connect($config);
     }
