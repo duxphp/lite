@@ -226,9 +226,9 @@ class Bootstrap
             $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
         }
 
-
         // 注册 clockwork
         $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
+
 
     }
 

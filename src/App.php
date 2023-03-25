@@ -5,6 +5,9 @@ declare(strict_types=1);
 
 namespace Dux;
 
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Clockwork;
+use Clockwork\Storage\FileStorage;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -333,26 +336,25 @@ class App
     }
 
     /**
-     * push
-     * @param string $type
-     * @return Push
+     * @param $message
+     * @return Clockwork
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function push(string $type = ""): Push
+    public static function clock($message = null): Clockwork
     {
-        if (!$type) {
-            $type = self::config("push")->get("type");
+        if (!self::$di->has("clock")) {
+            $clockwork = new Clockwork();
+            $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
+            $clockwork->authenticator(new NullAuthenticator);
+            $clockwork->log();
+            self::$di->set("clock", $clockwork);
         }
-        if (!self::$di->has("push." . $type)) {
-            $config = self::config("push")->get("drivers." . $type);
-            $queueType = $config["type"];
-            unset($config["type"]);
-            self::$di->set(
-                "push." . $type,
-                new Push($queueType, $config)
-            );
+        $clock = self::$di->get("clock");
+        if (isset($message)) {
+            $clock->log('debug', $message);
         }
-        return self::$di->get("push." . $type);
+        return $clock;
+
     }
 }
