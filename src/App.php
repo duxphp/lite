@@ -118,7 +118,12 @@ class App
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
-        $config = new Config(App::$configPath . "/$name.yaml", new Yaml());
+
+        $file = App::$configPath . "/$name.dev.yaml";
+        if (!$file) {
+            $file = App::$configPath . "/$name.yaml";
+        }
+        $config = new Config($file, new Yaml());
         self::$di->set("config." . $name, $config);
         return $config;
     }
