@@ -349,6 +349,7 @@ class App
             $clockwork->authenticator(new NullAuthenticator);
             $clockwork->log();
             self::$di->set("clock", $clockwork);
+            return $clockwork;
         }
         $clock = self::$di->get("clock");
         if (isset($message)) {

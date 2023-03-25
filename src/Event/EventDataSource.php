@@ -7,6 +7,7 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 use Closure;
+use Dux\App;
 use ReflectionFunction;
 
 class EventDataSource extends DataSource
@@ -33,15 +34,15 @@ class EventDataSource extends DataSource
     }
 
 
-    public function registerEvent(string $name, array $data)
+    public function addEvent(object $event, string $name = null, float $startTime = 0, float $stopTime = 0)
     {
         $trace = StackTrace::get()->resolveViewName();
 
         $event = [
-            'event' => $name,
-            'data' => (new Serializer)->normalize(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
-            'time' => microtime(true),
-            'listeners' => $this->findListenersFor($name),
+            'event' => $name ? $name . " [" . $event::class . "]" : $event::class,
+            'data' => [],
+            'duration' => ($stopTime - $startTime) / 1000,
+            'listeners' => $this->findListenersFor($name ?: $event::class),
             'trace' => (new Serializer)->trace($trace)
         ];
 
@@ -52,7 +53,9 @@ class EventDataSource extends DataSource
 
     private function findListenersFor(string $event): array
     {
+        App::log()->debug($event);
         $data = array_map(function ($listener) {
+
             if (is_array($listener) && count($listener) == 2) {
                 if (is_object($listener[0])) {
                     return get_class($listener[0]) . '@' . $listener[1];
@@ -68,6 +71,8 @@ class EventDataSource extends DataSource
             }
             return null;
         }, $this->dispatcher->getListeners($event));
+
+        App::log()->debug(json_encode($data));
         return array_filter($data);
     }
 }

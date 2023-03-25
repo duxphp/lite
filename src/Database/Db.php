@@ -27,8 +27,8 @@ class Db
             $event,
         );
         clock()->addDataSource($source);
-
         $source->listenToEvents();
+        
         return $capsule;
     }
 }

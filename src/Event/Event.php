@@ -16,7 +16,6 @@ class Event extends EventDispatcher
 
     public function __construct()
     {
-        // 注册事件
         $this->source = new EventDataSource($this);
         App::clock()->addDataSource($this->source);
         parent::__construct();
@@ -30,9 +29,10 @@ class Event extends EventDispatcher
 
     public function dispatch(object $event, string $eventName = null): object
     {
-        $name ??= $event::class;
-        $this->source->registerEvent($name, [$event]);
-        return parent::dispatch($event, $eventName);
+        $startTime = microtime(true);
+        $result = parent::dispatch($event, $eventName);
+        $this->source->addEvent($event, $eventName, $startTime, microtime(true));
+        return $result;
     }
 
     public function registerAttribute(): void

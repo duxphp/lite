@@ -4,9 +4,6 @@ declare(strict_types=1);
 namespace Dux;
 
 
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Clockwork;
-use Clockwork\Storage\FileStorage;
 use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
 use Dux\App\AppInstallCommand;
@@ -173,15 +170,8 @@ class Bootstrap
      */
     public function loadRoute(): void
     {
-
-
-        $this->di->set('clock', function () {
-            $clockwork = new Clockwork();
-            $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
-            $clockwork->authenticator(new NullAuthenticator);
-            return $clockwork;
-        });
-
+        
+        $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
 
         // 解析内容
         $this->web->addBodyParsingMiddleware();
@@ -225,10 +215,6 @@ class Bootstrap
             $routeCollector = $this->web->getRouteCollector();
             $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
         }
-
-        // 注册 clockwork
-        $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
-
 
     }
 
