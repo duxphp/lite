@@ -10,8 +10,8 @@ class Vaptcha
 {
     static function Verify(string $server, string $token)
     {
-        $id = App::config('client')->get('vaptcha');
-        $key = App::config('client')->get('vaptcha_key');
+        $id = App::config('use')->get('vaptcha.id');
+        $key = App::config('use')->get('vaptcha.key');
         $client = new Client();
         $result = $client->post($server, [
             'json' => [
