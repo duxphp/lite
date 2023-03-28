@@ -8,10 +8,13 @@ use GuzzleHttp\Client;
 
 class Vaptcha
 {
-    static function Verify(string $server, string $token)
+    static function Verify(string $server, string $token): void
     {
         $id = App::config('use')->get('vaptcha.id');
         $key = App::config('use')->get('vaptcha.key');
+        if (!$id || !$key) {
+            return;
+        }
         $client = new Client();
         $result = $client->post($server, [
             'json' => [
