@@ -210,7 +210,9 @@ class Bootstrap
                 return 1;
             });
             $response = $handler->handle($request);
-            return $response->withHeader('Access-Control-Allow-Origin', '*')
+
+            $origin = $request->getHeaderLine('Origin');
+            return $response->withHeader('Access-Control-Allow-Origin', $origin)
                 ->withHeader('Access-Control-Allow-Methods', '*')
                 ->withHeader('Access-Control-Allow-Headers', '*')
                 ->withHeader('Access-Control-Expose-Methods', '*')
