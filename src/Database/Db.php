@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Dux\Database;
 
 use Dux\Services\Handlers\DbMysql;
+use Dux\Services\Handlers\MySqlConnection;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
-use Illuminate\Database\MySqlConnection;
 use Illuminate\Events\Dispatcher;
 
 class Db

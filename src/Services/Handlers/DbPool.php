@@ -49,9 +49,8 @@ class DbPool
         Coroutine::run(static function () use ($pdo, $dsn, $username, $password, $options, $size) {
             for ($i = 0; $i < $size; $i++) {
 
-
                 $conn = new PDO($dsn, $username, $password, $options);
-                //$conn->setAttribute(PDO::ATTR_TIMEOUT, 160);
+                $conn->setAttribute(PDO::ATTR_TIMEOUT, 160);
                 $pdo->push($conn);
 //                Coroutine::run(static function () use ($conn) {
 //
@@ -73,7 +72,6 @@ class DbPool
             Coroutine::getCurrent()->dbPool = $conn;
         } else {
             dump('get' . Coroutine::getCurrent()->getId());
-
         }
 
         if (!$this->isConnected($conn)) {

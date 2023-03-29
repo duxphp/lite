@@ -37,7 +37,8 @@ class WebCommand extends Command
 
                 Coroutine::run(static function () use ($connection): void {
 
-                    
+                    dump('link id : ' . Coroutine::getCurrent()->getId());
+
                     try {
                         $request = null;
                         try {
