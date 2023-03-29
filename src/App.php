@@ -5,6 +5,9 @@ declare(strict_types=1);
 
 namespace Dux;
 
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Clockwork;
+use Clockwork\Storage\FileStorage;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -16,6 +19,7 @@ use Dux\Event\Event;
 use Dux\Handlers\Exception;
 use Dux\Logs\LogHandler;
 use Dux\Queue\Queue;
+use Dux\Scheduler\Scheduler;
 use Dux\Storage\Storage;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
@@ -105,15 +109,22 @@ class App
     /**
      * config
      * @source noodlehaus/config
-     * @param string $app
+     * @param string $name
      * @return Config
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public static function config(string $name): Config
     {
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
-        $config = new Config(App::$configPath . "/$name.yaml", new Yaml());
+
+        $file = App::$configPath . "/$name.dev.yaml";
+        if (!is_file($file)) {
+            $file = App::$configPath . "/$name.yaml";
+        }
+        $config = new Config($file, new Yaml());
         self::$di->set("config." . $name, $config);
         return $config;
     }
@@ -333,26 +344,40 @@ class App
     }
 
     /**
-     * push
-     * @param string $type
-     * @return Push
+     * @param null $message
+     * @return Clockwork|null
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function push(string $type = ""): Push
+    public static function clock($message = null): ?Clockwork
     {
-        if (!$type) {
-            $type = self::config("push")->get("type");
+        if (!self::config('use')->get('clock')) {
+            return null;
         }
-        if (!self::$di->has("push." . $type)) {
-            $config = self::config("push")->get("drivers." . $type);
-            $queueType = $config["type"];
-            unset($config["type"]);
+        if (!self::$di->has("clock")) {
+            $clockwork = new Clockwork();
+            $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
+            $clockwork->authenticator(new NullAuthenticator);
+            $clockwork->log();
+            self::$di->set("clock", $clockwork);
+            return $clockwork;
+        }
+        $clock = self::$di->get("clock");
+        if (isset($message)) {
+            $clock->log('debug', $message);
+        }
+        return $clock;
+    }
+
+    public static function scheduler(): Scheduler
+    {
+        if (!self::$di->has("scheduler")) {
             self::$di->set(
-                "push." . $type,
-                new Push($queueType, $config)
+                "scheduler",
+                new Scheduler()
             );
         }
-        return self::$di->get("push." . $type);
+        return self::$di->get("scheduler");
     }
+
 }

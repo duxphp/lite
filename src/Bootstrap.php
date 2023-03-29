@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace Dux;
 
 
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Clockwork;
-use Clockwork\Storage\FileStorage;
 use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App\AppInstallCommand;
 use Dux\App\AppUninstallCommand;
 use Dux\App\Attribute;
@@ -33,8 +32,7 @@ use Dux\Permission\PermissionCommand;
 use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
-use Dux\Services\RRCommand;
-use Dux\Services\WebCommand;
+use Dux\Scheduler\SchedulerCommand;
 use Dux\View\View;
 use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
@@ -74,7 +72,7 @@ class Bootstrap
         error_reporting(E_ALL ^ E_DEPRECATED ^ E_WARNING);
     }
 
-    public function loadFunc()
+    public function loadFunc(): void
     {
         require_once "Func/Response.php";
         require_once "Func/Common.php";
@@ -82,6 +80,7 @@ class Bootstrap
 
     /**
      * loadWeb
+     * @param Container $di
      * @return void
      */
     public function loadWeb(Container $di): void
@@ -95,13 +94,12 @@ class Bootstrap
     /**
      * loadConfig
      * @return void
-     */
-    /**
-     * loadConfig
-     * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadConfig(): void
     {
+
         $this->debug = (bool)App::config("use")->get("app.debug");
         $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
@@ -125,6 +123,8 @@ class Bootstrap
     /**
      * loadCache
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadCache(): void
     {
@@ -135,6 +135,8 @@ class Bootstrap
     /**
      * loadCommand
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadCommand(): void
     {
@@ -153,9 +155,8 @@ class Bootstrap
         $commands[] = AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
-        $commands[] = WebCommand::class;
-        $commands[] = RRCommand::class;
         $commands[] = WebsocketCommand::class;
+        $commands[] = SchedulerCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
@@ -166,7 +167,7 @@ class Bootstrap
      * loadView
      * @return void
      */
-    public function loadView()
+    public function loadView(): void
     {
         $this->view = View::init("app");
     }
@@ -174,19 +175,14 @@ class Bootstrap
     /**
      * loadRoute
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadRoute(): void
     {
-
-
-        $this->di->set('clock', function () {
-            $clockwork = new Clockwork();
-            $clockwork->storage(new FileStorage(App::$dataPath . '/clockwork'));
-            $clockwork->authenticator(new NullAuthenticator);
-            return $clockwork;
-        });
-
-
+        if (App::config('use')->get('clock')) {
+            $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
+        }
         // 解析内容
         $this->web->addBodyParsingMiddleware();
         // 注册路由中间件
@@ -216,9 +212,11 @@ class Bootstrap
                 return 1;
             });
             $response = $handler->handle($request);
-            return $response->withHeader('Access-Control-Allow-Origin', '*')
+
+            $origin = $request->getHeaderLine('Origin');
+            return $response->withHeader('Access-Control-Allow-Origin', $origin)
                 ->withHeader('Access-Control-Allow-Methods', '*')
-                ->withHeader('Access-Control-Allow-Headers', '*')
+                ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Content-MD5, Platform, Content-Date, Authorization, AccessKey')
                 ->withHeader('Access-Control-Expose-Methods', '*')
                 ->withHeader('Access-Control-Expose-Headers', '*')
                 ->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -229,10 +227,6 @@ class Bootstrap
             $routeCollector = $this->web->getRouteCollector();
             $routeCollector->setCacheFile(App::$dataPath . '/cache/route.file');
         }
-
-
-        // 注册 clockwork
-        $this->web->add(new ClockworkMiddleware($this->web, $this->di->get('clock')));
 
     }
 
@@ -246,8 +240,10 @@ class Bootstrap
     }
 
     /**
-     * 载入应用
+     * load app
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function loadApp(): void
     {

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Dux\App;
 
-use Dux\App;
+use ErrorException;
 use Nette\Utils\FileSystem;
 use Noodlehaus\Config;
 
@@ -14,11 +14,11 @@ class AppHandler
     {
         $dir = "./vendor/$name";
         if (!is_dir($dir)) {
-            throw new \ErrorException('The application already exists');
+            throw new ErrorException('The application already exists');
         }
         $composerFile = $dir . '/composer.json';
         if (!is_file($composerFile)) {
-            throw new \ErrorException('The application configuration does not exist');
+            throw new ErrorException('The application configuration does not exist');
 
         }
         $config = json_decode(file_get_contents($composerFile), true);
@@ -54,7 +54,7 @@ class AppHandler
         $registers = $conf->get("registers", []);
         foreach ($apps as $app) {
             $name = "\\App\\$app\\App";
-            if (in_array($name, $registers)) {
+            if (in_array($name, (array)$registers)) {
                 continue;
             }
             $registers[] = $name;
@@ -67,11 +67,11 @@ class AppHandler
     {
         $dir = "./vendor/$name";
         if (!is_dir($dir)) {
-            throw new \ErrorException('The application already exists');
+            throw new ErrorException('The application already exists');
         }
         $composerFile = $dir . '/composer.json';
         if (!is_file($composerFile)) {
-            throw new \ErrorException('The application configuration does not exist');
+            throw new ErrorException('The application configuration does not exist');
         }
         $config = json_decode(file_get_contents($composerFile), true);
         $extra = $config['extra'];

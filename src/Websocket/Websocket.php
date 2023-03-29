@@ -74,7 +74,7 @@ class Websocket
 
                 // 判断单点登录
                 if (self::$clients[$jwt->sub][$jwt->id]) {
-                    self::$clients[$jwt->sub][$jwt->id]->connection->close("\x88\x02\x27\x10", true);
+                    //self::$clients[$jwt->sub][$jwt->id]->connection->close("\x88\x02\x27\x10", true);
                 }
 
                 // 设置功能类型与用户id

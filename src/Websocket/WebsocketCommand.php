@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Workerman\Worker;
 
+ini_set('memory_limit', '1024M');
 
 class WebsocketCommand extends Command
 {
