@@ -23,6 +23,7 @@ use Dux\Storage\Storage;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Dux\View\View;
+use GO\Scheduler;
 use Illuminate\Database\Capsule\Manager;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
@@ -366,6 +367,17 @@ class App
             $clock->log('debug', $message);
         }
         return $clock;
-
     }
+
+    public static function scheduler(): Scheduler
+    {
+        if (!self::$di->has("scheduler")) {
+            self::$di->set(
+                "scheduler",
+                new Scheduler()
+            );
+        }
+        return self::$di->get("scheduler");
+    }
+
 }

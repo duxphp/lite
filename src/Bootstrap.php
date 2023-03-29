@@ -32,6 +32,7 @@ use Dux\Permission\PermissionCommand;
 use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
+use Dux\Scheduler\SchedulerCommand;
 use Dux\View\View;
 use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
@@ -155,6 +156,7 @@ class Bootstrap
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
         $commands[] = WebsocketCommand::class;
+        $commands[] = SchedulerCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
