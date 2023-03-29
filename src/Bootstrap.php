@@ -33,7 +33,7 @@ use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use Dux\Scheduler\SchedulerCommand;
-use Dux\server\WebCommand;
+use Dux\Server\WebCommand;
 use Dux\View\View;
 use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;

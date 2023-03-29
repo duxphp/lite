@@ -67,7 +67,7 @@
     "itsgoingd/clockwork": "^5.1",
     "intervention/image": "^2.7",
     "peppeocchi/php-cron-scheduler": "^4.0",
-    "mix/http-message": "^3.0"
+    "chubbyphp/chubbyphp-workerman-request-handler": "^2.0"
   },
   "require-dev": {
     "composer/composer": "^2.0",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "406ea4e0a7803df88526ce7c10ebd9d5",
+    "content-hash": "5ba11d0c3bdeaf29b5f3fe9b7faec635",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -154,6 +154,75 @@
                 }
             ],
             "time": "2023-01-15T23:15:59+00:00"
+        },
+        {
+            "name": "chubbyphp/chubbyphp-workerman-request-handler",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler.git",
+                "reference": "1a19d31ef74079853b96886e715ad71d78eaf15f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chubbyphp/chubbyphp-workerman-request-handler/zipball/1a19d31ef74079853b96886e715ad71d78eaf15f",
+                "reference": "1a19d31ef74079853b96886e715ad71d78eaf15f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0",
+                "psr/http-factory": "^1.0.1",
+                "psr/http-message": "^1.0.1",
+                "psr/http-server-handler": "^1.0.1",
+                "psr/log": "^1.1.4|^2.0|^3.0",
+                "workerman/workerman": "^4.0.30"
+            },
+            "require-dev": {
+                "blackfire/php-sdk": "^1.29",
+                "chubbyphp/chubbyphp-dev-helper": "dev-master",
+                "chubbyphp/chubbyphp-mock": "^1.6.1",
+                "infection/infection": "^0.26.5",
+                "php-coveralls/php-coveralls": "^2.5.2",
+                "phploc/phploc": "^7.0.2",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.4.8",
+                "phpunit/phpunit": "^9.5.17"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Chubbyphp\\WorkermanRequestHandler\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dominik Zogg",
+                    "email": "dominik.zogg@gmail.com"
+                }
+            ],
+            "description": "A request handler adapter for workerman, using PSR-7, PSR-15 and PSR-17.",
+            "keywords": [
+                "chubbyphp",
+                "psr-15",
+                "psr-17",
+                "psr-7",
+                "requesthandler",
+                "workerman"
+            ],
+            "support": {
+                "issues": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler/issues",
+                "source": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler/tree/2.0.0"
+            },
+            "time": "2022-07-04T05:58:13+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -1669,7 +1738,7 @@
         },
         {
             "name": "illuminate/bus",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/bus.git",
@@ -1722,7 +1791,7 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
@@ -1777,7 +1846,7 @@
         },
         {
             "name": "illuminate/conditionable",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/conditionable.git",
@@ -1823,7 +1892,7 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -1874,7 +1943,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -1922,16 +1991,16 @@
         },
         {
             "name": "illuminate/database",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "0961dbf2e305d5c6be41d4af6264c8cbfd655e7d"
+                "reference": "6923eac0a2b7c20cbcda3988e1abb21b1056fcc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/0961dbf2e305d5c6be41d4af6264c8cbfd655e7d",
-                "reference": "0961dbf2e305d5c6be41d4af6264c8cbfd655e7d",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/6923eac0a2b7c20cbcda3988e1abb21b1056fcc1",
+                "reference": "6923eac0a2b7c20cbcda3988e1abb21b1056fcc1",
                 "shasum": ""
             },
             "require": {
@@ -1987,11 +2056,11 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-03-25T12:02:36+00:00"
+            "time": "2023-03-29T13:12:05+00:00"
         },
         {
             "name": "illuminate/events",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/events.git",
@@ -2046,7 +2115,7 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -2092,7 +2161,7 @@
         },
         {
             "name": "illuminate/pagination",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pagination.git",
@@ -2142,7 +2211,7 @@
         },
         {
             "name": "illuminate/pipeline",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pipeline.git",
@@ -2190,16 +2259,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v10.5.0",
+            "version": "v10.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "3245e51d85f1217c704e0e4fc2a291a0e700acf7"
+                "reference": "646bfb9e8485e5f82921512a19643f26bbb778d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/3245e51d85f1217c704e0e4fc2a291a0e700acf7",
-                "reference": "3245e51d85f1217c704e0e4fc2a291a0e700acf7",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/646bfb9e8485e5f82921512a19643f26bbb778d3",
+                "reference": "646bfb9e8485e5f82921512a19643f26bbb778d3",
                 "shasum": ""
             },
             "require": {
@@ -2257,7 +2326,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-03-25T16:55:23+00:00"
+            "time": "2023-03-29T13:12:38+00:00"
         },
         {
             "name": "intervention/image",
