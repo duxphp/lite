@@ -66,7 +66,8 @@
     "workerman/redis-queue": "^1.0",
     "itsgoingd/clockwork": "^5.1",
     "intervention/image": "^2.7",
-    "peppeocchi/php-cron-scheduler": "^4.0"
+    "peppeocchi/php-cron-scheduler": "^4.0",
+    "swow/swow": "^1.2"
   },
   "require-dev": {
     "composer/composer": "^2.0",

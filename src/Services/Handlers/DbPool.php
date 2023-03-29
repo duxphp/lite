@@ -46,22 +46,23 @@ class DbPool
             'password' => $password,
             'options' => $options
         ];
+        Coroutine::run(static function () use ($pdo, $dsn, $username, $password, $options, $size) {
+            for ($i = 0; $i < $size; $i++) {
 
-        for ($i = 0; $i < $size; $i++) {
 
-            //Coroutine::run(static function () use ($pdo, $dsn, $username, $password, $options) {
-            $conn = new PDO($dsn, $username, $password, $options);
-            //$conn->setAttribute(PDO::ATTR_TIMEOUT, 160);
-            $pdo->push($conn);
+                $conn = new PDO($dsn, $username, $password, $options);
+                //$conn->setAttribute(PDO::ATTR_TIMEOUT, 160);
+                $pdo->push($conn);
 //                Coroutine::run(static function () use ($conn) {
 //
 //                    $conn->getAttribute(PDO::ATTR_SERVER_INFO);
 //
 //                    sleep(50);
 //                });
-            //});
+                //});
 
-        }
+            }
+        });
     }
 
     public function get(): PDO
