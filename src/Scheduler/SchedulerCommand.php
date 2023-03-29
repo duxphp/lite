@@ -16,13 +16,7 @@ class SchedulerCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-
-
-        App::scheduler()->call(function () use ($output) {
-            $output->writeln('ss');
-        })->everyMinute();
-
-        App::scheduler()->work([0, 30]);
+        App::scheduler()->run();
         return Command::SUCCESS;
     }
 }
