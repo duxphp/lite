@@ -152,18 +152,12 @@ if (!function_exists('decryption')) {
     }
 }
 
-
-if (!function_exists('start_time')) {
-
-    $start_time = microtime(true);
-}
-
-
-if (!function_exists('end_time')) {
-
-    function end_time()
+if (!function_exists('is_service')) {
+    function is_service(): bool
     {
-        $end_time = microtime(true);
-        $execution_time = ($end_time - $start_time) * 1000;
+        if (class_exists('Workerman\Worker')) {
+            return true;
+        }
+        return false;
     }
 }

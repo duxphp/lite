@@ -2,23 +2,19 @@
 declare(strict_types=1);
 
 namespace Dux\Queue;
+
 use Dux\Handlers\Exception;
-use Interop\Queue\Context;
+use Redis;
 
-class QueueHandlers {
-
-    public Context $context;
+class QueueHandlers
+{
     private string $class;
     private string $method;
     private array $params;
     private int $delay = 0;
-    private bool $supportDelay = false;
-    private \Interop\Queue\Queue $queue;
 
-    public function __construct(Context $context, \Interop\Queue\Queue $queue, bool $supportDelay) {
-        $this->queue = $queue;
-        $this->context = $context;
-        $this->supportDelay = $supportDelay;
+    public function __construct(public Redis $client, public string $group)
+    {
     }
 
     /**
@@ -28,7 +24,8 @@ class QueueHandlers {
      * @param array $params
      * @return QueueHandlers
      */
-    public function callback(string $class, string $method = "", array $params = []): self {
+    public function callback(string $class, string $method = "", array $params = []): self
+    {
         $this->class = $class;
         $this->method = $method;
         $this->params = $params;
@@ -41,29 +38,36 @@ class QueueHandlers {
      * @param int $millisecond
      * @return QueueHandlers
      */
-    public function delay(int $millisecond): self {
+    public function delay(int $millisecond): self
+    {
         $this->delay = $millisecond;
         return $this;
     }
 
     /**
      * 发送队列
-     * @return void
      */
-    public function send(): void {
+    public function send(): bool|int|Redis
+    {
         if (!$this->class) {
             throw new Exception("Please set the callback class");
         }
-        $body = [$this->class];
-        if ($this->method) {
-            $body[] = $this->method;
+
+        $queue_waiting = '{redis-queue}-waiting';
+        $queue_delay = '{redis-queue}-delayed';
+        $now = time();
+        $package_str = json_encode([
+            'id' => rand(),
+            'time' => $now,
+            'delay' => 0,
+            'attempts' => 0,
+            'queue' => $this->group,
+            'data' => [[$this->class, $this->method], $this->params]
+        ]);
+        if ($this->delay) {
+            return $this->client->zAdd($queue_delay, $now + $this->delay, $package_str);
         }
-        $message = $this->context->createMessage(implode(":", $body), $this->params);
-        $ctx = $this->context->createProducer();
-        if ($this->supportDelay && $this->delay) {
-            $ctx->setDeliveryDelay($this->delay);
-        }
-        $ctx->send($this->queue, $message);
+        return $this->client->lPush($queue_waiting . $this->group, $package_str);
     }
 
 

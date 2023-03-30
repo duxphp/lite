@@ -3,37 +3,40 @@ declare(strict_types=1);
 
 namespace Dux\Queue;
 
-use Enqueue\Redis\RedisConnectionFactory;
-use Interop\Queue\Context;
+use Redis;
 use RuntimeException;
 
-class Queue {
+class Queue
+{
+    public Redis $client;
 
-    public Context $context;
+    public array $config = [];
 
-    /**
-     * @var array []\Interop\Queue\Queue
-     */
     public array $group = [];
 
-    private bool $supportDelay = true;
-
-    public function __construct(string $type, array $config) {
+    public function __construct(string $type, array $config)
+    {
         if ($type !== "redis") {
             throw new RuntimeException("Queue type not supported");
         }
-        $factory = new RedisConnectionFactory($config);
-        $this->context = $factory->createContext();
+        $this->config = $config;
+        $this->client = new Redis;
+        $this->client->connect($config["host"], $config["port"]);
+        if ($config["auth"]) {
+            $this->client->auth($config["auth"]);
+        }
+        $database = $config["database"] ?: 0;
+        $this->client->select($database);
     }
 
-    public function add(string $group = "default"): QueueHandlers {
+    public function add(string $group = "default"): QueueHandlers
+    {
         if (isset($this->group[$group])) {
-            $queue = $this->group[$group];
-        } else {
-            $queue = $this->context->createQueue($group);
-            $this->group[$group] = $queue;
+            return $this->group[$group];
         }
-        return new QueueHandlers($this->context, $queue, $this->supportDelay);
+        $queue = new QueueHandlers($this->client, $group);
+        $this->group[$group] = $queue;
+        return $queue;
     }
 
 }
