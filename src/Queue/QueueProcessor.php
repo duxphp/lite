@@ -4,20 +4,23 @@ declare(strict_types=1);
 namespace Dux\Queue;
 
 use Dux\App;
-use Interop\Queue\Processor;
-use Interop\Queue\Message;
+use Exception;
 use Interop\Queue\Context;
+use Interop\Queue\Message;
+use Interop\Queue\Processor;
 
-class QueueProcessor implements Processor {
-
+class QueueProcessor implements Processor
+{
 
     public function __construct(
         public \Interop\Queue\Queue $queue,
-        public int $timeout,
-        public int $retry
-    ) {}
+        public int                  $retry
+    )
+    {
+    }
 
-    public function process(Message $message, Context $context): object|string {
+    public function process(Message $message, Context $context): object|string
+    {
         try {
             $body = $message->getBody();
             [$class, $method] = explode(":", $body, 2);
@@ -34,24 +37,21 @@ class QueueProcessor implements Processor {
                     App::log("queue")->error("method [{$body}]  does not exist");
                 }
             }
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             App::log("queue")->error($error->getMessage(), [$error->getFile() . ":" . $error->getLine()]);
             $this->retry($message, $context);
         }
         return Processor::ACK;
-
     }
-
 
     public function retry(Message $message, Context $context): void
     {
-        $id = $message->getMessageId();
         $retryNum = $message->getHeader("retry_num", 0);
         $retryNum++;
         $body = $message->getBody();
         if ($retryNum > $this->retry) {
             App::log("queue")->error("task [$body] retry failed");
-        }else {
+        } else {
             $message->setHeader("retry_num", $retryNum);
             $context->createProducer()->send($this->queue, $message);
         }

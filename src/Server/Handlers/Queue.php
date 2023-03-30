@@ -3,17 +3,18 @@
 namespace Dux\Server\Handlers;
 
 use Dux\App;
-use Exception;
-use Workerman\RedisQueue\Client;
+use Dux\Queue\QueueProcessor;
+use Enqueue\Consumption\ChainExtension;
+use Enqueue\Consumption\Extension\SignalExtension;
+use Enqueue\Consumption\QueueConsumer;
 use Workerman\Worker;
 
 class Queue
 {
 
-
     static function start(): void
     {
-        $group = App::config('queue')->get('group');
+        $group = App::config('queue')->get('group', 'default');
         $processes = App::config('queue')->get('processes', 1);
 
         $worker = new Worker();
@@ -21,34 +22,14 @@ class Queue
         $worker->count = $processes;
 
         $worker->onWorkerStart = function () use ($group) {
-            $config = App::queue()->config;
-            $host = $config['host'];
-            $port = $config['port'];
-            $auth = $config['auth'];
-            $dsn = "redis://$host:$port";
-            $client = new Client($dsn, [
-                'auth' => $auth,
-                'max_attempts' => $config['retry']
-            ]);
-            $client->subscribe($group, function (?array $data) {
-                if (!$data) {
-                    return;
-                }
-                [$classMethod, $params] = $data;
-                [$class, $method] = $classMethod;
-
-                try {
-                    $object = new $class;
-                    if (!$method) {
-                        $object(...$params);
-                    } else if (method_exists($object, $method)) {
-                        $object->$method(...$params);
-                    }
-                } catch (Exception $e) {
-                    App::log('queue')->error($e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine());
-                    throw $e;
-                }
-            });
+            $name = $group;
+            $retry = (int)App::config("queue")->get("retry", 3);
+            $context = App::queue()->context;
+            $queueConsumer = new QueueConsumer($context, new ChainExtension([
+                new SignalExtension(),
+            ]));
+            $queueConsumer->bind($name, new QueueProcessor($context->createQueue($name), $retry));
+            $queueConsumer->consume();
         };
     }
 

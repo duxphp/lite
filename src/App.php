@@ -18,6 +18,7 @@ use Dux\Database\Migrate;
 use Dux\Event\Event;
 use Dux\Handlers\Exception;
 use Dux\Logs\LogHandler;
+use Dux\Notify\Notify;
 use Dux\Queue\Queue;
 use Dux\Scheduler\Scheduler;
 use Dux\Storage\Storage;
@@ -380,4 +381,27 @@ class App
         return self::$di->get("scheduler");
     }
 
+    /**
+     * notify
+     * @param string $type
+     * @return Notify
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public static function notify(string $type = ""): Notify
+    {
+        if (!$type) {
+            $type = self::config("queue")->get("type");
+        }
+        if (!self::$di->has("notify." . $type)) {
+            $config = self::config("queue")->get("drivers." . $type);
+            $queueType = $config["type"];
+            unset($config["type"]);
+            self::$di->set(
+                "notify." . $type,
+                new Notify($queueType, $config)
+            );
+        }
+        return self::$di->get("notify." . $type);
+    }
 }

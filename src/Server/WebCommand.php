@@ -33,7 +33,6 @@ class WebCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-
         Web::Start();
         Queue::start();
 

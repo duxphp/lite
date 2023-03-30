@@ -1,21 +1,42 @@
 <?php
+declare(strict_types=1);
 
 namespace Dux\Notify;
 
 use Dux\App;
-use Redis;
+use Enqueue\Redis\RedisConnectionFactory;
+use Exception;
+use Interop\Queue\Context;
 
 class Notify
 {
 
-    public function subscribe(string $channel)
+    public Context $context;
+
+    /**
+     * @var array []\Interop\Queue\Queue
+     */
+    public array $services = [];
+
+    public function __construct(string $type, array $config)
     {
-        $data = [];
-        App::redis()->subscribe($channel, function (Redis $redis, $channel, $message) use (&$data) {
-            $data = json_decode($message);
-            $redis->unsubscribe($channel);
-        });
-        return $data;
+        $factory = match ($type) {
+            "redis" => new RedisConnectionFactory($config),
+            default => throw new Exception('This driver is not supported')
+        };
+        $this->context = $factory->createContext();
+    }
+
+    public function topic(string $name, string $clientApp, string $clientId = ''): NotifyHandler
+    {
+        $topicName = "$name.$clientApp.$clientId";
+        if (App::di()->has("push.$topicName")) {
+            $topic = App::di()->get("push.$topicName");
+        } else {
+            $topic = $this->context->createTopic($name);
+            App::di()->set("push.$topicName", $topic);
+        }
+        return new NotifyHandler($this->context, $topic, $name, $clientApp, $clientId);
     }
 
 }
