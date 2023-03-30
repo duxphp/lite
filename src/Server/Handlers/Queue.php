@@ -22,13 +22,12 @@ class Queue
         $worker->count = $processes;
 
         $worker->onWorkerStart = function () use ($group) {
-            $name = $group;
             $retry = (int)App::config("queue")->get("retry", 3);
             $context = App::queue()->context;
             $queueConsumer = new QueueConsumer($context, new ChainExtension([
                 new SignalExtension(),
             ]));
-            $queueConsumer->bind($name, new QueueProcessor($context->createQueue($name), $retry));
+            $queueConsumer->bind($group, new QueueProcessor($context->createQueue($group), $retry));
             $queueConsumer->consume();
         };
     }

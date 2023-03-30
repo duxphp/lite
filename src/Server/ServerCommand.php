@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Dux\Queue;
+namespace Dux\Server;
 
-use Spatie\Async\Pool;
+use Dux\Server\Handlers\Queue;
+use Dux\Server\Handlers\Web;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,15 +12,15 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Workerman\Worker;
 
-class QueueCommand extends Command
+class ServerCommand extends Command
 {
 
-    protected static $defaultName = 'queue';
-    protected static $defaultDescription = 'Queue start service';
+    protected static $defaultName = 'server';
+    protected static $defaultDescription = 'start server service';
 
     protected function configure(): void
     {
-        $this->setName('queue')
+        $this->setName('web')
             ->addArgument(
                 'args',
                 InputArgument::IS_ARRAY
@@ -32,7 +33,8 @@ class QueueCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        \Dux\Server\Handlers\Queue::start();
+        Web::Start();
+        Queue::start();
         Worker::runAll();
         return Command::SUCCESS;
     }
