@@ -3,6 +3,7 @@
 namespace Dux\Services\Handlers;
 
 
+use Exception;
 use PDO;
 use PDOException;
 use Swow\Channel;
@@ -35,37 +36,48 @@ class DbPool
     }
 
 
-    public function start(int $size, string $dsn, ?string $username, ?string $password, ?array $options): void
+    public function start(array $config): void
     {
-        dump('start pool');
-        $this->pool = $pdo = new Channel($size);
 
+        $size = 20;
+        dump('start pool');
+        $this->pool = new Channel($size);
+
+        extract($config, EXTR_SKIP);
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$database}";
         $this->config = [
             'dsn' => $dsn,
             'username' => $username,
             'password' => $password,
             'options' => $options
         ];
-        Coroutine::run(static function () use ($pdo, $dsn, $username, $password, $options, $size) {
-            for ($i = 0; $i < $size; $i++) {
+        //Coroutine::run(static function () use ($pdo, $dsn, $username, $password, $options, $size) {
+        for ($i = 0; $i < $size; $i++) {
 
+            try {
                 $conn = new PDO($dsn, $username, $password, $options);
                 $conn->setAttribute(PDO::ATTR_TIMEOUT, 160);
-                $pdo->push($conn);
+                $this->pool->push($conn);
+            } catch (Exception $e) {
+                dump($e);
+            }
 //                Coroutine::run(static function () use ($conn) {
 //
 //                    $conn->getAttribute(PDO::ATTR_SERVER_INFO);
 //
 //                    sleep(50);
 //                });
-                //});
+            //});
 
-            }
-        });
+        }
+        //});
+        dump('pool ok');
     }
 
     public function get(): PDO
     {
+        dump('get pdo');
         $conn = Coroutine::getCurrent()->dbPool;
         if (!$conn) {
             $conn = $this->pool->pop();
@@ -86,7 +98,7 @@ class DbPool
     {
         $conn = Coroutine::getCurrent()->dbPool;
         if ($conn) {
-            dump('release' . Coroutine::getCurrent()->getId());
+            dump('release' . Coroutine::getCurrent()->getId() . ' : ' . $this->pool->getLength());
             $this->pool->push($conn);
         }
     }
@@ -103,9 +115,8 @@ class DbPool
 
     public function reconnect(): PDO
     {
-        // 重新创建 PDO 实例并替换当前实例
-        return new PDO($this->config['dsn'], $this->config['username'], $this->config['password'], $this->config['options']);
-
+        Coroutine::getCurrent()->dbPool = new PDO($this->config['dsn'], $this->config['username'], $this->config['password'], $this->config['options']);
+        return Coroutine::getCurrent()->dbPool;
     }
 
 }

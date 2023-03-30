@@ -3,7 +3,7 @@
 namespace Dux\Services;
 
 use Dux\App;
-use Dux\Services\Handlers\DbPool;
+use Dux\Coroutine\ContextManage;
 use Exception;
 use Swow\Coroutine;
 use Swow\Errno;
@@ -29,16 +29,12 @@ class WebCommand extends Command
         $server = new Server();
         $server->bind('0.0.0.0', 8080)->listen();
 
+        ContextManage::init();
 
         while (true) {
             try {
                 $connection = $server->acceptConnection();
-
-
                 Coroutine::run(static function () use ($connection): void {
-
-                    dump('link id : ' . Coroutine::getCurrent()->getId());
-
                     try {
                         $request = null;
                         try {
@@ -53,7 +49,7 @@ class WebCommand extends Command
                         dump($e->getMessage());
                         // you can log error here
                     } finally {
-                        DbPool::getInstance()->release();
+                        ContextManage::destroy();
                         $connection->close();
                     }
                 });
@@ -66,7 +62,6 @@ class WebCommand extends Command
                 }
             }
         }
-
 
         return Command::SUCCESS;
     }

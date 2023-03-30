@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Dux\Database;
 
-use Dux\Services\Handlers\DbMysql;
-use Dux\Services\Handlers\MySqlConnection;
+use Dux\Coroutine\ContextManage;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Events\Dispatcher;
 
 class Db
@@ -17,10 +17,14 @@ class Db
     {
         $capsule = new Manager;
 
-        Connection::resolverFor('async_mysql', function ($connection, $database, $prefix, $config) {
-            $connector = new DbMysql();
-            $pdoConnection = $connector->connect($config);
-            return new MySqlConnection($pdoConnection, $database, $prefix, $config);
+        // 全局实例化
+
+        Connection::resolverFor('async_mysql', static function ($pdo, $database, $prefix, $config) {
+
+
+            return new MySqlConnection(function () {
+                return ContextManage::context()->getValue('mysql.pool');
+            }, $database, $prefix, $config);
         });
 
         foreach ($configs as $key => $config) {
