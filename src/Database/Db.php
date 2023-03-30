@@ -8,6 +8,8 @@ use Dux\App;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Events\Dispatcher;
+use Throwable;
+use Workerman\Timer;
 
 class Db
 {
@@ -20,6 +22,19 @@ class Db
         $event = new Dispatcher(new Container);
         $capsule->setEventDispatcher($event);
         $capsule->bootEloquent();
+
+        if (is_service()) {
+            Timer::add(55, function () use ($capsule) {
+                foreach ($capsule->getDatabaseManager()->getConnections() as $connection) {
+                    if ($connection->getConfig('driver') == 'mysql') {
+                        try {
+                            $connection->select('select 1');
+                        } catch (Throwable $e) {
+                        }
+                    }
+                }
+            });
+        }
 
         $status = App::config('use')->get('clock');
         if ($status) {

@@ -20,7 +20,7 @@ class ServerCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('web')
+        $this->setName('server')
             ->addArgument(
                 'args',
                 InputArgument::IS_ARRAY

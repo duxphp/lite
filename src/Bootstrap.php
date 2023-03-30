@@ -33,6 +33,7 @@ use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use Dux\Scheduler\SchedulerCommand;
+use Dux\Server\ServerCommand;
 use Dux\Server\WebCommand;
 use Dux\View\View;
 use Dux\Websocket\WebsocketCommand;
@@ -159,6 +160,7 @@ class Bootstrap
         $commands[] = WebsocketCommand::class;
         $commands[] = SchedulerCommand::class;
         $commands[] = WebCommand::class;
+        $commands[] = ServerCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
