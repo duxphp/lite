@@ -45,7 +45,6 @@ class Websocket
             if (!self::$clients[$channelData['client_app']][$channelData['client_id']]) {
                 return;
             }
-            dump($channelData['message']);
             self::send(self::$clients[$channelData['client_app']][$channelData['client_id']]->connection, $channelData['type'], $channelData['message'], $channelData['data']);
         });
 
