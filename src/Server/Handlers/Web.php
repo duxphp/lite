@@ -26,6 +26,8 @@ class Web
 
         $worker->onMessage = function (WorkermanTcpConnection $workermanTcpConnection, WorkermanRequest $workermanRequest) {
 
+            $workermanTcpConnection->upgradeToWebSocket($request);
+
             $filePath = App::$publicPath . $workermanRequest->path();
             if (is_dir($filePath)) {
                 $filePath = rtrim($filePath, '/') . '/index.html';

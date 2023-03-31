@@ -5,6 +5,7 @@ namespace Dux\Server;
 
 use Dux\Server\Handlers\Queue;
 use Dux\Server\Handlers\Web;
+use Dux\Server\Handlers\Websocket;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,6 +35,7 @@ class ServerCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         Web::Start();
+        Websocket::start();
         Queue::start();
         Worker::runAll();
         return Command::SUCCESS;
