@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Dux\Server;
 
+use Dux\Server\Handlers\Channel;
 use Dux\Server\Handlers\Queue;
 use Dux\Server\Handlers\Web;
 use Dux\Server\Handlers\Websocket;
@@ -35,8 +36,9 @@ class ServerCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         Web::Start();
-        Websocket::start();
         Queue::start();
+        Channel::start();
+        Websocket::start();
         Worker::runAll();
         return Command::SUCCESS;
     }

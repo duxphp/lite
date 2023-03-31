@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Dux\Websocket;
 
+use Channel\Client;
+
 class Message
 {
 
@@ -17,10 +19,18 @@ class Message
      */
     public static function send(string $clientApp, string $clientId, string $type, string|array|null $message, ?array $data = []): void
     {
-        if (!Websocket::$clients[$clientApp][$clientId]) {
-            return;
-        }
-        Websocket::send(Websocket::$clients[$clientApp][$clientId]->connection, $type, $message, $data);
+        Client::publish('websocket', [
+            'client_app' => $clientApp,
+            'client_id' => $clientId,
+            'type' => $type,
+            'message' => $message,
+            'data' => $data
+        ]);
+
+//        if (!Websocket::$clients[$clientApp][$clientId]) {
+//            return;
+//        }
+//        Websocket::send(Websocket::$clients[$clientApp][$clientId]->connection, $type, $message, $data);
     }
 
 

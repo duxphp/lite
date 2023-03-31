@@ -3,8 +3,8 @@
 namespace Dux\Server\Handlers;
 
 use Chubbyphp\WorkermanRequestHandler\PsrRequestFactory;
-use Chubbyphp\WorkermanRequestHandler\WorkermanResponseEmitter;
 use Dux\App;
+use Exception;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Factory\UploadedFileFactory;
@@ -26,8 +26,6 @@ class Web
 
         $worker->onMessage = function (WorkermanTcpConnection $workermanTcpConnection, WorkermanRequest $workermanRequest) {
 
-            $workermanTcpConnection->upgradeToWebSocket($request);
-
             $filePath = App::$publicPath . $workermanRequest->path();
             if (is_dir($filePath)) {
                 $filePath = rtrim($filePath, '/') . '/index.html';
@@ -48,11 +46,21 @@ class Web
             $workermanTcpConnection->maxRecvPackageSize = 60;
             $workermanTcpConnection->maxSendBufferSize = 60;
 
-            $emit = new WorkermanResponseEmitter();
-            $emit->emit(
-                App::app()->handle($request->create($workermanTcpConnection, $workermanRequest)),
-                $workermanTcpConnection
+            $request = $request->create($workermanTcpConnection, $workermanRequest);
+            try {
+                $response = App::app()->handle($request);
+            } catch (Exception $e) {
+                dump($e->getMessage());
+                return;
+            }
+
+            $workermanTcpConnection->send(
+                (new Response())
+                    ->withStatus($response->getStatusCode(), $response->getReasonPhrase())
+                    ->withHeaders($response->getHeaders())
+                    ->withBody((string)$response->getBody())
             );
+
         };
     }
 

@@ -35,6 +35,21 @@ class Websocket
 
     public function onWorkerStart(Worker $worker): void
     {
+        // 连接通讯组件
+        $port = App::config('use')->get('app.port', 8080);
+        $port = $port + 1;
+        \Channel\Client::connect('0.0.0.0', $port);
+
+        // 监听websocket 消息
+        \Channel\Client::on('websocket', function ($channelData) use ($worker) {
+            if (!self::$clients[$channelData['client_app']][$channelData['client_id']]) {
+                return;
+            }
+            dump($channelData['message']);
+            self::send(self::$clients[$channelData['client_app']][$channelData['client_id']]->connection, $channelData['type'], $channelData['message'], $channelData['data']);
+        });
+
+
         // 心跳连接
         Timer::add(30, function () use ($worker) {
             $time = time();
@@ -93,7 +108,6 @@ class Websocket
 
                 // 触发上线事件
                 App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.online');
-
 
             } catch (Exception $e) {
                 App::log('websocket')->error($e->getMessage());
