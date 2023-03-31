@@ -72,7 +72,6 @@ class EventDataSource extends DataSource
             return null;
         }, $this->dispatcher->getListeners($event));
 
-        App::log()->debug(json_encode($data));
         return array_filter($data);
     }
 }
