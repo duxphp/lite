@@ -3,11 +3,8 @@
 namespace Dux\Server\Handlers;
 
 use Dux\App;
-use Dux\Queue\QueueProcessor;
-use Enqueue\Consumption\ChainExtension;
-use Enqueue\Consumption\Extension\ExitStatusExtension;
-use Enqueue\Consumption\Extension\SignalExtension;
-use Enqueue\Consumption\QueueConsumer;
+use Exception;
+use Workerman\RedisQueue\Client;
 use Workerman\Worker;
 
 class Queue
@@ -15,29 +12,45 @@ class Queue
 
     static function start(): void
     {
-        $group = App::config('queue')->get('group', 'default');
-        $processes = App::config('queue')->get('processes', 1);
+        $group = App::config('queue')->get('group');
+        $processes = App::config('queue')->get('processes', 4);
 
         $worker = new Worker();
         $worker->name = 'queue';
         $worker->count = $processes;
 
-        $exitStatusExtension = new ExitStatusExtension();
-        $worker->onWorkerStart = function () use ($group, $exitStatusExtension) {
-            $retry = (int)App::config("queue")->get("retry", 3);
-            $context = App::queue()->context;
-            $queueConsumer = new QueueConsumer($context, new ChainExtension([
-                new SignalExtension(),
-                $exitStatusExtension
-            ]), [], null, 1000);
-            $queueConsumer->bind($group, new QueueProcessor($context->createQueue($group), $retry));
-            $queueConsumer->consume();
-        };
+        $worker->onWorkerStart = function () use ($group) {
+            \Channel\Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
 
-        $worker->onWorkerExit = function () use ($exitStatusExtension) {
-            exit($exitStatusExtension->getExitStatus());
-        };
+            $config = App::queue()->config;
+            $host = $config['host'];
+            $port = $config['port'];
+            $auth = $config['auth'];
+            $dsn = "redis://$host:$port";
+            $client = new Client($dsn, [
+                'auth' => $auth,
+                'max_attempts' => $config['retry']
+            ]);
+            $client->subscribe($group, function (?array $data) {
+                if (!$data) {
+                    return;
+                }
+                [$classMethod, $params] = $data;
+                [$class, $method] = $classMethod;
 
+                try {
+                    $object = new $class;
+                    if (!$method) {
+                        $object(...$params);
+                    } else if (method_exists($object, $method)) {
+                        $object->$method(...$params);
+                    }
+                } catch (Exception $e) {
+                    App::log('queue')->error($e->getMessage() . ' ' . $e->getFile() . ':' . $e->getLine());
+                    throw $e;
+                }
+            });
+        };
     }
 
 }

@@ -383,23 +383,16 @@ class App
 
     /**
      * notify
-     * @param string $type
      * @return Notify
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function notify(string $type = ""): Notify
+    public static function notify(): Notify
     {
-        if (!$type) {
-            $type = self::config("queue")->get("type");
-        }
         if (!self::$di->has("notify." . $type)) {
-            $config = self::config("queue")->get("drivers." . $type);
-            $queueType = $config["type"];
-            unset($config["type"]);
             self::$di->set(
                 "notify." . $type,
-                new Notify($queueType, $config)
+                new Notify()
             );
         }
         return self::$di->get("notify." . $type);
