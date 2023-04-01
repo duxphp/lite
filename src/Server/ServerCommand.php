@@ -5,6 +5,7 @@ namespace Dux\Server;
 
 use Dux\Server\Handlers\Channel;
 use Dux\Server\Handlers\Queue;
+use Dux\Server\Handlers\Scheduler;
 use Dux\Server\Handlers\Web;
 use Dux\Server\Handlers\Websocket;
 use Symfony\Component\Console\Command\Command;
@@ -36,9 +37,10 @@ class ServerCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         Web::Start();
-        Queue::start();
         Channel::start();
         Websocket::start();
+        Queue::start();
+        Scheduler::start();
         Worker::runAll();
         return Command::SUCCESS;
     }
