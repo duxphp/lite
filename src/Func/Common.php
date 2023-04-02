@@ -155,9 +155,6 @@ if (!function_exists('decryption')) {
 if (!function_exists('is_service')) {
     function is_service(): bool
     {
-        if (class_exists('Workerman\Worker')) {
-            return true;
-        }
-        return false;
+        return App::di()->has('server');
     }
 }
