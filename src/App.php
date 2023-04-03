@@ -12,6 +12,7 @@ use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Dux\App\AppExtend;
+use Dux\Auth\AuthService;
 use Dux\Config\Yaml;
 use Dux\Database\Db;
 use Dux\Database\Migrate;
@@ -396,5 +397,24 @@ class App
             );
         }
         return self::$di->get("notify." . $type);
+    }
+
+    /**
+     * 授权处理
+     * @param string $app
+     * @return Notify
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public static function auth(string $app = ""): Notify
+    {
+        if (!self::$di->has("auth.$app")) {
+            self::$di->set(
+                "auth.$app",
+                new AuthService($app)
+            );
+        }
+        return self::$di->get("auth.$app");
+
     }
 }
