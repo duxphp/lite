@@ -36,9 +36,7 @@ class Websocket
     public function onWorkerStart(Worker $worker): void
     {
         // 连接通讯组件
-        $port = App::config('use')->get('app.port', 8080);
-        $port = $port + 1;
-        \Channel\Client::connect('0.0.0.0', $port);
+        \Channel\Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
 
         // 监听websocket 消息
         \Channel\Client::on('websocket', function ($channelData) use ($worker) {

@@ -3,40 +3,39 @@ declare(strict_types=1);
 
 namespace Dux\Notify;
 
-use Dux\App;
-use Enqueue\Redis\RedisConnectionFactory;
-use Exception;
-use Interop\Queue\Context;
+use Channel\Client;
+use Psr\Http\Message\ResponseInterface;
 
 class Notify
 {
-
-    public Context $context;
-
-    /**
-     * @var array []\Interop\Queue\Queue
-     */
-    public array $services = [];
-
-    public function __construct(string $type, array $config)
+    public function __construct()
     {
-        $factory = match ($type) {
-            "redis" => new RedisConnectionFactory($config),
-            default => throw new Exception('This driver is not supported')
-        };
-        $this->context = $factory->createContext();
     }
 
-    public function topic(string $name, string $clientApp, string $clientId = ''): NotifyHandler
+    // 消费订阅消息
+    public function consume(ResponseInterface $response, string $topic): ResponseInterface
     {
-        $topicName = "$name.$clientApp.$clientId";
-        if (App::di()->has("push.$topicName")) {
-            $topic = App::di()->get("push.$topicName");
-        } else {
-            $topic = $this->context->createTopic($name);
-            App::di()->set("push.$topicName", $topic);
+        if (!is_service()) {
+            sleep(10);
         }
-        return new NotifyHandler($this->context, $topic, $name, $clientApp, $clientId);
+        return send($response, 'ok')->withHeader('notify', $topic);
+    }
+
+    /**
+     * 发送订阅消息
+     * @param string $topic
+     * @param array $data
+     * @return void
+     */
+    public function send(string $topic, array $data): void
+    {
+        if (!is_service()) {
+            return;
+        }
+        Client::publish("notify", [
+            'topic' => $topic,
+            'data' => $data
+        ]);
     }
 
 }

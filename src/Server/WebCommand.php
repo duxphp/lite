@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Dux\Server;
 
+use Dux\App;
 use Dux\Server\Handlers\Web;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,6 +33,7 @@ class WebCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        App::di()->set('server', true);
         Web::Start();
         Worker::runAll();
         return Command::SUCCESS;

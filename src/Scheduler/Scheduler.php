@@ -3,50 +3,40 @@
 namespace Dux\Scheduler;
 
 use Closure;
-use Dux\App;
 use Exception;
-use GO\Job;
+use Workerman\Crontab\Crontab;
 
 class Scheduler
 {
+    private array $data = [];
 
-    private \GO\Scheduler $scheduler;
-
-    public function __construct()
+    public function add(string $cron, callable|array $callback): void
     {
-        $this->scheduler = new \GO\Scheduler();
+        $this->data[] = [
+            'cron' => $cron,
+            'func' => $callback
+        ];
     }
 
-    public function add(callable|array $callback, $params = []): Job
+    public function expand(): void
     {
-        if ($callback instanceof Closure) {
-            return $this->scheduler->call($callback, $params);
+        foreach ($this->data as $item) {
+            new Crontab($item['cron'], function () use ($item) {
+                $func = $item['func'];
+                if ($item['func'] instanceof Closure) {
+                    $func();
+                    return;
+                }
+                [$class, $method] = $func;
+                if (!class_exists($class)) {
+                    throw new Exception("Scheduler class [$class] does not exist");
+                }
+                if (!method_exists($class, $method)) {
+                    throw new Exception("Scheduler method [$class:$method] does not exist");
+                }
+                (new $class)->$method();
+            });
         }
-
-        [$class, $method] = $callback;
-        if (!class_exists($class)) {
-            throw new Exception("Scheduler class [$class] does not exist");
-        }
-        if (!method_exists($class, $method)) {
-            throw new Exception("Scheduler method [$class:$method] does not exist");
-        }
-        return $this->scheduler->call(function () use ($class, $method, $params) {
-            (new $class)->$method(...$params);
-        });
-    }
-
-    public function run(): void
-    {
-        $failedJobs = $this->scheduler->getFailedJobs();
-        foreach ($failedJobs as $job) {
-            App::log('scheduler')->error($job->getException()->getMessage() . ' ' . $job->getException()->getFile() . ':' . $job->getException()->getLine());
-        }
-        $this->scheduler->run();
-    }
-
-    public function work(array $seconds = [0]): void
-    {
-        $this->scheduler->work($seconds);
     }
 
 }

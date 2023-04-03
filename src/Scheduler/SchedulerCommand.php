@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Dux\Scheduler;
 
-use Dux\App;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Workerman\Worker;
 
 class SchedulerCommand extends Command
 {
@@ -16,7 +16,8 @@ class SchedulerCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        App::scheduler()->run();
+        \Dux\Server\Handlers\Scheduler::start();
+        Worker::runAll();
         return Command::SUCCESS;
     }
 }
