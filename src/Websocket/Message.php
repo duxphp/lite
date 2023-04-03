@@ -26,11 +26,6 @@ class Message
             'message' => $message,
             'data' => $data
         ]);
-
-//        if (!Websocket::$clients[$clientApp][$clientId]) {
-//            return;
-//        }
-//        Websocket::send(Websocket::$clients[$clientApp][$clientId]->connection, $type, $message, $data);
     }
 
 

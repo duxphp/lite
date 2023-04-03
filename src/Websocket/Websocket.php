@@ -46,7 +46,6 @@ class Websocket
             self::send(self::$clients[$channelData['client_app']][$channelData['client_id']]->connection, $channelData['type'], $channelData['message'], $channelData['data']);
         });
 
-
         // 心跳连接
         Timer::add(30, function () use ($worker) {
             $time = time();
@@ -62,7 +61,6 @@ class Websocket
             }
         });
         App::event()->dispatch(new EventService($this), 'websocket.start');
-
     }
 
     public function onConnect(TcpConnection $connection): void
@@ -166,13 +164,11 @@ class Websocket
         }
 
         try {
-            // 触发事件
             App::event()->dispatch(new MessageEvent("message", $client->sub, (string)$client->id, [], $client->platform), 'message.offline');
         } catch (Exception $e) {
             App::log("websocket")->error($e->getMessage(), $e->getTrace());
         }
 
-        // 卸载客户端数据
         unset(self::$pings[$connection->id], self::$clients[$client->sub][$client->id], self::$clientMaps[$connection->id]);
     }
 
