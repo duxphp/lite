@@ -2,21 +2,22 @@
 
 namespace Dux\Manage;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App;
-use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
-use \Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use \Illuminate\Database\Eloquent\Model;
-use \Illuminate\Support\Collection;
+use Throwable;
 
 /**
- * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): array
+ * @method global(ServerRequestInterface $request, ResponseInterface $response, array $args)
+ * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): Builder
  * @method listFormat(object $item): array
  * @method listAssign($query, array $args, array $list): array
- * @method infoWhere($query, array $args, ServerRequestInterface $request): array
+ * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): Builder
  * @method infoAssign($info): array
  * @method infoFormat($info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
@@ -34,7 +35,8 @@ use \Illuminate\Support\Collection;
  * @method restoreBefore($info, array $args)
  * @method restoreAfter($info, array $args)
  */
-class Manage {
+class Manage
+{
 
     protected string $id = "id";
     protected string $name = "";
@@ -51,7 +53,11 @@ class Manage {
      * @param array $args
      * @return ResponseInterface
      */
-    public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function list(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $queryParams = $request->getQueryParams();
         $limit = $queryParams["limit"] ?: $this->listLimit;
         $treeStatus = $this->tree;
@@ -89,7 +95,7 @@ class Manage {
             ];
         }
         if (method_exists($this, "listAssign")) {
-            $assign = [...$assign, ...$this->listAssign($query, $args, (array) $assign['list'])];
+            $assign = [...$assign, ...$this->listAssign($query, $args, (array)$assign['list'])];
         }
         return send($response, "ok", $assign);
     }
@@ -101,7 +107,11 @@ class Manage {
      * @param array $args
      * @return ResponseInterface
      */
-    public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $info = collect();
         if ($id) {
@@ -133,8 +143,15 @@ class Manage {
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Throwable
      */
-    public function save(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function save(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $name = $this->name;
         $data = Validator::parser([...$request->getParsedBody(), ...$args], method_exists($this, "saveValidator") ? $this->saveValidator($args, $request) : []);
@@ -172,8 +189,15 @@ class Manage {
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Throwable
      */
-    public function store(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function store(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $data = $request->getParsedBody();
         App::db()->getConnection()->beginTransaction();
@@ -198,8 +222,15 @@ class Manage {
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Throwable
      */
-    public function del(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function del(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $name = $this->name ?? "";
         $query = $this->model::query();
@@ -226,8 +257,15 @@ class Manage {
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Throwable
      */
-    public function trashed(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function trashed(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $name = $this->name ?? "";
         $query = $this->model::query();
@@ -254,8 +292,15 @@ class Manage {
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Throwable
      */
-    public function restore(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function restore(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        if (method_exists($this, 'global')) {
+            $this->global($request, $response, $args);
+        }
         $id = $args["id"] ?: 0;
         $name = $this->name ?? "";
         $query = $this->model::query();
