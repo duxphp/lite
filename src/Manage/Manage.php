@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 /**
- * @method global(ServerRequestInterface $request, ResponseInterface $response, array $args)
+ * @method global(ServerRequestInterface $request, ResponseInterface $response, array $args): void
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): Builder
  * @method listFormat(object $item): array
  * @method listAssign($query, array $args, array $list): array
