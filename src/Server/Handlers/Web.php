@@ -41,7 +41,7 @@ class Web
             });
         };
 
-        $worker->onMessage = function (WorkermanTcpConnection $workermanTcpConnection, WorkermanRequest $workermanRequest) {
+        $worker->onMessage = static function (WorkermanTcpConnection $workermanTcpConnection, WorkermanRequest $workermanRequest) {
 
             // 静态文件
             if (StaticFile::run($workermanTcpConnection, $workermanRequest)) {
@@ -55,6 +55,7 @@ class Web
                 new UploadedFileFactory()
             );
             $request = $request->create($workermanTcpConnection, $workermanRequest);
+            App::di()->get('error')->forceContentType(null);
             $response = App::app()->handle($request);
 
             // 通知处理

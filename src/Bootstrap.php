@@ -201,6 +201,7 @@ class Bootstrap
         $errorHandler->registerErrorRenderer("text/xml", ErrorXmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/html", ErrorHtmlRenderer::class);
         $errorHandler->registerErrorRenderer("text/plain", ErrorPlainRenderer::class);
+        $this->di->set('error', $errorHandler);
 
         // 跨域处理
         $this->web->options('/{routes:.+}', function ($request, $response, $args) {
