@@ -85,9 +85,19 @@ class Web
 
     public static function transition(ResponseInterface $response): Response
     {
+        $headers = [];
+        foreach ($response->getHeaders() as $key => $value) {
+            $words = preg_split('/[\s-]+/', $key);
+            $capitalizedWords = array_map(function ($word) {
+                return ucwords(strtolower($word));
+            }, $words);
+            $capitalizedHeader = implode('-', $capitalizedWords);
+            $headers[$capitalizedHeader] = $value;
+        }
+
         return (new Response())
             ->withStatus($response->getStatusCode(), $response->getReasonPhrase())
-            ->withHeaders($response->getHeaders())
+            ->withHeaders($headers)
             ->withBody((string)$response->getBody());
     }
 
