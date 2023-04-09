@@ -25,6 +25,7 @@ use Throwable;
  * @method saveAfter(Data $data, $info)
  * @method storeBefore(array $updateData, int $id, $data)
  * @method storeAfter($info, array $updateData, $data)
+ * @method storeEnd($info, array $updateData, $data)
  * @method delWhere(Builder $query, array $args): Builder
  * @method delBefore($info, array $args)
  * @method delAfter($info, array $args)
@@ -180,6 +181,11 @@ class Manage
             $this->saveAfter($data, $model, $id);
         }
         App::db()->getConnection()->commit();
+
+        if (method_exists($this, "saveEnd")) {
+            $this->saveEnd($data, $model, $id);
+        }
+
         return send($response, ($id ? "编辑" : "添加") . "{$name}成功");
     }
 
