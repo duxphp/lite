@@ -35,12 +35,12 @@ class QueueHandlers
 
     /**
      * 设置延时任务
-     * @param int $millisecond
+     * @param int $seconds
      * @return QueueHandlers
      */
-    public function delay(int $millisecond): self
+    public function delay(int $seconds): self
     {
-        $this->delay = $millisecond;
+        $this->delay = $seconds;
         return $this;
     }
 
