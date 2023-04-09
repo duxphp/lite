@@ -22,10 +22,11 @@ use Throwable;
  * @method infoFormat($info): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
  * @method saveFormat(Data $data, int $id, ServerRequestInterface $request): array
- * @method saveAfter(Data $data, $info)
+ * @method saveBefore(Data $data, $info, int $id)
+ * @method saveAfter(Data $data, $info, int $id)
+ * @method saveEnd(Data $data, $info, int $id)
  * @method storeBefore(array $updateData, int $id, $data)
  * @method storeAfter($info, array $updateData, $data)
- * @method storeEnd($info, array $updateData, $data)
  * @method delWhere(Builder $query, array $args): Builder
  * @method delBefore($info, array $args)
  * @method delAfter($info, array $args)
