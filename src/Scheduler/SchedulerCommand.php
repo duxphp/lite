@@ -16,7 +16,7 @@ class SchedulerCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        \Dux\Server\Handlers\Scheduler::start();
+        \Dux\Server\Handlers\Scheduler::start(false);
         Worker::runAll();
         return Command::SUCCESS;
     }

@@ -9,13 +9,15 @@ use Workerman\Worker;
 class Scheduler
 {
 
-    static function start(): void
+    static function start(bool $channel = true): void
     {
         $worker = new Worker();
         $worker->name = 'scheduler';
 
-        $worker->onWorkerStart = function () {
-            Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
+        $worker->onWorkerStart = function () use ($channel) {
+            if (!$channel) {
+                Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
+            }
             App::scheduler()->expand();
         };
     }

@@ -10,7 +10,7 @@ use Workerman\Worker;
 class Queue
 {
 
-    static function start(): void
+    static function start(bool $channel = true): void
     {
         $group = App::config('queue')->get('group');
         $processes = App::config('queue')->get('processes', 4);
@@ -19,8 +19,10 @@ class Queue
         $worker->name = 'queue';
         $worker->count = $processes;
 
-        $worker->onWorkerStart = function () use ($group) {
-            \Channel\Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
+        $worker->onWorkerStart = function () use ($group, $channel) {
+            if ($channel) {
+                \Channel\Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
+            }
 
             $config = App::queue()->config;
             $host = $config['host'];

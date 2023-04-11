@@ -10,11 +10,12 @@ class Websocket
 
     static function start(): void
     {
+        $progress = App::config('use')->get('app.progress', 4);
         $port = App::config('use')->get('app.port', 8080);
         $port = $port + 2;
         $worker = new Worker("websocket://0.0.0.0:$port");
         $worker->name = 'websocket';
-        $worker->count = 4;
+        $worker->count = $progress;
         App::di()->set('ws.worker', $worker);
 
         $handler = new \Dux\Websocket\Websocket();
