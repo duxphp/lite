@@ -32,7 +32,7 @@ class QueueCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        \Dux\Server\Handlers\Queue::start();
+        \Dux\Server\Handlers\Queue::start(false);
         Worker::runAll();
         return Command::SUCCESS;
     }
