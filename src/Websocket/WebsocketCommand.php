@@ -2,6 +2,7 @@
 
 namespace Dux\Websocket;
 
+use Dux\Server\Handlers\Channel;
 use Dux\Server\Handlers\Websocket;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,6 +34,7 @@ class WebsocketCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        Channel::start();
         Websocket::start();
         Worker::runAll();
         return Command::SUCCESS;
