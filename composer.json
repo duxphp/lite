@@ -68,7 +68,11 @@
     "chubbyphp/chubbyphp-workerman-request-handler": "^2.0",
     "workerman/channel": "^1.1",
     "workerman/crontab": "^1.0",
-    "workerman/redis-queue": "^1.0"
+    "workerman/redis-queue": "^1.0",
+    "amphp/http-server": "^3.0",
+    "amphp/socket": "^2.1",
+    "amphp/log": "^2.0@beta",
+    "amphp/http": "^2.0"
   },
   "require-dev": {
     "composer/composer": "^2.0",
