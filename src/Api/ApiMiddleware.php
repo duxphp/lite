@@ -7,20 +7,22 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
-class ApiMiddleware {
+class ApiMiddleware
+{
 
     /**
      * 误差秒
      * @var int
      */
-    protected int $time = 5;
+    protected int $time = 60;
 
 
     public function __construct(public $callback)
     {
     }
 
-    public function __invoke(Request $request, RequestHandler $handler): Response {
+    public function __invoke(Request $request, RequestHandler $handler): Response
+    {
 
         // 请求超时
         if (!$this->allowTimestamp($request)) {
@@ -69,7 +71,7 @@ class ApiMiddleware {
      */
     protected function allowTimestamp(Request $request): bool
     {
-        $queryTime = (int) $request->getHeader('Content-Date')[0];
+        $queryTime = (int)$request->getHeader('Content-Date')[0];
         if ($queryTime + $this->time < time()) {
             return false;
         }
