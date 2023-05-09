@@ -15,7 +15,7 @@ class Scheduler
         $worker->name = 'scheduler';
 
         $worker->onWorkerStart = function () use ($channel) {
-            if (!$channel) {
+            if ($channel) {
                 Client::connect('0.0.0.0', App::config('use')->get('app.port', 8080) + 1);
             }
             App::scheduler()->expand();
