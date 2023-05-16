@@ -5,7 +5,7 @@ namespace Dux\Validator;
 
 use ArrayAccess;
 
-abstract class Data implements ArrayAccess
+class Data implements ArrayAccess
 {
 
     protected array $array = [];
@@ -14,7 +14,7 @@ abstract class Data implements ArrayAccess
     {
         $this->array[$key] = $value;
     }
-    
+
     public function __isset($key)
     {
         return isset($this->array[$key]);
