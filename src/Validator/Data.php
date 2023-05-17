@@ -58,5 +58,4 @@ class Data implements ArrayAccess
             unset($this->array[$offset]);
         }
     }
-
 }
