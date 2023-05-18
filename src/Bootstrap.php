@@ -161,7 +161,7 @@ class Bootstrap
         $commands[] = SchedulerCommand::class;
         $commands[] = WebCommand::class;
         $commands[] = ServerCommand::class;
-        $commands[] = Amp\ServerCommand::class;
+        $commands[] = React\ServerCommand::class;
         $this->command = Command::init($commands);
 
         // 注册模型迁移
