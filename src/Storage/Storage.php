@@ -8,7 +8,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Overtrue\Flysystem\Cos\CosAdapter;
 use Overtrue\Flysystem\Qiniu\QiniuAdapter;
-use Iidestiny\Flysystem\Oss\OssAdapter;
+    use Iidestiny\Flysystem\Oss\OssAdapter;
 
 class Storage {
     public static function init(string $type, array $config): Filesystem {
@@ -22,7 +22,8 @@ class Storage {
                 $adapter = new CosAdapter($config);
                 break;
             case "oss":
-                $adapter = new OssAdapter($config["accessKeyId"], $config["accessKeySecret"], $config["endpoint"], $config["bucket"], $config["isCName"], $config["prefix"]);
+                $adapter = new OssAdapter($config["accessKeyId"], $config["accessKeySecret"], $config["endpoint"], $config["bucket"], $config["isCName"], $config["prefix"] ?: '');
+                $adapter->setCdnUrl($config["domain"]);
                 break;
             default:
                 $adapter = new LocalFilesystemAdapter(

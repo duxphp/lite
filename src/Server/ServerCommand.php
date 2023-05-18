@@ -38,7 +38,6 @@ class ServerCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         App::di()->set('server', true);
-        Web::Start();
         Channel::start();
         Websocket::start();
         Queue::start();

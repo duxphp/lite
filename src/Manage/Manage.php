@@ -5,6 +5,7 @@ namespace Dux\Manage;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Dux\App;
+use Dux\Handlers\ExceptionBusiness;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,7 @@ use Throwable;
 
 /**
  * @method global(ServerRequestInterface $request, ResponseInterface $response, array $args): void
+ * @method globalWhere(Builder $query): Builder
  * @method listWhere(Builder $query, array $args, ServerRequestInterface $request): Builder
  * @method listFormat(object $item): array
  * @method listAssign($query, array $args, array $list): array
@@ -81,6 +83,11 @@ class Manage
         if (method_exists($this, "listWhere")) {
             $query = $this->listWhere($query, $args, $request);
         }
+
+        if (method_exists($this, "globalWhere")) {
+            $query = $this->globalWhere($query);
+        }
+
         if ($pageStatus && !$treeStatus) {
             $query = $query->paginate($limit);
         } else {
@@ -117,15 +124,14 @@ class Manage
         $id = $args["id"] ?: 0;
         $info = collect();
         if ($id) {
-            /**
-             * @var $query Builder
-             */
-            $query = $this->model::query();
+            $query = $this->model::query()->where($this->id, $id);
             if (method_exists($this, "infoWhere")) {
-                $info = $this->infoWhere($query, $args, $request)->first();
-            } else {
-                $info = $query->find($id);
+                $query = $this->infoWhere($query, $args, $request);
             }
+            if (method_exists($this, "globalWhere")) {
+                $query = $this->globalWhere($query);
+            }
+            $info = $query->first();
             $data = format_data($info, function ($item): array {
                 return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
             });
@@ -166,7 +172,17 @@ class Manage
         }
 
         if ($id) {
-            $model = $this->model::find($id);
+            $query = $this->model::query()->where($this->id, $id);
+            if (method_exists($this, "saveWhere")) {
+                $query = $this->infoWhere($query, $args, $request);
+            }
+            if (method_exists($this, "globalWhere")) {
+                $query = $this->globalWhere($query);
+            }
+            $model = $query->first();
+            if (!$model) {
+                throw new ExceptionBusiness('数据不存在');
+            }
         } else {
             $model = new $this->model;
         }
@@ -214,10 +230,13 @@ class Manage
         if (method_exists($this, "storeBefore")) {
             $updateData = $this->storeBefore($updateData, $id, $data);
         }
-        $this->model::query()->where($this->id, $id)->update($updateData);
-        $info = $this->model::find($id);
+        $model = $this->model::query()->where($this->id, $id);
+        if (method_exists($this, "globalWhere")) {
+            $model = $this->globalWhere($model);
+        }
+        $model->update($updateData);
         if (method_exists($this, "storeAfter")) {
-            $this->storeAfter($info, $updateData, $data);
+            $this->storeAfter($model->find($id), $updateData, $data);
         }
         App::db()->getConnection()->commit();
         return send($response, "更改成功");
@@ -242,10 +261,13 @@ class Manage
         $name = $this->name ?? "";
         $query = $this->model::query();
         if (method_exists($this, "delWhere")) {
-            $info = $this->delWhere($query, $args)->first();
-        } else {
-            $info = $query->where($this->id, $id)->first();
+            $query = $this->delWhere($query, $args);
         }
+        if (method_exists($this, "globalWhere")) {
+            $query = $this->globalWhere($query);
+        }
+        $info = $query->where($this->id, $id)->first();
+
         App::db()->getConnection()->beginTransaction();
         if (method_exists($this, "delBefore")) {
             $this->delBefore($info, $args);
@@ -277,10 +299,13 @@ class Manage
         $name = $this->name ?? "";
         $query = $this->model::query();
         if (method_exists($this, "trashedWhere")) {
-            $info = $this->trashedWhere($query, $args)->withTrashed()->first();
-        } else {
-            $info = $query->where($this->id, $id)->withTrashed()->first();
+            $query = $this->trashedWhere($query, $args);
         }
+        if (method_exists($this, "globalWhere")) {
+            $query = $this->globalWhere($query);
+        }
+        $info = $query->where($this->id, $id)->withTrashed()->first();
+
         App::db()->getConnection()->beginTransaction();
         if (method_exists($this, "trashedBefore")) {
             $this->trashedBefore($info, $args);
@@ -312,10 +337,13 @@ class Manage
         $name = $this->name ?? "";
         $query = $this->model::query();
         if (method_exists($this, "restoreWhere")) {
-            $info = $this->restoreWhere($query, $args)->withTrashed()->first();
-        } else {
-            $info = $query->withTrashed()->where($this->id, $id)->first();
+            $query = $this->restoreWhere($query, $args);
         }
+        if (method_exists($this, "globalWhere")) {
+            $query = $this->globalWhere($query);
+        }
+        $info = $query->where($this->id, $id)->withTrashed()->first();
+
         App::db()->getConnection()->beginTransaction();
         if (method_exists($this, "restoreBefore")) {
             $this->restoreBefore($info, $args);
