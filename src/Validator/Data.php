@@ -10,6 +10,11 @@ class Data implements ArrayAccess
 
     protected array $array = [];
 
+    public function __construct(array $array = [])
+    {
+        $this->array = $array;
+    }
+
     public function __set($key, $value)
     {
         $this->array[$key] = $value;
