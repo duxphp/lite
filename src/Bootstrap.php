@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux;
 
 
+use Carbon\Carbon;
 use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
 use DI\DependencyException;
@@ -120,6 +121,8 @@ class Bootstrap
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
 
+        $local = App::config("use")->get("app.local", 'zh');
+        Carbon::setLocale($local);
     }
 
     /**
