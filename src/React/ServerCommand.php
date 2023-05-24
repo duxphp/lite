@@ -23,7 +23,6 @@ use Slim\Psr7\Stream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use React\WebSocket\Server as WebSocketServer;
 
 ini_set('memory_limit', '1024M');
 
