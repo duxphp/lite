@@ -20,8 +20,8 @@ use Throwable;
  * @method listFormat(object $item): array
  * @method listAssign($query, array $args, array $list): array
  * @method infoWhere(Builder $query, array $args, ServerRequestInterface $request): Builder
- * @method infoAssign($info): array
- * @method infoFormat($info): array
+ * @method infoAssign($info, ServerRequestInterface $request): array
+ * @method infoFormat($info, ServerRequestInterface $request): array
  * @method saveValidator(array $args, ServerRequestInterface $request): array
  * @method saveFormat(Data $data, int $id, ServerRequestInterface $request): array
  * @method saveBefore(Data $data, $info, int $id)
@@ -132,15 +132,15 @@ class Manage
                 $query = $this->globalWhere($query);
             }
             $info = $query->first();
-            $data = format_data($info, function ($item): array {
-                return method_exists($this, "infoFormat") ? $this->infoFormat($item) : $item;
+            $data = format_data($info, function ($item) use($request): array {
+                return method_exists($this, "infoFormat") ? $this->infoFormat($item, $request) : $item;
             });
         } else {
             $data = [];
         }
 
         if (method_exists($this, "infoAssign")) {
-            $data = [...$data, ...$this->infoAssign($info)];
+            $data = [...$data, ...$this->infoAssign($info, $request)];
         }
         return send($response, "ok", $data);
     }
