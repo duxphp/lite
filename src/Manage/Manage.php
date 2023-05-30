@@ -133,7 +133,7 @@ class Manage
             }
             $info = $query->first();
             $data = format_data($info, function ($item) use($request): array {
-                return method_exists($this, "infoFormat") ? $this->infoFormat($item, $request) : $item;
+                return method_exists($this, "infoFormat") ? $this->infoFormat($item, $request) : $item->toArray();
             });
         } else {
             $data = [];
