@@ -59,4 +59,9 @@ class Data implements ArrayAccess
         }
     }
 
+    public function toArray(): array
+    {
+        return $this->array;
+    }
+
 }
