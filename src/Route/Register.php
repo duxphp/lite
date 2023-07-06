@@ -78,7 +78,8 @@ class Register
                         class: $class,
                         name: $params["name"] ?: $name,
                         title: $params["title"],
-                        ways: $params["ways"] ?? []
+                        ways: $params["ways"] ?? [],
+                        middleware: $params["middleware"] ?? []
                     );
                     $groupClass[$className] = $group;
                     if ($params['permission']) {

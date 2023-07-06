@@ -14,6 +14,7 @@ class RouteManage {
      * @param string $pattern 路由前缀
      * @param string $name 路由名
      * @param array $ways 允许方法
+     * @param array $middleware 中间件
      * @param string $permission 权限注册名
      */
     public function __construct(
@@ -22,5 +23,6 @@ class RouteManage {
         string $pattern,
         string $name = '',
         array  $ways = [],
+        array $middleware = [],
         string $permission = '') {}
 }

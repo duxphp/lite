@@ -138,10 +138,11 @@ class Route {
      * @param string $name
      * @param string $title
      * @param array $ways ["list", "info", "add", "edit", "store", "del"]
+     * @param array $middleware
      * @return Route
      */
-    public function manage(string $pattern, string $class, string $name, string $title, array $ways = []): Route {
-        $group = $this->group($pattern, $title);
+    public function manage(string $pattern, string $class, string $name, string $title, array $ways = [], array $middleware = []): Route {
+        $group = $this->group($pattern, $title,...$middleware);
         $group->manageAttr = [
             $class,
             $name,
