@@ -21,6 +21,9 @@ class Redis
         }
         $database = $this->config["database"] ?: 0;
         $this->drive->select($database);
+        if ($this->config["optPrefix"]) {
+            $this->drive->setOption(\Redis::OPT_PREFIX, $this->config["optPrefix"]);
+        }
         return $this->drive;
     }
 
