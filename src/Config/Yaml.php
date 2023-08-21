@@ -73,7 +73,7 @@ class Yaml extends \Noodlehaus\Parser\Yaml
                     if (!is_array($params)) {
                         $params = [$params];
                     }
-                    call_user_func($fun, ...$params);
+                    $data[$key] = call_user_func($fun, ...$params);
                 }
             }
         }
