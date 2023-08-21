@@ -118,6 +118,10 @@ class Bootstrap
             'domain' => App::config("use")->get("app.domain"),
         ]);
 
+        Config::setTag('env', function ($key, $default) {
+            return $_ENV[$key] ?? $default;
+        });
+
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
 

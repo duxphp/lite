@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Dux\Config;
 
 use Exception;
-use Symfony\Component\Yaml\Yaml as YamlParser;
 use Noodlehaus\Exception\ParseException;
+use Symfony\Component\Yaml\Tag\TaggedValue;
+use Symfony\Component\Yaml\Yaml as YamlParser;
 
 class Yaml extends \Noodlehaus\Parser\Yaml
 {
@@ -35,16 +36,48 @@ class Yaml extends \Noodlehaus\Parser\Yaml
         }
 
         try {
-            $data = YamlParser::parse($config, YamlParser::PARSE_CONSTANT);
+            $data = YamlParser::parse($config, YamlParser::PARSE_CONSTANT + YamlParser::PARSE_CUSTOM_TAGS);
         } catch (Exception $exception) {
             throw new ParseException(
                 [
-                    'message'   => 'Error parsing YAML string',
+                    'message' => 'Error parsing YAML string',
                     'exception' => $exception,
                 ]
             );
         }
 
-        return (array)$this->parse($data);
+        return $this->parse($data);
+    }
+
+    protected function parse($data = null): ?array
+    {
+        if (!$data) {
+            return null;
+        }
+        return $this->parseValue($data);
+    }
+
+    protected function parseValue(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->parseValue($value);
+            }
+            if ($value instanceof TaggedValue) {
+                $tag = $value->getTag();
+                $fun = Config::getTag($tag);
+                if (!$fun) {
+                    $data[$key] = null;
+                } else {
+                    $params = $value->getValue() ?: [];
+                    if (!is_array($params)) {
+                        $params = [$params];
+                    }
+                    call_user_func($fun, ...$params);
+                }
+            }
+        }
+        return $data;
+
     }
 }

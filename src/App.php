@@ -11,6 +11,7 @@ use Clockwork\Storage\FileStorage;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
+use Dotenv\Dotenv;
 use Dux\App\AppExtend;
 use Dux\Auth\AuthService;
 use Dux\Config\Yaml;
@@ -121,6 +122,9 @@ class App
         if (self::$di->has("config." . $name)) {
             return self::$di->get("config." . $name);
         }
+
+        $dotenv = Dotenv::createImmutable(self::$basePath);
+        $dotenv->safeLoad();
 
         $file = App::$configPath . "/$name.dev.yaml";
         if (!is_file($file)) {
