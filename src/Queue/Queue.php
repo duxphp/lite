@@ -27,6 +27,9 @@ class Queue
         }
         $database = $config["database"] ?: 0;
         $this->client->select($database);
+        if ($this->config["optPrefix"]) {
+            $this->client->setOption(Redis::OPT_PREFIX, $this->config["optPrefix"]);
+        }
     }
 
     public function add(string $group = "default"): QueueHandlers
