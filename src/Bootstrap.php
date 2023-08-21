@@ -118,7 +118,7 @@ class Bootstrap
             'domain' => App::config("use")->get("app.domain"),
         ]);
 
-        Config::setTag('env', function ($key, $default) {
+        Config::setTag('env', function ($key, $default = null) {
             return $_ENV[$key] ?? $default;
         });
 
