@@ -115,7 +115,6 @@ class Bootstrap
             'data_path' => App::$dataPath,
             'config_path' => App::$configPath,
             'public_path' => App::$publicPath,
-            'domain' => App::config("use")->get("app.domain"),
         ]);
 
         Config::setTag('env', function ($key, $default = null) {
