@@ -103,12 +103,6 @@ class Bootstrap
     public function loadConfig(): void
     {
 
-        $this->debug = (bool)App::config("use")->get("app.debug");
-        $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
-        $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
-        $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
-
-
         Config::setValues([
             'base_path' => App::$basePath,
             'app_path' => App::$appPath,
@@ -120,6 +114,12 @@ class Bootstrap
         Config::setTag('env', function ($key, $default = null) {
             return $_ENV[$key] ?? $default;
         });
+        
+        $this->debug = (bool)App::config("use")->get("app.debug");
+        $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
+
 
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
