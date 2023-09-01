@@ -15,12 +15,15 @@ class Redis
 
     public function connect(): \Redis
     {
-        $this->drive->connect($this->config["host"], $this->config["port"], $this->config["timeout"]);
+        $this->drive->connect($this->config["host"], (int)$this->config["port"], (float)$this->config["timeout"]);
         if ($this->config["auth"]) {
             $this->drive->auth($this->config["auth"]);
         }
-        $database = $this->config["database"] ?: 0;
+        $database = (int)$this->config["database"] ?: 0;
         $this->drive->select($database);
+        if ($this->config["optPrefix"]) {
+            $this->drive->setOption(\Redis::OPT_PREFIX, $this->config["optPrefix"]);
+        }
         return $this->drive;
     }
 

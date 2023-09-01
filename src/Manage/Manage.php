@@ -91,8 +91,12 @@ class Manage
         if ($pageStatus && !$treeStatus) {
             $query = $query->paginate($limit);
         } else {
-            $query = $query->get()->toTree();
+            $query = $query->get();
         }
+        if($treeStatus){
+            $query = $query->toTree();
+        }
+
         $assign = [];
         if (method_exists($this, "listFormat")) {
             $assign = format_data($query, function ($item): array {
@@ -133,7 +137,7 @@ class Manage
             }
             $info = $query->first();
             $data = format_data($info, function ($item) use($request): array {
-                return method_exists($this, "infoFormat") ? $this->infoFormat($item, $request) : $item;
+                return method_exists($this, "infoFormat") ? $this->infoFormat($item, $request) : $item->toArray();
             });
         } else {
             $data = [];

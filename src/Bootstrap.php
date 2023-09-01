@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux;
 
 
+use Carbon\Carbon;
 use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
 use DI\DependencyException;
@@ -102,24 +103,29 @@ class Bootstrap
     public function loadConfig(): void
     {
 
-        $this->debug = (bool)App::config("use")->get("app.debug");
-        $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
-        $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
-        $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
-
-
         Config::setValues([
             'base_path' => App::$basePath,
             'app_path' => App::$appPath,
             'data_path' => App::$dataPath,
             'config_path' => App::$configPath,
             'public_path' => App::$publicPath,
-            'domain' => App::config("use")->get("app.domain"),
         ]);
+
+        Config::setTag('env', function ($key, $default = null) {
+            return $_ENV[$key] ?? $default;
+        });
+        
+        $this->debug = (bool)App::config("use")->get("app.debug");
+        $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
+        $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
+        $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
+
 
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
 
+        $local = App::config("use")->get("app.local", 'zh');
+        Carbon::setLocale($local);
     }
 
     /**
