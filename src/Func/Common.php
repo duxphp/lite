@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use Carbon\Carbon;
 use Dux\App;
+use Dux\Handlers\ExceptionBusiness;
 use Symfony\Component\VarDumper\VarDumper;
 
 
@@ -139,7 +140,7 @@ if (!function_exists('encryption')) {
         $key = $key ?: App::config('use')->get('app.secret');
         $data = openssl_encrypt($str, $method, $key, OPENSSL_RAW_DATA, $iv);
         if (!$data) {
-            throw new \Dux\Handlers\ExceptionBusiness('encryption failure');
+            throw new ExceptionBusiness('encryption failure');
         }
         return strtolower(bin2hex($data));
     }
@@ -152,6 +153,7 @@ if (!function_exists('decryption')) {
         $key = $key ?: App::config('use')->get('app.secret');
         return openssl_decrypt(hex2bin($str), $method, $key, OPENSSL_RAW_DATA, $iv);
     }
+}
 
 if (!function_exists('is_service')) {
     function is_service(): bool
