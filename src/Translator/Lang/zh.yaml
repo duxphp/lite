@@ -1,0 +1,3 @@
+common:
+  encryption:
+    failure: 加密失败

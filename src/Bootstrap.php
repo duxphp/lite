@@ -92,6 +92,12 @@ class Bootstrap
         $this->di = $di;
         $this->web = AppFactory::create();
         $this->route = new Route\Register();
+
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $lang = $request->getHeaderLine('Accept-Language');
+            $this->di->set('language', $lang);
+            return $handler->handle($request);
+        });
     }
 
     /**

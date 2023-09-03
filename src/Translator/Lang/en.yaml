@@ -1,0 +1,3 @@
+common:
+  encryption:
+    failure: Encryption failure

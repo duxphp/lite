@@ -37,6 +37,9 @@ use Phpfastcache\Helper\Psr16Adapter;
 use Redis;
 use Slim\App as SlimApp;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Translation\Loader\ArrayLoader;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Symfony\Component\Translation\Translator;
 
 class App
 {
@@ -54,6 +57,8 @@ class App
      * create
      * @param $basePath
      * @return Bootstrap
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public static function create($basePath): Bootstrap
     {
@@ -350,6 +355,7 @@ class App
     }
 
     /**
+     * clock
      * @param null $message
      * @return Clockwork|null
      * @throws DependencyException
@@ -375,6 +381,12 @@ class App
         return $clock;
     }
 
+    /**
+     * scheduler
+     * @return Scheduler
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
     public static function scheduler(): Scheduler
     {
         if (!self::$di->has("scheduler")) {
@@ -392,7 +404,7 @@ class App
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function notify(): Notify
+    public static function notify(string $type): Notify
     {
         if (!self::$di->has("notify." . $type)) {
             self::$di->set(
@@ -404,7 +416,7 @@ class App
     }
 
     /**
-     * 授权处理
+     * Auth
      * @param string $app
      * @return Notify
      * @throws DependencyException
@@ -419,6 +431,29 @@ class App
             );
         }
         return self::$di->get("auth.$app");
+    }
 
+    /**
+     * translator
+     * @param string|null $lang
+     * @return Translator
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public static function trans(?string $lang = ""): Translator {
+        if (!$lang) {
+            $lang = self::$di->get('language') ?: 'en';
+        }
+        if (!self::$di->has("trans")) {
+            $translator = new Translator($lang);
+            $translator->addLoader('array', new YamlFileLoader());
+            $translator->addResource('array', __DIR__ . '/Translator/Lang/en.yaml', 'en');
+            $translator->addResource('array', __DIR__ . '/Translator/Lang/zh.yaml', 'zh');
+            self::$di->set(
+                "trans",
+                $translator
+            );
+        }
+        return self::$di->get("trans");
     }
 }
