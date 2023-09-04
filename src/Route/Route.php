@@ -8,7 +8,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteInterface;
 use Slim\Routing\RouteCollectorProxy;
 
-class Route {
+class Route
+{
 
     private string $pattern = "";
     private array $middleware = [];
@@ -23,7 +24,8 @@ class Route {
      * @param string $title 标题
      * @param object ...$middleware 中间件
      */
-    public function __construct(string $pattern, string $title = "", object ...$middleware) {
+    public function __construct(string $pattern, string $title = "", object ...$middleware)
+    {
         $this->pattern = $pattern;
         $this->title = $title;
         $this->middleware = $middleware;
@@ -36,7 +38,8 @@ class Route {
      * @param object ...$middleware
      * @return Route
      */
-    public function group(string $pattern, string $title, object ...$middleware): Route {
+    public function group(string $pattern, string $title, object ...$middleware): Route
+    {
         $group = new Route($pattern, $title, ...$middleware);
         $this->group[] = $group;
         return $group;
@@ -51,7 +54,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function get(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["GET"], $pattern, $callable, $name, $title);
     }
 
@@ -64,7 +68,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function post(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["POST"], $pattern, $callable, $name, $title);
     }
 
@@ -77,7 +82,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function put(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["PUT"], $pattern, $callable, $name, $title);
     }
 
@@ -90,7 +96,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function delete(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["DELETE"], $pattern, $callable, $name, $title);
     }
 
@@ -103,7 +110,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function options(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["OPTIONS"], $pattern, $callable, $name, $title);
     }
 
@@ -115,7 +123,8 @@ class Route {
      * @param string $title
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function path(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["PATH"], $pattern, $callable, $name, $title);
     }
 
@@ -128,7 +137,8 @@ class Route {
      * @param string $auth
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name, string $title): void {
+    public function any(string $pattern, callable|object|string $callable, string $name, string $title): void
+    {
         $this->map(["ANY"], $pattern, $callable, $name, $title);
     }
 
@@ -141,15 +151,16 @@ class Route {
      * @param array $middleware
      * @return Route
      */
-    public function manage(string $pattern, string $class, string $name, string $title, array $ways = [], array $middleware = []): Route {
-        $group = $this->group($pattern, $title,...$middleware);
+    public function manage(string $pattern, string $class, string $name, string $title, array $ways = [], array $middleware = []): Route
+    {
+        $group = $this->group($pattern, $title, ...$middleware);
         $group->manageAttr = [
             $class,
             $name,
             $title,
         ];
         if (!$ways || in_array("list", $ways)) {
-            $group->get('',  "$class:list", "$name.list", "{$title}列表");
+            $group->get('', "$class:list", "$name.list", "{$title}列表");
         }
         if (!$ways || in_array("info", $ways)) {
             $group->get("/{id}", "$class:info", "$name.info", "{$title}详情");
@@ -172,7 +183,8 @@ class Route {
     /**
      * @return self
      */
-    public function softDelete(): self {
+    public function softDelete(): self
+    {
         if (!$this->manageAttr) {
             return $this;
         }
@@ -191,7 +203,8 @@ class Route {
      * @param string $title
      * @return void
      */
-    public function map(array $methods, string $pattern, string|callable $callable, string $name, string $title): void {
+    public function map(array $methods, string $pattern, string|callable $callable, string $name, string $title): void
+    {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,
@@ -206,7 +219,8 @@ class Route {
      * @param string $pattern
      * @return array
      */
-    public function parseTree(string $pattern = "", array $middleware = []): array {
+    public function parseTree(string $pattern = "", array $middleware = []): array
+    {
         $pattern = $pattern ?: $this->pattern;
         foreach ($this->middleware as $vo) {
             $middleware[] = get_class($vo);
@@ -240,7 +254,8 @@ class Route {
      * @param array $middleware
      * @return array
      */
-    public function parseData(string $pattern = "", array $middleware = []): array {
+    public function parseData(string $pattern = "", array $middleware = []): array
+    {
         $pattern = $pattern ?: $this->pattern;
         foreach ($this->middleware as $vo) {
             $middleware[] = get_class($vo);
@@ -268,7 +283,8 @@ class Route {
      * @param RouteCollectorProxy $route
      * @return void
      */
-    public function run(RouteCollectorProxy $route): void {
+    public function run(RouteCollectorProxy $route): void
+    {
         $dataList = $this->data;
         $groupList = $this->group;
         $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList) {

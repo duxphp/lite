@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Dux\Helpers;
 
 use Dux\App;
-use Dux\Route\Attribute\RouteManage;
+use Dux\Resources\Attribute\ResourceManage;
 use Dux\Validator\Data;
 use Noodlehaus\Config;
 use Symfony\Component\Console\Command\Command;
@@ -59,12 +59,12 @@ class ManageCommand extends Command {
         $namespace->addUse(\Dux\Manage\Manage::class);
         $namespace->addUse(Data::class);
         $namespace->addUse(\Illuminate\Database\Eloquent\Model::class);
-        $namespace->addUse(RouteManage::class);
+        $namespace->addUse(ResourceManage::class);
         $class = $namespace->addClass($className);
 
         $name = lcfirst($appName) . "." . lcfirst($className);
         $pattern = "/" . str_replace(".", "/", $name);
-        $class->addAttribute(RouteManage::class, [
+        $class->addAttribute(ResourceManage::class, [
             'app' => lcfirst($layerName) . 'Auth',
             'title' => '',
             'pattern' => $pattern,

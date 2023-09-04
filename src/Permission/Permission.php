@@ -17,14 +17,14 @@ class Permission {
         $this->pattern = $pattern;
     }
 
-    public function group(string $name, string $label, int $order = 0): PermissionGroup {
-        $group = new PermissionGroup($name, $label, $order, $this->pattern);
+    public function group(string $label, string $name, int $order = 0): PermissionGroup {
+        $group = new PermissionGroup($label, $name, $order, $this->pattern);
         $this->data[] = $group;
         return $group;
     }
 
-    public function manage(string $name, string $label, int $order = 0, array $ways = []): PermissionGroup {
-        $group = $this->group($name, $label, $order);
+    public function manage(string $label, string $name, int $order = 0, array $ways = []): PermissionGroup {
+        $group = $this->group($label, $name, $order);
         if (!$ways || in_array("list", $ways)) {
             $group->add("list", "列表");
         }

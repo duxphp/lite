@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Dux\Route;
+namespace Dux\Resources;
 
 use Dux\App;
 use Dux\Bootstrap;
 use Dux\Handlers\Exception;
-use Dux\Route\Attribute\RouteGroup;
+use Dux\Permission\Permission;
+use Dux\Resources\Attribute\ResourceGroup;
+use Dux\Resources\Attribute\Resource;
+use Dux\Route\Route;
 
 class Register
 {
@@ -53,7 +56,7 @@ class Register
 
         foreach ($attributes as $attribute => $list) {
             if (
-                $attribute != RouteGroup::class
+                $attribute != ResourceGroup::class
             ) {
                 continue;
             }
@@ -61,13 +64,19 @@ class Register
                 $params = $vo["params"];
                 $class = $vo["class"];
                 [$className, $methodName, $name] = $this->formatFile($class);
-                // group
-                if ($attribute == RouteGroup::class) {
-                    $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
-                    $groupClass[$className] = $group;
-                    if ($params['permission']) {
-                        $permissionClass[$class] = $permission->get($params['permission'])->group($params["title"], $name);
-                    }
+                $group = $this->get($params["app"])->manage(
+                    pattern: $params["pattern"],
+                    class: $class,
+                    name: $params["name"] ?: $name,
+                    title: $params["label"],
+                    ways: $params["action"] ?? [],
+                    middleware: $params["middleware"] ?? []
+                );
+
+                $groupClass[$className] = $group;
+                if ($params['name']) {
+                    $permission->set($params['name'], new Permission($params['name']));
+                    $permissionClass[$class] = $permission->get($params['name'])->manage($params["label"], $name, 0, $params["action"] ?? []);
                 }
             }
         }
