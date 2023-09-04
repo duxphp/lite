@@ -93,9 +93,9 @@ class Bootstrap
         $this->web = AppFactory::create();
         $this->route = new Route\Register();
 
-        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+        $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($di) {
             $lang = $request->getHeaderLine('Accept-Language');
-            $this->di->set('language', $lang);
+            $di->set('language', $lang);
             return $handler->handle($request);
         });
     }
@@ -120,7 +120,7 @@ class Bootstrap
         Config::setTag('env', function ($key, $default = null) {
             return $_ENV[$key] ?? $default;
         });
-        
+
         $this->debug = (bool)App::config("use")->get("app.debug");
         $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
