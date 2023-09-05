@@ -3,50 +3,49 @@ declare(strict_types=1);
 
 namespace Dux\Permission;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Interfaces\RouteInterface;
-use Slim\Routing\RouteCollectorProxy;
-
-class Permission {
+class Permission
+{
 
     private array $data = [];
     private string $pattern = "";
 
-    public function __construct(string $pattern = "") {
+    public function __construct(string $pattern = "")
+    {
         $this->pattern = $pattern;
     }
 
-    public function group(string $label, string $name, int $order = 0): PermissionGroup {
+    public function group(string $label, string $name, int $order = 0): PermissionGroup
+    {
         $group = new PermissionGroup($label, $name, $order, $this->pattern);
         $this->data[] = $group;
         return $group;
     }
 
-    public function manage(string $label, string $name, int $order = 0, array $ways = []): PermissionGroup {
+    public array $actions = ['list', 'show', 'create', 'edit', 'store', 'delete', 'trash', 'restore'];
+
+    public function resources(string $name, int $order = 0, array|false $actions = []): PermissionGroup
+    {
         $group = $this->group($label, $name, $order);
-        if (!$ways || in_array("list", $ways)) {
-            $group->add("list", "列表");
+
+        if ($actions === false) {
+            return $group;
         }
-        if (!$ways || in_array("info", $ways)) {
-            $group->add("info", "信息");
+
+        if (!$actions) {
+            $maps = $this->actions;
+        } else {
+            $maps = array_intersect($this->actions, $actions);
         }
-        if (!$ways || in_array("add", $ways)) {
-            $group->add("add", "添加");
+
+        foreach ($maps as $vo) {
+            $group->add(__('common.resources.' . $vo), $vo);
         }
-        if (!$ways || in_array("edit", $ways)) {
-            $group->add("edit", "编辑");
-        }
-        if (!$ways || in_array("store", $ways)) {
-            $group->add("store", "存储");
-        }
-        if (!$ways || in_array("del", $ways)) {
-            $group->add("del", "删除");
-        }
+
         return $group;
     }
 
-    public function get(): array {
+    public function get(): array
+    {
         $data = [];
         foreach ($this->data as $vo) {
             $data[] = $vo->get();
@@ -54,7 +53,8 @@ class Permission {
         return collect($data)->sortBy("order")->toArray();
     }
 
-    public function getData(): array {
+    public function getData(): array
+    {
         $data = [];
         foreach ($this->data as $vo) {
             $data = [...$data, ...$vo->getData()];

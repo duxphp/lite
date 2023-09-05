@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 trait One
 {
-    public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function show(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->init($request, $response, $args);
         $id = $args["id"] ?: 0;

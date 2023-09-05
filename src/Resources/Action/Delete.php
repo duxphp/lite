@@ -2,6 +2,7 @@
 
 namespace Dux\Resources\Action;
 
+use Closure;
 use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
 use Psr\Http\Message\ResponseInterface;
@@ -9,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 trait Delete
 {
-    public function del(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->init($request, $response, $args);
         $id = $args["id"];
@@ -25,8 +26,8 @@ trait Delete
             throw new ExceptionBusiness('Data empty');
         }
 
-        if (isset($this->delHook[0]) && $this->delHook[0] instanceof \Closure) {
-            $this->delHook[0]($model, );
+        if (isset($this->delHook[0]) && $this->delHook[0] instanceof Closure) {
+            $this->delHook[0]($model,);
         }
 
         $this->delBefore($model);
@@ -40,9 +41,12 @@ trait Delete
         return send($response, "删除{$this->name}成功");
     }
 
-    public function delBefore(mixed $info): void {
+    public function delBefore(mixed $info): void
+    {
     }
-    public function delAfter(mixed $info): void {
+
+    public function delAfter(mixed $info): void
+    {
     }
 
 }

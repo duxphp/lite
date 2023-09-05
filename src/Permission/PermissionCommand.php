@@ -12,13 +12,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PermissionCommand extends Command {
+class PermissionCommand extends Command
+{
 
     protected static $defaultName = 'permission';
     protected static $defaultDescription = 'show permission list';
 
 
-    protected function configure(): void {
+    protected function configure(): void
+    {
         $this->addArgument(
             'group',
             InputArgument::OPTIONAL,
@@ -26,7 +28,8 @@ class PermissionCommand extends Command {
         );
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int {
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
 
         $group = $input->getArgument("group");
         if ($group) {
@@ -42,9 +45,9 @@ class PermissionCommand extends Command {
                 if ($k) {
                     $data[] = new TableSeparator();
                 }
-                $data[] = [$permission["name"]];
+                $data[] = [$permission["label"]];
                 foreach ($permission["children"] as $vo) {
-                    $data[] = [$vo["name"], $vo["label"]];
+                    $data[] = [$vo["label"], $vo["name"]];
 
                 }
             }
@@ -52,7 +55,7 @@ class PermissionCommand extends Command {
             $table
                 ->setHeaders([
                     [new TableCell("permissions {$key}", ['colspan' => 2])],
-                    ['Name', 'Label']
+                    ['Label', 'Name']
                 ])
                 ->setRows($data);
             $table->render();

@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace Dux\Route;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Interfaces\RouteInterface;
 use Slim\Routing\RouteCollectorProxy;
 
 class Route
@@ -16,31 +13,25 @@ class Route
     private array $group = [];
     private array $data = [];
 
-    public string $title = "";
-    public array $manageAttr = [];
-
     /**
-     * @param string $pattern 匹配
-     * @param string $title 标题
-     * @param object ...$middleware 中间件
+     * @param string $pattern
+     * @param object ...$middleware
      */
-    public function __construct(string $pattern, string $title = "", object ...$middleware)
+    public function __construct(string $pattern, object ...$middleware)
     {
         $this->pattern = $pattern;
-        $this->title = $title;
         $this->middleware = $middleware;
     }
 
     /**
      * 分组
      * @param string $pattern
-     * @param string $title
      * @param object ...$middleware
      * @return Route
      */
-    public function group(string $pattern, string $title, object ...$middleware): Route
+    public function group(string $pattern, object ...$middleware): Route
     {
-        $group = new Route($pattern, $title, ...$middleware);
+        $group = new Route($pattern, ...$middleware);
         $this->group[] = $group;
         return $group;
     }
@@ -50,13 +41,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function get(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["GET"], $pattern, $callable, $name, $title);
+        $this->map(["GET"], $pattern, $callable, $name);
     }
 
     /**
@@ -64,13 +53,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function post(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["POST"], $pattern, $callable, $name, $title);
+        $this->map(["POST"], $pattern, $callable, $name);
     }
 
     /**
@@ -78,13 +65,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function put(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["PUT"], $pattern, $callable, $name, $title);
+        $this->map(["PUT"], $pattern, $callable, $name);
     }
 
     /**
@@ -92,13 +77,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function delete(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["DELETE"], $pattern, $callable, $name, $title);
+        $this->map(["DELETE"], $pattern, $callable, $name);
     }
 
     /**
@@ -106,13 +89,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function options(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["OPTIONS"], $pattern, $callable, $name, $title);
+        $this->map(["OPTIONS"], $pattern, $callable, $name);
     }
 
     /**
@@ -120,12 +101,11 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function path(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["PATH"], $pattern, $callable, $name, $title);
+        $this->map(["PATH"], $pattern, $callable, $name);
     }
 
     /**
@@ -133,65 +113,55 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
-     * @param string $title
-     * @param string $auth
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name, string $title): void
+    public function any(string $pattern, callable|object|string $callable, string $name): void
     {
-        $this->map(["ANY"], $pattern, $callable, $name, $title);
+        $this->map(["ANY"], $pattern, $callable, $name);
     }
 
     /**
      * @param string $pattern
      * @param string $class
      * @param string $name
-     * @param string $title
-     * @param array $ways ["list", "info", "add", "edit", "store", "del"]
+     * @param array|false $actions
+     * @param bool $softDelete
      * @param array $middleware
      * @return Route
      */
-    public function manage(string $pattern, string $class, string $name, string $title, array $ways = [], array $middleware = []): Route
+    public function resources(string $pattern, string $class, string $name, array|false $actions = [], bool $softDelete = false, array $middleware = []): Route
     {
-        $group = $this->group($pattern, $title, ...$middleware);
-        $group->manageAttr = [
-            $class,
-            $name,
-            $title,
-        ];
-        if (!$ways || in_array("list", $ways)) {
-            $group->get('', "$class:list", "$name.list", "{$title}列表");
+        $group = $this->group($pattern, ...$middleware);
+
+        if ($actions === false) {
+            return $group;
         }
-        if (!$ways || in_array("info", $ways)) {
-            $group->get("/{id}", "$class:info", "$name.info", "{$title}详情");
+
+        if (in_array("list", $actions)) {
+            $group->get('', "$class:list", "$name.list");
         }
-        if (!$ways || in_array("add", $ways)) {
-            $group->post("", "$class:save", "$name.add", "{$title}添加");
+        if (in_array("show", $actions)) {
+            $group->get("/{id}", "$class:show", "$name.show");
         }
-        if (!$ways || in_array("edit", $ways)) {
-            $group->post("/{id}", "$class:save", "$name.edit", "{$title}编辑");
+        if (in_array("create", $actions)) {
+            $group->post("", "$class:create", "$name.create");
         }
-        if (!$ways || in_array("del", $ways)) {
-            $group->delete("/{id}", "$class:del", "$name.del", "{$title}删除");
+        if (in_array("edit", $actions)) {
+            $group->put("/{id}", "$class:edit", "$name.edit");
         }
-        if (!$ways || in_array("store", $ways)) {
-            $group->post("/{id}/store", "$class:store", "$name.store", "{$title}存储");
+        if (in_array("store", $actions)) {
+            $group->path("/{id}", "$class:store", "$name.store");
+        }
+        if (in_array("delete", $actions)) {
+            $group->delete("/{id}", "$class:delete", "$name.delete");
+        }
+        if ($softDelete && in_array("trash", $actions)) {
+            $group->delete("/{id}/trash", "$class:trash", "$name.trash");
+        }
+        if ($softDelete && in_array("restore", $actions)) {
+            $group->put("/{id}/restore", "$class:restore", "$name.restore");
         }
         return $group;
-    }
-
-    /**
-     * @return self
-     */
-    public function softDelete(): self
-    {
-        if (!$this->manageAttr) {
-            return $this;
-        }
-        [$class, $name, $title] = $this->manageAttr;
-        $this->get("/{id}/restore", "$class:restore", "$name.restore", "{$title}恢复");
-        $this->delete("/{id}/trashed", "$class:trashed", "$name.trashed", "{$title}清除");
-        return $this;
     }
 
     /**
@@ -200,23 +170,24 @@ class Route
      * @param string $pattern
      * @param string|callable $callable function(Request $request, Response $response)
      * @param string $name
-     * @param string $title
+     * @param array $middleware
      * @return void
      */
-    public function map(array $methods, string $pattern, string|callable $callable, string $name, string $title): void
+    public function map(array $methods, string $pattern, string|callable $callable, string $name, array $middleware = []): void
     {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,
             "callable" => $callable,
             "name" => $name,
-            "title" => $title,
+            "middleware" => $middleware ?: []
         ];
     }
 
     /**
      * 解析树形路由
      * @param string $pattern
+     * @param array $middleware
      * @return array
      */
     public function parseTree(string $pattern = "", array $middleware = []): array
@@ -229,11 +200,10 @@ class Route
         foreach ($this->data as $route) {
             $route["pattern"] = $pattern . $route["pattern"];
             $data[] = [
-                "title" => $route["title"],
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
-                "middleware" => $middleware
+                "middleware" => array_filter([...$middleware, $route['middleware']])
             ];
         }
         foreach ($this->group as $group) {
@@ -241,7 +211,6 @@ class Route
         }
 
         return [
-            "title" => $this->title,
             "pattern" => $pattern,
             "data" => $data
         ];
@@ -264,11 +233,10 @@ class Route
         foreach ($this->data as $route) {
             $route["pattern"] = $pattern . $route["pattern"];
             $data[] = [
-                "title" => $route["title"],
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
-                "middleware" => $middleware
+                "middleware" => array_filter([...$middleware, $route['middleware']])
             ];
         }
         foreach ($this->group as $group) {
@@ -289,7 +257,7 @@ class Route
         $groupList = $this->group;
         $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList) {
             foreach ($dataList as $item) {
-                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("route:title", (string)$item["title"]);
+                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"]);
             }
             foreach ($groupList as $item) {
                 $item->run($group);

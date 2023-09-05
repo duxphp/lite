@@ -35,9 +35,9 @@ use Monolog\Logger;
 use Noodlehaus\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 use Redis;
+use ReflectionClass;
 use Slim\App as SlimApp;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Translation\Translator;
 
@@ -55,12 +55,12 @@ class App
 
     /**
      * create
-     * @param $basePath
+     * @param string $basePath
      * @return Bootstrap
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public static function create($basePath): Bootstrap
+    public static function create(string $basePath, string $lang = 'en'): Bootstrap
     {
         self::$basePath = $basePath;
         self::$configPath = $basePath . '/config';
@@ -69,6 +69,7 @@ class App
         self::$appPath = $basePath . '/app';
 
         self::$di = new Container();
+        self::$di->set('language', $lang);
 
         $app = new Bootstrap();
         $app->loadFunc();
@@ -84,9 +85,9 @@ class App
         return $app;
     }
 
-    public static function createCli($basePath): Bootstrap
+    public static function createCli(string $basePath, string $lang = 'en'): Bootstrap
     {
-        $app = self::create($basePath);
+        $app = self::create($basePath, $lang);
         $app->loadCommand();
         return $app;
     }
@@ -435,16 +436,13 @@ class App
 
     /**
      * translator
-     * @param string|null $lang
      * @return Translator
      * @throws DependencyException
-     * @throws NotFoundException
      */
-    public static function trans(?string $lang = ""): Translator {
-        if (!$lang) {
-            $lang = self::$di->get('language') ?: 'en';
-        }
+    public static function trans(): Translator
+    {
         if (!self::$di->has("trans")) {
+            $lang = self::$di->get('language') ?: 'en';
             $translator = new Translator($lang);
             $translator->addLoader('array', new YamlFileLoader());
             $translator->addResource('array', __DIR__ . '/Translator/Lang/en.yaml', 'en');
@@ -455,5 +453,23 @@ class App
             );
         }
         return self::$di->get("trans");
+    }
+
+    public static function transAutoRegister(string $appInitClass): void
+    {
+        $reflection = new ReflectionClass($appInitClass);
+        $filePath = $reflection->getFileName();
+        $dirPath = dirname($filePath) . "/Langs";
+        $files = glob($dirPath . "/*.*.yaml");
+        if (!$files) {
+            return;
+        }
+        foreach ($files as $file) {
+            $names = explode('.', basename($file, '.yaml'), 2);
+            [$name, $lang] = $names;
+            self::trans()->addResource('array', $file, $lang, $name);
+        }
+
+
     }
 }

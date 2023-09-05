@@ -1,3 +1,12 @@
 common:
   encryption:
     failure: Encryption failure
+  resources:
+    list: List
+    show: Show
+    create: Create
+    edit: Edit
+    delete: Delete
+    store: Store
+    trash: Trash
+    restore: Restore

@@ -3,60 +3,68 @@ declare(strict_types=1);
 
 namespace Dux\Resources;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App;
 use Dux\Bootstrap;
-use Dux\Handlers\Exception;
-use Dux\Permission\Permission;
-use Dux\Resources\Attribute\ResourceGroup;
+use Dux\Resources\Attribute\Action;
 use Dux\Resources\Attribute\Resource;
-use Dux\Route\Route;
+use Exception;
 
 class Register
 {
+
 
     public array $app = [];
     public array $path = [];
 
     /**
-     * 设置路由应用
+     * 设置资源
      * @param string $name
-     * @param Route $route
+     * @param \Dux\Resources\Resource $resource
      * @return void
      */
-    public function set(string $name, Route $route): void
+    public function set(string $name, \Dux\Resources\Resource $resource): void
     {
-        $this->app[$name] = $route;
+        $this->app[$name] = $resource;
     }
 
     /**
-     * 获取路由应用
+     * 获取资源
      * @param string $name
-     * @return Route
+     * @return \Dux\Resources\Resource
      */
-    public function get(string $name): Route
+    public function get(string $name): \Dux\Resources\Resource
     {
 
         if (!isset($this->app[$name])) {
-            throw new Exception("The routing app [$name] is not registered");
+            throw new \Dux\Handlers\Exception("The resources app [$name] is not registered");
         }
         return $this->app[$name];
     }
 
+
     /**
      * 注解路由注册
+     * @param Bootstrap $bootstrap
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws Exception
      */
     public function registerAttribute(Bootstrap $bootstrap): void
     {
         $attributes = (array)App::di()->get("attributes");
 
         $permission = $bootstrap->getPermission();
-        $groupClass = [];
-        $permissionClass = [];
+        $appMaps = [];
+        $routeMaps = [];
+        $permissionMaps = [];
+
 
         foreach ($attributes as $attribute => $list) {
             if (
-                $attribute != ResourceGroup::class
+                $attribute != Resource::class
             ) {
                 continue;
             }
@@ -64,26 +72,27 @@ class Register
                 $params = $vo["params"];
                 $class = $vo["class"];
                 [$className, $methodName, $name] = $this->formatFile($class);
-                $group = $this->get($params["app"])->manage(
-                    pattern: $params["pattern"],
+                $params['auth'] = (bool)($params['auth'] ?? true);
+                $middleware = $this->getMiddleware($params['app'], $params['auth'], $params['middleware']);
+
+                $group = $bootstrap->route->get($params["app"])->resources(
+                    pattern: $params["route"],
                     class: $class,
                     name: $params["name"] ?: $name,
-                    title: $params["label"],
-                    ways: $params["action"] ?? [],
-                    middleware: $params["middleware"] ?? []
+                    actions: $params["actions"] ?? [],
+                    middleware: $middleware
                 );
-
-                $groupClass[$className] = $group;
-                if ($params['name']) {
-                    $permission->set($params['name'], new Permission($params['name']));
-                    $permissionClass[$class] = $permission->get($params['name'])->manage($params["label"], $name, 0, $params["action"] ?? []);
+                $appMaps[$className] = $params['app'];
+                $routeMaps[$className] = $group;
+                if ($params['name'] && $params['auth']) {
+                    $permissionMaps[$className] = $permission->get($params['app'])->resources($params['label'], $params['name'], 0, $params['actions'] ?? []);
                 }
             }
         }
 
         foreach ($attributes as $attribute => $list) {
             if (
-                $attribute != \Dux\Route\Attribute\Route::class
+                $attribute != Action::class
             ) {
                 continue;
             }
@@ -91,36 +100,43 @@ class Register
                 $params = $vo["params"];
                 $class = $vo["class"];
                 [$className, $methodName, $name] = $this->formatFile($class);
-                // route
-                if (str_contains($class, ":")) {
-                    // method
-                    if (!$params["app"] && !isset($groupClass[$className])) {
-                        throw new \Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
-                    }
-                    $group = $params["app"] ? $this->get($params["app"]) : $groupClass[$className];
-                } else {
-                    // class
-                    if (empty($params["app"])) {
-                        throw new \Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
-                    }
-                    $group = $this->get($params["app"]);
+                if (!isset($routeMaps[$className])) {
+                    throw new Exception("class [" . $class . "] route attribute parameter missing \"app\" ");
                 }
-                $name = $params["name"] ?: $name . ($methodName ? "." . lcfirst($methodName) : "");
-                $group->map(
+                $route = $routeMaps[$className];
+                $name = $name . "." . ($params["name"] ?: lcfirst($methodName));
+
+                $middleware = $params["middleware"] ?: [];
+                if ($appMaps[$className] && $params['auth']) {
+                    $middleware = $this->getMiddleware($appMaps[$className], (bool)$params['auth'], $params['middleware']);
+                }
+                $route->map(
                     methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
-                    pattern: $params["pattern"] ?: '',
+                    pattern: $params["route"],
                     callable: $class,
                     name: $name,
-                    title: $group->title . $params["title"]
+                    middleware: $middleware
                 );
-
-                // 权限处理
-                if ($permissionClass[$className]) {
-                    $permissionClass[$className]->addLabel($name, $params["title"]);
+                if ($permissionMaps[$className] && (!isset($params['auth']) || $params['auth'])) {
+                    $permissionMaps[$className]->add($params["label"], $name, false);
                 }
 
             }
         }
+    }
+
+    private function getMiddleware(string $app, bool $auth, ?array $middleware = []): array
+    {
+        $resource = $this->get($app);
+        if ($auth) {
+            $data = $resource->getAllMiddleware();
+        } else {
+            $data = $resource->getMiddleware();
+        }
+        if ($middleware) {
+            $data = [...$middleware, ...$middleware];
+        }
+        return array_filter($data);
     }
 
     private function formatFile($class): array

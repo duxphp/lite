@@ -3,29 +3,33 @@ declare(strict_types=1);
 
 namespace Dux\Permission;
 
-class PermissionGroup {
+class PermissionGroup
+{
     private int $order;
     private string $name;
     private string $label;
     private array $data = [];
     private string $pattern;
 
-    public function __construct(string $label, string $name, int $order, string $pattern = "") {
+    public function __construct(string $label, string $name, int $order, string $pattern = "")
+    {
         $this->label = $label;
         $this->name = $name;
         $this->order = $order;
         $this->pattern = $pattern;
     }
 
-    public function add(string $label, string $name): self {
+    public function add(string $label, string $name, bool $complete = true): self
+    {
         $this->data[] = [
-            "name" => $this->pattern .$this->name . "." . $name,
+            "name" => $complete ? $this->pattern . $this->name . "." . $name : $name,
             "label" => $label,
         ];
         return $this;
     }
 
-    public function get(): array {
+    public function get(): array
+    {
         return [
             "label" => $this->label,
             "name" => "group:" . $this->pattern . $this->name,
@@ -34,7 +38,8 @@ class PermissionGroup {
         ];
     }
 
-    public function getData(): array {
+    public function getData(): array
+    {
         $data = [];
         foreach ($this->data as $vo) {
             $data[] = $vo["name"];

@@ -2,16 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Dux\Resources;
+namespace Dux\Resources\Action;
 
-use Dux\Resources\Action\Create;
-use Dux\Resources\Action\Delete;
-use Dux\Resources\Action\Edit;
-use Dux\Resources\Action\Many;
-use Dux\Resources\Action\One;
-use Dux\Resources\Action\Restore;
-use Dux\Resources\Action\Store;
-use Dux\Resources\Action\Trash;
 use Dux\Validator\Data;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -87,7 +79,7 @@ abstract class Resources
     public array $restoreHook = [];
 
 
-    use Many,One,Create,Edit,Store,Delete,Trash,Restore;
+    use Many, One, Create, Edit, Store, Delete, Trash, Restore;
 
     /**
      * 初始化
@@ -96,7 +88,9 @@ abstract class Resources
      * @param array $args
      * @return void
      */
-    public function init(ServerRequestInterface $request, ResponseInterface $response, array $args) {}
+    public function init(ServerRequestInterface $request, ResponseInterface $response, array $args)
+    {
+    }
 
     /**
      * 数据转换
@@ -112,7 +106,9 @@ abstract class Resources
      * @param Builder $query
      * @return void
      */
-    public function query(Builder $query) {}
+    public function query(Builder $query)
+    {
+    }
 
     /**
      * 多条数据查询
@@ -121,7 +117,9 @@ abstract class Resources
      * @param ServerRequestInterface $request
      * @return void
      */
-    public function queryMany(Builder $query, ServerRequestInterface $request, array $args) {}
+    public function queryMany(Builder $query, ServerRequestInterface $request, array $args)
+    {
+    }
 
     /**
      * 单条数据查询
@@ -130,7 +128,9 @@ abstract class Resources
      * @param array $args
      * @return void
      */
-    public function queryOne(Builder $query, ServerRequestInterface $request, array $args) {}
+    public function queryOne(Builder $query, ServerRequestInterface $request, array $args)
+    {
+    }
 
     /**
      * 多条元数据
@@ -164,7 +164,7 @@ abstract class Resources
      * @param array $args
      * @return array
      */
-    public function validator(array $data, ServerRequestInterface $request, array $args) : array
+    public function validator(array $data, ServerRequestInterface $request, array $args): array
     {
         return [];
     }
@@ -176,7 +176,7 @@ abstract class Resources
      * @param array $args
      * @return array
      */
-    public function format(Data $data, ServerRequestInterface $request, array $args) : array
+    public function format(Data $data, ServerRequestInterface $request, array $args): array
     {
         return $data->toArray();
     }

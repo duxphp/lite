@@ -5,19 +5,24 @@ namespace Dux\UI;
 
 use Dux\App;
 use Nette\Utils\FileSystem;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
-class UI {
+class UI
+{
 
     public static array $dirList = [];
 
-    public static function register(string $dir, string $app): void {
+    public static function register(string $dir, string $app): void
+    {
         self::$dirList[] = [
             "path" => realpath($dir),
             "app" => $app
         ];
     }
 
-    public static function sync(): void {
+    public static function sync(): void
+    {
         foreach (self::$dirList as $dir) {
             $files = [];
             self::getFiles($dir["path"], $files);
@@ -39,12 +44,14 @@ class UI {
 
     }
 
-    private static function getUiPath(string $dir): string {
-        return App::$basePath . "/client/app/$dir";
+    private static function getUiPath(string $dir): string
+    {
+        return App::$basePath . "/web/pages/$dir";
     }
 
-    private static function getFiles($path, &$data): void {
-        $dirIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+    private static function getFiles($path, &$data): void
+    {
+        $dirIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 
         foreach ($dirIterator as $info) {
             if ($info->getPath() == $path) {

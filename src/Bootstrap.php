@@ -30,7 +30,6 @@ use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Permission\PermissionCommand;
-use Dux\Permission\Register;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
 use Dux\Scheduler\SchedulerCommand;
@@ -63,7 +62,7 @@ class Bootstrap
 
     public Event $event;
     public Route\Register $route;
-    public ?Menu\Register $menu = null;
+    public Resources\Register $resource;
     public ?Permission\Register $permission = null;
     private Container $di;
 
@@ -91,11 +90,12 @@ class Bootstrap
         AppFactory::setContainer($di);
         $this->di = $di;
         $this->web = AppFactory::create();
+        $this->resource = new Resources\Register();
         $this->route = new Route\Register();
 
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($di) {
             $lang = $request->getHeaderLine('Accept-Language');
-            $di->set('language', $lang);
+            App::trans()->setLocale($lang);
             return $handler->handle($request);
         });
     }
@@ -108,7 +108,6 @@ class Bootstrap
      */
     public function loadConfig(): void
     {
-
         Config::setValues([
             'base_path' => App::$basePath,
             'app_path' => App::$appPath,
@@ -125,7 +124,6 @@ class Bootstrap
         $this->exceptionTitle = App::config("use")->get("exception.title", $this->exceptionTitle);
         $this->exceptionDesc = App::config("use")->get("exception.desc", $this->exceptionDesc);
         $this->exceptionBack = App::config("use")->get("exception.back", $this->exceptionBack);
-
 
         $timezone = App::config("use")->get("app.timezone", 'PRC');
         date_default_timezone_set($timezone);
@@ -276,6 +274,11 @@ class Bootstrap
         // 事件注解加载
         $this->event->registerAttribute();
 
+        // 注册语言包
+        foreach ($appList as $vo) {
+            App::transAutoRegister($vo);
+        }
+
         // 事件注册
         foreach ($appList as $vo) {
             call_user_func([new $vo, "init"], $this);
@@ -285,13 +288,21 @@ class Bootstrap
             call_user_func([new $vo, "register"], $this);
         }
 
-        // 注解路由注册
-        $this->route->registerAttribute($this);
+        // 资源注册
+        foreach ($this->resource->app as $resource) {
+            $resource->run($this);
+        }
 
         // 普通路由注册
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
+
+        // 注解资源注册
+        $this->resource->registerAttribute($this);
+
+        // 注解路由注册
+        $this->route->registerAttribute($this);
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
@@ -323,18 +334,15 @@ class Bootstrap
         return $this->route;
     }
 
-    public function getMenu(): Menu\Register
+    public function getResource(): Resources\Register
     {
-        if (!$this->menu) {
-            $this->menu = new Menu\Register();
-        }
-        return $this->menu;
+        return $this->resource;
     }
 
     public function getPermission(): Permission\Register
     {
         if (!$this->permission) {
-            $this->permission = new Register();
+            $this->permission = new Permission\Register();
         }
         return $this->permission;
     }

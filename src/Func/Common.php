@@ -164,8 +164,8 @@ if (!function_exists('is_service')) {
 
 
 if (!function_exists('__')) {
-    function __(string $value): string
+    function __(string $value, array $parameters = [], string $domain = ''): string
     {
-        return App::trans()->trans('common.'. $value);
+        return App::trans()->trans($value, $parameters, $domain);
     }
 }

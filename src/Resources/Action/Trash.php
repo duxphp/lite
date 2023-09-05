@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 trait Trash
 {
-    public function trashed(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function trash(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->init($request, $response, $args);
         $id = $args["id"];
@@ -36,10 +36,12 @@ trait Trash
         return send($response, "彻底删除{$this->name}成功");
     }
 
-    public function trashBefore(mixed $info): void {
+    public function trashBefore(mixed $info): void
+    {
     }
 
-    public function trashAfter(mixed $info): void {
+    public function trashAfter(mixed $info): void
+    {
     }
 
 }

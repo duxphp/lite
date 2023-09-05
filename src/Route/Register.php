@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Dux\Route;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dux\App;
 use Dux\Bootstrap;
 use Dux\Handlers\Exception;
@@ -41,7 +43,10 @@ class Register
 
     /**
      * 注解路由注册
+     * @param Bootstrap $bootstrap
      * @return void
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function registerAttribute(Bootstrap $bootstrap): void
     {
@@ -61,13 +66,10 @@ class Register
                 $params = $vo["params"];
                 $class = $vo["class"];
                 [$className, $methodName, $name] = $this->formatFile($class);
-                // group
-                if ($attribute == RouteGroup::class) {
-                    $group = $this->get($params["app"])->group($params["pattern"], $params["title"], ...($params["middleware"] ?? []));
-                    $groupClass[$className] = $group;
-                    if ($params['permission']) {
-                        $permissionClass[$class] = $permission->get($params['permission'])->group($params["title"], $name);
-                    }
+                $group = $this->get($params["app"])->group($params["pattern"], ...($params["middleware"] ?? []));
+                $groupClass[$className] = $group;
+                if ($params['permission']) {
+                    $permissionClass[$class] = $permission->get($params['permission'])->group($params["title"], $name);
                 }
             }
         }
@@ -101,8 +103,7 @@ class Register
                     methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
                     pattern: $params["pattern"] ?: '',
                     callable: $class,
-                    name: $name,
-                    title: $group->title . $params["title"]
+                    name: $name
                 );
 
                 // 权限处理

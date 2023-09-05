@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace Dux\Permission;
 
-use DI\DependencyException;
-use DI\NotFoundException;
-use Dux\App;
 use Dux\Handlers\Exception;
-use \Dux\Permission\Attribute\PermissionGroup;
-use \Dux\Permission\Attribute\PermissionManage;
-use \Dux\Permission\Attribute\Permission as PermissionAttr;
 
-class Register {
+class Register
+{
 
     public array $app = [];
 
@@ -21,7 +16,8 @@ class Register {
      * @param Permission $permission
      * @return void
      */
-    public function set(string $name, Permission $permission): void {
+    public function set(string $name, Permission $permission): void
+    {
         $this->app[$name] = $permission;
     }
 
@@ -30,7 +26,8 @@ class Register {
      * @param string $name
      * @return Permission
      */
-    public function get(string $name): Permission {
+    public function get(string $name): Permission
+    {
 
         if (!isset($this->app[$name])) {
             throw new Exception("The menu permission [$name] is not registered");
