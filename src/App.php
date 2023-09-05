@@ -401,6 +401,7 @@ class App
 
     /**
      * notify
+     * @param string $type
      * @return Notify
      * @throws DependencyException
      * @throws NotFoundException
@@ -437,16 +438,16 @@ class App
     /**
      * translator
      * @return Translator
-     * @throws DependencyException
+     * @throws DependencyException|NotFoundException
      */
     public static function trans(): Translator
     {
         if (!self::$di->has("trans")) {
             $lang = self::$di->get('language') ?: 'en';
             $translator = new Translator($lang);
-            $translator->addLoader('array', new YamlFileLoader());
-            $translator->addResource('array', __DIR__ . '/Translator/Lang/en.yaml', 'en');
-            $translator->addResource('array', __DIR__ . '/Translator/Lang/zh.yaml', 'zh');
+            $translator->addLoader('yaml', new YamlFileLoader());
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.en.yaml', 'en', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh.yaml', 'zh', 'common');
             self::$di->set(
                 "trans",
                 $translator
@@ -467,7 +468,7 @@ class App
         foreach ($files as $file) {
             $names = explode('.', basename($file, '.yaml'), 2);
             [$name, $lang] = $names;
-            self::trans()->addResource('array', $file, $lang, $name);
+            self::trans()->addResource('yaml', $file, $lang, $name);
         }
 
 

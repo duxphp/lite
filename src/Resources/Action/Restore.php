@@ -22,7 +22,7 @@ trait Restore
 
         $model = $query->withTrashed()->first();
         if (!$model) {
-            throw new ExceptionBusiness('Data empty');
+            throw new ExceptionBusiness(__("message.emptyData", "common"));
         }
 
         $this->restoreBefore($model);
@@ -33,7 +33,7 @@ trait Restore
 
         App::db()->getConnection()->commit();
 
-        return send($response, "恢复{$this->name}成功");
+        return send($response, $this->translation($request, 'restore'));
     }
 
     public function restoreBefore(mixed $info): void {

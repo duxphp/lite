@@ -140,7 +140,7 @@ if (!function_exists('encryption')) {
         $key = $key ?: App::config('use')->get('app.secret');
         $data = openssl_encrypt($str, $method, $key, OPENSSL_RAW_DATA, $iv);
         if (!$data) {
-            throw new ExceptionBusiness(__('common.encryption.failure'));
+            throw new ExceptionBusiness(__('encryption.failure', 'common'));
         }
         return strtolower(bin2hex($data));
     }
@@ -164,8 +164,27 @@ if (!function_exists('is_service')) {
 
 
 if (!function_exists('__')) {
-    function __(string $value, array $parameters = [], string $domain = ''): string
+    function __(string $value, ...$params): string
     {
-        return App::trans()->trans($value, $parameters, $domain);
+        $parameters = [];
+        $domain = '';
+
+        if (isset($params[0])) {
+            if (is_array($params[0])) {
+                $parameters = $params[0];
+            }else {
+                $domain = $params[0];
+            }
+        }
+
+        if (isset($params[1])) {
+            if (is_array($params[1])) {
+                $parameters = $params[1];
+            }else {
+                $domain = $params[1];
+            }
+        }
+
+        return App::trans()->trans($value, $parameters, $domain, App::di()->get('language'));
     }
 }

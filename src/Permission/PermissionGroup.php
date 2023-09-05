@@ -5,45 +5,44 @@ namespace Dux\Permission;
 
 class PermissionGroup
 {
-    private int $order;
-    private string $name;
-    private string $label;
     private array $data = [];
-    private string $pattern;
 
-    public function __construct(string $label, string $name, int $order, string $pattern = "")
+    public function __construct(public string $app, public string $name, public int $order, public string $pattern = "")
     {
-        $this->label = $label;
-        $this->name = $name;
-        $this->order = $order;
-        $this->pattern = $pattern;
     }
 
-    public function add(string $label, string $name, bool $complete = true): self
+    public function add(string $name, bool $complete = true): self
     {
-        $this->data[] = [
-            "name" => $complete ? $this->pattern . $this->name . "." . $name : $name,
-            "label" => $label,
-        ];
+        $this->data[] = $complete ? $this->pattern . $this->name . "." . $name : $name;
         return $this;
     }
 
     public function get(): array
     {
         return [
-            "label" => $this->label,
+            "label" => __($this->pattern . $this->name . ".name", $this->app),
             "name" => "group:" . $this->pattern . $this->name,
             "order" => $this->order,
-            "children" => $this->data,
+            "children" => array_map(function ($item) {
+                $labelData = explode(".", $item);
+                $label = last($labelData);
+
+                if (in_array($label, Permission::$actions)) {
+                    $label = __(  "resources.$label", "common");
+                }else {
+                    $label = __( $item . ".name", $this->app);
+                }
+
+                return [
+                    "label" => $label,
+                    "name" => $item,
+                ];
+            }, $this->data),
         ];
     }
 
     public function getData(): array
     {
-        $data = [];
-        foreach ($this->data as $vo) {
-            $data[] = $vo["name"];
-        }
-        return $data;
+        return $this->data;
     }
 }

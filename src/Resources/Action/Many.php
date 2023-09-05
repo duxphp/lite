@@ -4,6 +4,7 @@ namespace Dux\Resources\Action;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Routing\RouteContext;
 
 trait Many
 {
@@ -48,7 +49,7 @@ trait Many
             ...$meta,
         ];
 
-        return send($response, "ok", $assign);
+        return send($response, "ok", $assign['data'], $assign['meta']);
     }
 
 }

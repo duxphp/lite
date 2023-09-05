@@ -24,7 +24,7 @@ class Resource
 
     public function addAuthMiddleware(object ...$middleware): self
     {
-        $this->middleware = $middleware;
+        $this->authMiddleware = $middleware;
         return $this;
     }
 
@@ -46,7 +46,7 @@ class Resource
 
     public function run(Bootstrap $bootstrap): void
     {
-        $bootstrap->getRoute()->set($this->name, new Route($this->route));
         $bootstrap->getPermission()->set($this->name, new Permission());
+        $bootstrap->getRoute()->set($this->name, new Route($this->route));
     }
 }

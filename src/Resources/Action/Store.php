@@ -45,7 +45,7 @@ trait Store
 
         $model = $query->first();
         if (!$model) {
-            throw new ExceptionBusiness('Data empty');
+            throw new ExceptionBusiness(__("message.emptyData", "common"));
         }
 
         foreach ($modelData as $key => $vo) {
@@ -61,7 +61,7 @@ trait Store
 
         App::db()->getConnection()->commit();
 
-        return send($response, "更新{$this->name}成功");
+        return send($response, $this->translation($request, 'store'));
     }
 
     public function storeBefore(Data $data, mixed $info): void {

@@ -8,19 +8,23 @@ use Slim\Routing\RouteCollectorProxy;
 class Route
 {
 
-    private string $pattern = "";
     private array $middleware = [];
     private array $group = [];
     private array $data = [];
+    private string $app = "";
 
     /**
      * @param string $pattern
      * @param object ...$middleware
      */
-    public function __construct(string $pattern, object ...$middleware)
+    public function __construct(public string $pattern = "", object ...$middleware)
     {
-        $this->pattern = $pattern;
         $this->middleware = $middleware;
+    }
+
+    public function setApp(string $app): void
+    {
+        $this->app = $app;
     }
 
     /**
@@ -32,6 +36,7 @@ class Route
     public function group(string $pattern, object ...$middleware): Route
     {
         $group = new Route($pattern, ...$middleware);
+        $group->setApp($this->app);
         $this->group[] = $group;
         return $group;
     }
@@ -137,22 +142,22 @@ class Route
             return $group;
         }
 
-        if (in_array("list", $actions)) {
+        if (!$actions || in_array("list", $actions)) {
             $group->get('', "$class:list", "$name.list");
         }
-        if (in_array("show", $actions)) {
+        if (!$actions || in_array("show", $actions)) {
             $group->get("/{id}", "$class:show", "$name.show");
         }
-        if (in_array("create", $actions)) {
+        if (!$actions || in_array("create", $actions)) {
             $group->post("", "$class:create", "$name.create");
         }
-        if (in_array("edit", $actions)) {
+        if (!$actions || in_array("edit", $actions)) {
             $group->put("/{id}", "$class:edit", "$name.edit");
         }
-        if (in_array("store", $actions)) {
+        if (!$actions || in_array("store", $actions)) {
             $group->path("/{id}", "$class:store", "$name.store");
         }
-        if (in_array("delete", $actions)) {
+        if (!$actions || in_array("delete", $actions)) {
             $group->delete("/{id}", "$class:delete", "$name.delete");
         }
         if ($softDelete && in_array("trash", $actions)) {
@@ -255,9 +260,10 @@ class Route
     {
         $dataList = $this->data;
         $groupList = $this->group;
-        $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList) {
+        $app = $this->app;
+        $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList, $app) {
             foreach ($dataList as $item) {
-                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"]);
+                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("app", $app);
             }
             foreach ($groupList as $item) {
                 $item->run($group);

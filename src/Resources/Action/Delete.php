@@ -23,7 +23,7 @@ trait Delete
 
         $model = $query->first();
         if (!$model) {
-            throw new ExceptionBusiness('Data empty');
+            throw new ExceptionBusiness(__("message.emptyData", "common"));
         }
 
         if (isset($this->delHook[0]) && $this->delHook[0] instanceof Closure) {
@@ -38,7 +38,7 @@ trait Delete
 
         App::db()->getConnection()->commit();
 
-        return send($response, "删除{$this->name}成功");
+        return send($response, $this->translation($request, 'delete'));
     }
 
     public function delBefore(mixed $info): void

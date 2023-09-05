@@ -22,7 +22,7 @@ trait Trash
 
         $model = $query->withTrashed()->first();
         if (!$model) {
-            throw new ExceptionBusiness('Data empty');
+            throw new ExceptionBusiness(__("message.emptyData", "common"));
         }
 
         $this->trashBefore($model);
@@ -33,7 +33,7 @@ trait Trash
 
         App::db()->getConnection()->commit();
 
-        return send($response, "彻底删除{$this->name}成功");
+        return send($response, $this->translation($request, 'trash'));
     }
 
     public function trashBefore(mixed $info): void

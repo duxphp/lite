@@ -35,7 +35,7 @@ trait One
             ...$meta,
         ];
 
-        return send($response, "ok", $assign);
+        return send($response, "ok", $assign['data'], $assign['meta']);
     }
 
 }

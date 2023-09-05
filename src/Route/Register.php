@@ -24,6 +24,7 @@ class Register
      */
     public function set(string $name, Route $route): void
     {
+        $route->setApp($name);
         $this->app[$name] = $route;
     }
 
@@ -68,9 +69,6 @@ class Register
                 [$className, $methodName, $name] = $this->formatFile($class);
                 $group = $this->get($params["app"])->group($params["pattern"], ...($params["middleware"] ?? []));
                 $groupClass[$className] = $group;
-                if ($params['permission']) {
-                    $permissionClass[$class] = $permission->get($params['permission'])->group($params["title"], $name);
-                }
             }
         }
 
@@ -105,11 +103,6 @@ class Register
                     callable: $class,
                     name: $name
                 );
-
-                // 权限处理
-                if ($permissionClass[$className]) {
-                    $permissionClass[$className]->addLabel($name, $params["title"]);
-                }
 
             }
         }

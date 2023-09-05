@@ -11,16 +11,18 @@ use Psr\Http\Message\ResponseInterface;
  * @param ResponseInterface $response
  * @param string $message
  * @param array $data
+ * @param array $meta
  * @param int $code
  * @return ResponseInterface
  */
-function send(ResponseInterface $response, string $message, array $data = [], int $code = 200): ResponseInterface
+function send(ResponseInterface $response, string $message, array $data = [], array $meta = [], int $code = 200): ResponseInterface
 {
-    $resfult = [];
-    $resfult["code"] = $code;
-    $resfult["message"] = $message;
-    $resfult["data"] = $data;
-    $payload = json_encode($resfult, JSON_PRETTY_PRINT);
+    $result = [];
+    $result["code"] = $code;
+    $result["message"] = $message;
+    $result["data"] = $data;
+    $result["meta"] = $meta;
+    $payload = json_encode($result, JSON_UNESCAPED_UNICODE);
     $response->getBody()->rewind();
     $response->getBody()->write($payload);
     return $response

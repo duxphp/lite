@@ -18,6 +18,7 @@ class Register
      */
     public function set(string $name, Permission $permission): void
     {
+        $permission->setApp($name);
         $this->app[$name] = $permission;
     }
 

@@ -95,7 +95,7 @@ class Bootstrap
 
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($di) {
             $lang = $request->getHeaderLine('Accept-Language');
-            App::trans()->setLocale($lang);
+            $di->set('language', $lang);
             return $handler->handle($request);
         });
     }
@@ -293,16 +293,16 @@ class Bootstrap
             $resource->run($this);
         }
 
-        // 普通路由注册
-        foreach ($this->route->app as $route) {
-            $route->run($this->web);
-        }
-
         // 注解资源注册
         $this->resource->registerAttribute($this);
 
         // 注解路由注册
         $this->route->registerAttribute($this);
+
+        // 普通路由注册
+        foreach ($this->route->app as $route) {
+            $route->run($this->web);
+        }
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {

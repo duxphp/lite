@@ -7,6 +7,7 @@ use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Routing\RouteContext;
 
 trait Create
 {
@@ -34,7 +35,7 @@ trait Create
 
         App::db()->getConnection()->commit();
 
-        return send($response, "创建{$this->name}成功");
+        return send($response, $this->translation($request, 'create'));
     }
 
     public function createBefore(Data $data): void {

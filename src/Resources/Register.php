@@ -61,7 +61,6 @@ class Register
         $routeMaps = [];
         $permissionMaps = [];
 
-
         foreach ($attributes as $attribute => $list) {
             if (
                 $attribute != Resource::class
@@ -73,6 +72,7 @@ class Register
                 $class = $vo["class"];
                 [$className, $methodName, $name] = $this->formatFile($class);
                 $params['auth'] = (bool)($params['auth'] ?? true);
+
                 $middleware = $this->getMiddleware($params['app'], $params['auth'], $params['middleware']);
 
                 $group = $bootstrap->route->get($params["app"])->resources(
@@ -85,7 +85,7 @@ class Register
                 $appMaps[$className] = $params['app'];
                 $routeMaps[$className] = $group;
                 if ($params['name'] && $params['auth']) {
-                    $permissionMaps[$className] = $permission->get($params['app'])->resources($params['label'], $params['name'], 0, $params['actions'] ?? []);
+                    $permissionMaps[$className] = $permission->get($params['app'])->resources($params['name'], 0, $params['actions'] ?? []);
                 }
             }
         }
@@ -105,10 +105,11 @@ class Register
                 }
                 $route = $routeMaps[$className];
                 $name = $name . "." . ($params["name"] ?: lcfirst($methodName));
+                $appName = $appMaps[$className];
 
                 $middleware = $params["middleware"] ?: [];
-                if ($appMaps[$className] && $params['auth']) {
-                    $middleware = $this->getMiddleware($appMaps[$className], (bool)$params['auth'], $params['middleware']);
+                if ($appName && $params['auth']) {
+                    $middleware = $this->getMiddleware($appName, (bool)$params['auth'], $params['middleware']);
                 }
                 $route->map(
                     methods: is_array($params["methods"]) ? $params["methods"] : [$params["methods"]],
@@ -118,7 +119,7 @@ class Register
                     middleware: $middleware
                 );
                 if ($permissionMaps[$className] && (!isset($params['auth']) || $params['auth'])) {
-                    $permissionMaps[$className]->add($params["label"], $name, false);
+                    $permissionMaps[$className]->add($name, false);
                 }
 
             }

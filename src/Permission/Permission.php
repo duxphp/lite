@@ -7,38 +7,44 @@ class Permission
 {
 
     private array $data = [];
-    private string $pattern = "";
+    private string $pattern;
+    private string $app = '';
+    public static array $actions = ['list', 'show', 'create', 'edit', 'store', 'delete', 'trash', 'restore'];
 
     public function __construct(string $pattern = "")
     {
         $this->pattern = $pattern;
     }
 
-    public function group(string $label, string $name, int $order = 0): PermissionGroup
+    public function setApp(string $app): void
     {
-        $group = new PermissionGroup($label, $name, $order, $this->pattern);
+        $this->app = $app;
+    }
+
+    public function group(string $name, int $order = 0): PermissionGroup
+    {
+        $group = new PermissionGroup($this->app, $name, $order, $this->pattern);
         $this->data[] = $group;
         return $group;
     }
 
-    public array $actions = ['list', 'show', 'create', 'edit', 'store', 'delete', 'trash', 'restore'];
 
     public function resources(string $name, int $order = 0, array|false $actions = []): PermissionGroup
     {
-        $group = $this->group($label, $name, $order);
+        $group = $this->group($name, $order);
 
         if ($actions === false) {
             return $group;
         }
 
         if (!$actions) {
-            $maps = $this->actions;
+            $maps = self::$actions;
         } else {
-            $maps = array_intersect($this->actions, $actions);
+            $maps = array_intersect(self::$actions, $actions);
         }
 
         foreach ($maps as $vo) {
-            $group->add(__('common.resources.' . $vo), $vo);
+            $group->add($vo);
         }
 
         return $group;

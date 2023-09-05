@@ -11,6 +11,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Routing\RouteContext;
 
 abstract class Resources
 {
@@ -134,13 +135,13 @@ abstract class Resources
 
     /**
      * 多条元数据
-     * @param Builder $query
+     * @param Builder|LengthAwarePaginator $query
      * @param array $data
      * @param ServerRequestInterface $request
      * @param array $args
      * @return array
      */
-    public function metaMany(Builder $query, array $data, ServerRequestInterface $request, array $args): array
+    public function metaMany(Builder|LengthAwarePaginator $query, array $data, ServerRequestInterface $request, array $args): array
     {
         return [];
     }
@@ -229,14 +230,23 @@ abstract class Resources
 
         if ($pageStatus) {
             $result['meta'] = [
-                'pagination' => [
-                    'total' => $total,
-                    'page' => $page
-                ]
+                'total' => $total,
+                'page' => $page
             ];
         }
 
         return $result;
+    }
+
+    public function translation(ServerRequestInterface $request, string $action): string
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $app = $route->getArgument("app");
+        $name = $route->getName();
+        return __("message.$action", [
+            "%name%" => __("$name.name", $app),
+        ], "common");
     }
 
 }

@@ -28,7 +28,7 @@ trait  Edit
 
         $model = $query->first();
         if (!$model) {
-            throw new ExceptionBusiness('Data empty');
+            throw new ExceptionBusiness(__("message.emptyData", "common"));
         }
 
         foreach ($modelData as $key => $vo) {
@@ -43,7 +43,7 @@ trait  Edit
 
         App::db()->getConnection()->commit();
 
-        return send($response, "编辑{$this->name}成功");
+        return send($response, $this->translation($request, 'edit'));
     }
 
     public function editBefore(Data $data, mixed $info): void {
