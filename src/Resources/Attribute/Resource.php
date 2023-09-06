@@ -16,6 +16,7 @@ class Resource
      * @param bool $auth 授权
      * @param array|false $actions 方法
      * @param array $middleware 中间件
+     * @param bool $softDelete 软删除
      */
     public function __construct(
         string      $app,
@@ -23,7 +24,8 @@ class Resource
         string      $name,
         bool        $auth = true,
         array|false $actions = [],
-        array       $middleware = []
+        array       $middleware = [],
+        bool        $softDelete = false
     )
     {
     }

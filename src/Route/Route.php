@@ -46,11 +46,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function get(string $pattern, callable|object|string $callable, string $name): void
+    public function get(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["GET"], $pattern, $callable, $name);
+        $this->map(["GET"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -58,11 +59,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function post(string $pattern, callable|object|string $callable, string $name): void
+    public function post(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["POST"], $pattern, $callable, $name);
+        $this->map(["POST"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -70,11 +72,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function put(string $pattern, callable|object|string $callable, string $name): void
+    public function put(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["PUT"], $pattern, $callable, $name);
+        $this->map(["PUT"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -82,11 +85,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function delete(string $pattern, callable|object|string $callable, string $name): void
+    public function delete(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["DELETE"], $pattern, $callable, $name);
+        $this->map(["DELETE"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -94,11 +98,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function options(string $pattern, callable|object|string $callable, string $name): void
+    public function options(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["OPTIONS"], $pattern, $callable, $name);
+        $this->map(["OPTIONS"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -106,11 +111,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name): void
+    public function path(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["PATH"], $pattern, $callable, $name);
+        $this->map(["PATH"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -118,11 +124,12 @@ class Route
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
+     * @param int $priority
      * @return void
      */
-    public function any(string $pattern, callable|object|string $callable, string $name): void
+    public function any(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["ANY"], $pattern, $callable, $name);
+        $this->map(["ANY"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -143,28 +150,28 @@ class Route
         }
 
         if (!$actions || in_array("list", $actions)) {
-            $group->get('', "$class:list", "$name.list");
+            $group->get('', "$class:list", "$name.list", 100);
         }
         if (!$actions || in_array("show", $actions)) {
-            $group->get("/{id}", "$class:show", "$name.show");
+            $group->get("/{id}", "$class:show", "$name.show", 100);
         }
         if (!$actions || in_array("create", $actions)) {
-            $group->post("", "$class:create", "$name.create");
+            $group->post("", "$class:create", "$name.create", 100);
         }
         if (!$actions || in_array("edit", $actions)) {
-            $group->put("/{id}", "$class:edit", "$name.edit");
+            $group->put("/{id}", "$class:edit", "$name.edit", 100);
         }
         if (!$actions || in_array("store", $actions)) {
-            $group->path("/{id}", "$class:store", "$name.store");
+            $group->path("/{id}", "$class:store", "$name.store", 100);
         }
         if (!$actions || in_array("delete", $actions)) {
-            $group->delete("/{id}", "$class:delete", "$name.delete");
+            $group->delete("/{id}", "$class:delete", "$name.delete", 100);
         }
         if ($softDelete && in_array("trash", $actions)) {
-            $group->delete("/{id}/trash", "$class:trash", "$name.trash");
+            $group->delete("/{id}/trash", "$class:trash", "$name.trash", 100);
         }
         if ($softDelete && in_array("restore", $actions)) {
-            $group->put("/{id}/restore", "$class:restore", "$name.restore");
+            $group->put("/{id}/restore", "$class:restore", "$name.restore", 100);
         }
         return $group;
     }
@@ -176,16 +183,18 @@ class Route
      * @param string|callable $callable function(Request $request, Response $response)
      * @param string $name
      * @param array $middleware
+     * @param int $priority
      * @return void
      */
-    public function map(array $methods, string $pattern, string|callable $callable, string $name, array $middleware = []): void
+    public function map(array $methods, string $pattern, string|callable $callable, string $name, array $middleware = [], int $priority = 0): void
     {
         $this->data[] = [
             "methods" => $methods,
             "pattern" => $pattern,
             "callable" => $callable,
             "name" => $name,
-            "middleware" => $middleware ?: []
+            "middleware" => $middleware ?: [],
+            "priority" => $priority
         ];
     }
 
@@ -262,6 +271,8 @@ class Route
         $groupList = $this->group;
         $app = $this->app;
         $route = $route->group($this->pattern, function (RouteCollectorProxy $group) use ($dataList, $groupList, $app) {
+            $priority = array_column($dataList, 'priority');
+            array_multisort($priority, SORT_ASC, $dataList);
             foreach ($dataList as $item) {
                 $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("app", $app);
             }

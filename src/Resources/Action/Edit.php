@@ -14,13 +14,13 @@ trait  Edit
     public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->init($request, $response, $args);
-        $id = (int) $args["id"];
+        $id = (int)$args["id"];
 
         $requestData = [...$request->getParsedBody(), ...$args];
         $data = Validator::parser($requestData, $this->validator($requestData, $request, $args));
 
         $modelData = $this->formatData($this->format($data, $request, $args), $data);
-
+        
         App::db()->getConnection()->beginTransaction();
         $query = $this->model::query()->where($this->key, $id);
         $this->queryOne($query, $request, $args);
@@ -46,8 +46,11 @@ trait  Edit
         return send($response, $this->translation($request, 'edit'));
     }
 
-    public function editBefore(Data $data, mixed $info): void {
+    public function editBefore(Data $data, mixed $info): void
+    {
     }
-    public function editAfter(Data $data, mixed $info): void {
+
+    public function editAfter(Data $data, mixed $info): void
+    {
     }
 }

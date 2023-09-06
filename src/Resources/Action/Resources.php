@@ -189,7 +189,7 @@ abstract class Resources
      */
     public function formatData(array $rule, Data $data): array
     {
-        return array_map(function ($item, $key) use ($data) {
+        return array_map(function ($item) use ($data) {
             return is_callable($item) ? $item($item, $data) : $item;
         }, $rule);
     }
@@ -244,6 +244,8 @@ abstract class Resources
         $route = $routeContext->getRoute();
         $app = $route->getArgument("app");
         $name = $route->getName();
+        $lastPos = strrpos($name, '.');
+        $name = $lastPos !== false ? substr($name, 0, $lastPos) : $name;
         return __("message.$action", [
             "%name%" => __("$name.name", $app),
         ], "common");

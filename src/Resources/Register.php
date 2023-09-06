@@ -80,12 +80,13 @@ class Register
                     class: $class,
                     name: $params["name"] ?: $name,
                     actions: $params["actions"] ?? [],
+                    softDelete: (bool)$params['softDelete'],
                     middleware: $middleware
                 );
                 $appMaps[$className] = $params['app'];
                 $routeMaps[$className] = $group;
                 if ($params['name'] && $params['auth']) {
-                    $permissionMaps[$className] = $permission->get($params['app'])->resources($params['name'], 0, $params['actions'] ?? []);
+                    $permissionMaps[$className] = $permission->get($params['app'])->resources($params['name'], 0, $params['actions'] ?? [], (bool)$params['softDelete']);
                 }
             }
         }

@@ -9,7 +9,7 @@ class Permission
     private array $data = [];
     private string $pattern;
     private string $app = '';
-    public static array $actions = ['list', 'show', 'create', 'edit', 'store', 'delete', 'trash', 'restore'];
+    public static array $actions = ['list', 'show', 'create', 'edit', 'store', 'delete'];
 
     public function __construct(string $pattern = "")
     {
@@ -29,12 +29,16 @@ class Permission
     }
 
 
-    public function resources(string $name, int $order = 0, array|false $actions = []): PermissionGroup
+    public function resources(string $name, int $order = 0, array|false $actions = [], bool $softDelete = false): PermissionGroup
     {
         $group = $this->group($name, $order);
 
         if ($actions === false) {
             return $group;
+        }
+
+        if ($softDelete) {
+            $actions = [...$actions, ...['trash', 'restore']];
         }
 
         if (!$actions) {
