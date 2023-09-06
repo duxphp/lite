@@ -107,16 +107,16 @@ class Route
     }
 
     /**
-     * path
+     * patch
      * @param string $pattern
      * @param callable|object|string $callable
      * @param string $name
      * @param int $priority
      * @return void
      */
-    public function path(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
+    public function patch(string $pattern, callable|object|string $callable, string $name, int $priority = 0): void
     {
-        $this->map(["PATH"], $pattern, $callable, $name, [], $priority);
+        $this->map(["PATCH"], $pattern, $callable, $name, [], $priority);
     }
 
     /**
@@ -162,7 +162,7 @@ class Route
             $group->put("/{id}", "$class:edit", "$name.edit", 100);
         }
         if (!$actions || in_array("store", $actions)) {
-            $group->path("/{id}", "$class:store", "$name.store", 100);
+            $group->patch("/{id}", "$class:store", "$name.store", 100);
         }
         if (!$actions || in_array("delete", $actions)) {
             $group->delete("/{id}", "$class:delete", "$name.delete", 100);
@@ -178,7 +178,7 @@ class Route
 
     /**
      * map
-     * @param array $methods [GET, POST, PUT, DELETE, OPTIONS, PATH]
+     * @param array $methods [GET, POST, PUT, DELETE, OPTIONS, PATCH]
      * @param string $pattern
      * @param string|callable $callable function(Request $request, Response $response)
      * @param string $name

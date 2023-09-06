@@ -25,7 +25,7 @@ trait Store
                 return true;
             }
             return false;
-        });
+        }, ARRAY_FILTER_USE_BOTH);
 
         $data = Validator::parser($requestData, $validator);
         $ruleData = array_filter($this->format($data, $request, $args), function ($item, $key) use ($keys) {
@@ -33,7 +33,7 @@ trait Store
                 return true;
             }
             return false;
-        });
+        }, ARRAY_FILTER_USE_BOTH);
 
         $modelData = $this->formatData($ruleData, $data);
 

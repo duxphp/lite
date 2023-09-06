@@ -5,7 +5,7 @@ message:
   create: Create %name% success
   edit: Edit %name% success
   delete: Delete %name% success
-  store: Store %name% success
+  store: Store %name% data success
   trash: Trash %name% success
   restore: Restore %name% success
 resources:
