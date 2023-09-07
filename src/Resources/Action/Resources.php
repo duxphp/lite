@@ -22,7 +22,7 @@ abstract class Resources
     protected bool $tree = false;
     protected array $pagination = [
         'status' => true,
-        'limit' => 20,
+        'pageSize' => 10,
     ];
 
     /**
@@ -249,6 +249,23 @@ abstract class Resources
         return __("message.$action", [
             "%name%" => __("$name.name", $app),
         ], "common");
+    }
+
+    public function getSorts(array $params): array
+    {
+
+        $data = [];
+        foreach ($params as $key => $vo) {
+            if (!str_ends_with($key, "_sort")) {
+                continue;
+            }
+            if ($vo != 'asc' && $vo != 'desc') {
+                continue;
+            }
+            $field = substr($key, 0, -5);
+            $data[$field] = $vo;
+        }
+        return $data;
     }
 
 }

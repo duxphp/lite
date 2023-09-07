@@ -2,9 +2,9 @@
 
 namespace Dux\Resources\Action;
 
+use Illuminate\Database\Eloquent\Builder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Routing\RouteContext;
 
 trait Many
 {
@@ -15,14 +15,22 @@ trait Many
 
         $limit = 0;
         if ($this->pagination['status']) {
-            $limit = $queryParams["limit"] ?: $this->pagination['limit'];
+            $limit = $queryParams["pageSize"] ?: $this->pagination['pageSize'];
         }
 
+        /**
+         * @var $query Builder
+         */
         $query = $this->model::query();
 
         $key = $queryParams['id'];
         if ($key) {
             $query->where($this->key, $key);
+        }
+
+        $sorts = $this->getSorts($queryParams);
+        foreach ($sorts as $key => $sort) {
+            $query->orderBy($key, $sort);
         }
 
         $this->queryMany($query, $request, $args);
