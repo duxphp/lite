@@ -135,13 +135,13 @@ abstract class Resources
 
     /**
      * 多条元数据
-     * @param Builder|LengthAwarePaginator $query
+     * @param object|array $query
      * @param array $data
      * @param ServerRequestInterface $request
      * @param array $args
      * @return array
      */
-    public function metaMany(Builder|LengthAwarePaginator $query, array $data, ServerRequestInterface $request, array $args): array
+    public function metaMany(object|array $query, array $data, ServerRequestInterface $request, array $args): array
     {
         return [];
     }
