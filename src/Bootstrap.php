@@ -283,14 +283,15 @@ class Bootstrap
         foreach ($appList as $vo) {
             call_user_func([new $vo, "init"], $this);
         }
-        // 应用注册
-        foreach ($appList as $vo) {
-            call_user_func([new $vo, "register"], $this);
-        }
 
         // 资源注册
         foreach ($this->resource->app as $resource) {
             $resource->run($this);
+        }
+
+        // 应用注册
+        foreach ($appList as $vo) {
+            call_user_func([new $vo, "register"], $this);
         }
 
         // 注解资源注册
