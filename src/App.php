@@ -78,6 +78,7 @@ class App
         $app->loadCache();
         $app->loadView();
         $app->loadEvent();
+        $app->loadScheduler();
         $app->loadDb();
         $app->loadApp();
         $app->loadRoute();
@@ -385,18 +386,10 @@ class App
     /**
      * scheduler
      * @return Scheduler
-     * @throws DependencyException
-     * @throws NotFoundException
      */
     public static function scheduler(): Scheduler
     {
-        if (!self::$di->has("scheduler")) {
-            self::$di->set(
-                "scheduler",
-                new Scheduler()
-            );
-        }
-        return self::$di->get("scheduler");
+        return self::$bootstrap->scheduler;
     }
 
     /**

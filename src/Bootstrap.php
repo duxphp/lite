@@ -32,7 +32,7 @@ use Dux\Helpers\ModelCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
-use Dux\Scheduler\SchedulerCommand;
+use Dux\Scheduler\Scheduler;
 use Dux\Server\ServerCommand;
 use Dux\Server\WebCommand;
 use Dux\View\View;
@@ -62,6 +62,7 @@ class Bootstrap
 
     public Event $event;
     public Route\Register $route;
+    public Scheduler $scheduler;
     public Resources\Register $resource;
     public ?Permission\Register $permission = null;
     private Container $di;
@@ -167,11 +168,20 @@ class Bootstrap
         $commands[] = AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
-        $commands[] = WebsocketCommand::class;
-        $commands[] = SchedulerCommand::class;
         $commands[] = WebCommand::class;
         $commands[] = ServerCommand::class;
         $this->command = Command::init($commands);
+
+
+        // Scheduler
+        $workerScheduler = new \Orisai\Scheduler\Command\WorkerCommand();
+        $workerScheduler->setExecutable('dux');
+        $this->command->addCommands([
+            new \Orisai\Scheduler\Command\ListCommand($this->scheduler->scheduler),
+            new \Orisai\Scheduler\Command\RunCommand($this->scheduler->scheduler),
+            new \Orisai\Scheduler\Command\RunJobCommand($this->scheduler->scheduler),
+            $workerScheduler,
+        ]);
 
         // 注册模型迁移
         App::dbMigrate()->registerAttribute();
@@ -250,6 +260,11 @@ class Bootstrap
         $this->event = new Event();
     }
 
+    public function loadScheduler(): void
+    {
+        $this->scheduler = new Scheduler();
+    }
+
     public function loadDb(): void
     {
     }
@@ -304,6 +319,8 @@ class Bootstrap
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
+
+        $this->scheduler->expand();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
