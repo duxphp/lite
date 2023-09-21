@@ -36,7 +36,6 @@ use Dux\Scheduler\Scheduler;
 use Dux\Server\ServerCommand;
 use Dux\Server\WebCommand;
 use Dux\View\View;
-use Dux\Websocket\WebsocketCommand;
 use Illuminate\Pagination\Paginator;
 use Latte\Engine;
 use Phpfastcache\Helper\Psr16Adapter;
@@ -65,6 +64,7 @@ class Bootstrap
     public Scheduler $scheduler;
     public Resources\Register $resource;
     public ?Permission\Register $permission = null;
+    public ?Menu\Register $menu = null;
     private Container $di;
 
     /**
@@ -363,6 +363,14 @@ class Bootstrap
             $this->permission = new Permission\Register();
         }
         return $this->permission;
+    }
+
+    public function getMenu(): Menu\Register
+    {
+        if (!$this->menu) {
+            $this->menu = new Menu\Register();
+        }
+        return $this->menu;
     }
 
 }

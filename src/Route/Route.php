@@ -213,11 +213,15 @@ class Route
         $data = [];
         foreach ($this->data as $route) {
             $route["pattern"] = $pattern . $route["pattern"];
+            $routeMiddleware = array_map(function ($item) {
+                return get_class($item);
+            }, $route['middleware']);
+
             $data[] = [
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
-                "middleware" => array_filter([...$middleware, $route['middleware']])
+                "middleware" => array_filter([...$middleware, ...$routeMiddleware])
             ];
         }
         foreach ($this->group as $group) {
@@ -246,11 +250,15 @@ class Route
         $data = [];
         foreach ($this->data as $route) {
             $route["pattern"] = $pattern . $route["pattern"];
+            $routeMiddleware = array_map(function ($item) {
+                return get_class($item);
+            }, $route['middleware']);
+
             $data[] = [
                 "name" => $route["name"],
                 "pattern" => $route["pattern"],
                 "methods" => $route["methods"],
-                "middleware" => array_filter([...$middleware, $route['middleware']])
+                "middleware" => array_filter([...$middleware, ...$routeMiddleware])
             ];
         }
         foreach ($this->group as $group) {
@@ -274,7 +282,12 @@ class Route
             $priority = array_column($dataList, 'priority');
             array_multisort($priority, SORT_ASC, $dataList);
             foreach ($dataList as $item) {
-                $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("app", $app);
+                $groupRoute = $group->map($item["methods"], $item["pattern"], $item["callable"])->setName($item["name"])->setArgument("app", $app);
+                if ($item['middleware']) {
+                    foreach ($item['middleware'] as $vo) {
+                        $groupRoute->add($vo);
+                    }
+                }
             }
             foreach ($groupList as $item) {
                 $item->run($group);
