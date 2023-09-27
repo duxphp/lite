@@ -66,6 +66,7 @@ class Manage
         $limit = $queryParams["limit"] ?: $this->listLimit;
         $treeStatus = $this->tree;
         $pageStatus = $this->listPage;
+
         /**
          * @var $query Builder
          */
