@@ -73,7 +73,11 @@ class Manage
 
         $key = $queryParams['key'];
         if ($key) {
-            $query->where('id', $key);
+            if (is_array($key)) {
+                $query->whereIn('id', $key);
+            }else {
+                $query->where('id', $key);
+            }
         }
 
         if ($this->listFields) {
