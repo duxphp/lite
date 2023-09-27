@@ -5,30 +5,17 @@ namespace Dux\Menu;
 
 class MenuItem {
 
-    private string $name;
-    private string $url;
-    private int $order = 0;
-    private string $auth = "";
-    private string $pattern;
-
-    public function __construct(string $name, string $url, int $order = 0, string $pattern = "") {
-        $this->name = $name;
-        $this->url = $url;
-        $this->order = $order;
-        $this->pattern = $pattern;
-    }
-
-    public function auth(string $label): self {
-        $this->auth = $label;
-        return $this;
+    public function __construct(public string $groupName, public string $name, public string $route, public string $icon = '', public int $sort = 0, public string $prefix = '') {
     }
 
     public function get(): array {
         return [
+            "key" => $this->groupName . '/' .$this->name,
             "name" => $this->name,
-            "url" => $this->pattern . $this->url,
-            "order" => $this->order,
-            "auth" => $this->auth
+            "label" => __($this->name . '.name', 'manage'),
+            "icon" => $this->icon,
+            "route" => $this->prefix . '/' . $this->route,
+            "sort" => $this->sort,
         ];
     }
 }

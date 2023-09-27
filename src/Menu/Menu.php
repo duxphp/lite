@@ -8,37 +8,32 @@ class Menu
 
     private array $data = [];
     private array $push = [];
-    private string $pattern = "";
 
 
-    public function __construct(string $pattern = "")
+    public function __construct(public string $prefix = '')
     {
-        $this->pattern = $pattern;
     }
 
-    public function add(string $app, array $config): MenuApp
+    public function add(string $name, array $config): MenuApp
     {
-        $config["app"] = $app;
-        $menuApp = new MenuApp($config, $this->pattern);
-        $this->data[$app] = $menuApp;
+        $config["name"] = $name;
+        $menuApp = new MenuApp($name, $config, $this->prefix);
+        $this->data[$name] = $menuApp;
         return $menuApp;
     }
 
-    public function push(string $app): MenuApp
+    public function push(string $name): MenuApp
     {
-        $menuApp = new MenuApp();
-        $this->push[$app][] = $menuApp;
+        $menuApp = new MenuApp($name);
+        $this->push[$name][] = $menuApp;
         return $menuApp;
     }
 
-    public function get(array $auth = []): array
+    public function get(): array
     {
         $menuData = [];
         foreach ($this->data as $name => $app) {
             $appData = $app->get();
-            if ($auth && $appData["auth"] && !in_array($appData["auth"], $auth)) {
-                continue;
-            }
             if ($this->push[$name]) {
                 foreach ($this->push[$name] as $push) {
                     $object = $push->get();
@@ -53,26 +48,23 @@ class Menu
             foreach ($appData["children"] as $groupData) {
                 $list = [];
                 foreach ($groupData["children"] as $vo) {
-                    if ($auth && $vo["auth"] && !in_array($vo["auth"], $auth)) {
-                        continue;
-                    }
                     $list[] = $vo;
                 }
-                $list = collect($list)->sortBy('order')->values()->toArray();
-                if (!$list) {
+                $list = collect($list)->sortBy('sort')->values()->toArray();
+                if (!$list && !$groupData['route']) {
                     continue;
                 }
                 $groupData["children"] = $list;
                 $groupsMenu[] = $groupData;
             }
-            $groupList = collect($groupsMenu)->sortBy('order')->values()->toArray();
-            if (empty($groupList) && !$appData['url']) {
+            $groupList = collect($groupsMenu)->sortBy('sort')->values()->toArray();
+            if (empty($groupList) && !$appData['route']) {
                 continue;
             }
             $appData["children"] = $groupList;
             $restData[] = $appData;
         }
-        return collect($restData)->sortBy('order')->values()->toArray();
+        return collect($restData)->sortBy('sort')->values()->toArray();
 
     }
 

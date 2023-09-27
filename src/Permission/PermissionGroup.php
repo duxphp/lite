@@ -20,7 +20,7 @@ class PermissionGroup
     public function get(): array
     {
         return [
-            "label" => __($this->pattern . $this->name . ".name", $this->app),
+            "label" => __($this->pattern . $this->name . ".name", 'manage'),
             "name" => "group:" . $this->pattern . $this->name,
             "order" => $this->order,
             "children" => array_map(function ($item) {
@@ -30,7 +30,7 @@ class PermissionGroup
                 if (in_array($label, Permission::$actions)) {
                     $label = __(  "resources.$label", "common");
                 }else {
-                    $label = __( $item . ".name", $this->app);
+                    $label = __( $item . ".name", 'manage');
                 }
 
                 return [

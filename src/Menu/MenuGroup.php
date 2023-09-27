@@ -5,19 +5,12 @@ namespace Dux\Menu;
 
 class MenuGroup {
 
-    private string $name;
-    private int $order = 0;
     private array $data = [];
-    private string $pattern;
-
-    public function __construct(string $name, int $order = 0, string $pattern = "") {
-        $this->name = $name;
-        $this->order = $order;
-        $this->pattern = $pattern;
+    public function __construct(public string $appName, public string $name, public string $icon = '', public int $sort = 0, public string $prefix = '') {
     }
 
-    public function item(string $name, string $url, int $order): MenuItem {
-        $app = new MenuItem($name, $url, $order, $this->pattern);
+    public function item(string $name, string $route, string $icon = '', int $sort = 0): MenuItem {
+        $app = new MenuItem($this->name, $name, $route, $icon, $sort, $this->prefix);
         $this->data[] = $app;
         return $app;
     }
@@ -28,8 +21,11 @@ class MenuGroup {
             $items[] = $vo->get();
         }
         return [
+            "key" => $this->appName . '/' . $this->name,
             "name" => $this->name,
-            "order" => $this->order,
+            "label" => __($this->name . '.name', 'manage'),
+            "sort" => $this->sort,
+            "icon" => $this->icon,
             "children" => $items,
         ];
     }
