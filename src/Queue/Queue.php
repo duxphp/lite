@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace Dux\Queue;
 
+use Enqueue\Redis\RedisMessage;
 use Redis;
 use RuntimeException;
+use Symfony\Component\Messenger\Handler\HandlersLocator;
+use Symfony\Component\Messenger\MessageBus;
+use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
 class Queue
 {
@@ -13,6 +17,7 @@ class Queue
     public array $config = [];
 
     public array $group = [];
+    private MessageBus $bus;
 
     public function __construct(string $type, array $config)
     {
@@ -20,26 +25,25 @@ class Queue
             throw new RuntimeException("Queue type not supported");
         }
         $this->config = $config;
-        $this->client = new Redis;
-        $this->client->connect($config["host"], $config["port"]);
-        if ($config["auth"]) {
-            $this->client->auth($config["auth"]);
-        }
-        $database = $config["database"] ?: 0;
-        $this->client->select($database);
-        if ($this->config["optPrefix"]) {
-            $this->client->setOption(Redis::OPT_PREFIX, $this->config["optPrefix"]);
-        }
+
+        $handler = new QueueHandlers();
+        $bus = new MessageBus([
+            new HandleMessageMiddleware(new HandlersLocator([
+                QueueMessage::class => [$handler],
+            ])),
+        ]);
+
+        $this->bus = $bus;
     }
 
-    public function add(string $group = "default"): QueueHandlers
+    public function add(string $class, string $method = "", array $params = []): void
     {
-        if (isset($this->group[$group])) {
-            return $this->group[$group];
-        }
-        $queue = new QueueHandlers($this->client, $group);
-        $this->group[$group] = $queue;
-        return $queue;
+        $message = new RedisMessage($class . ':' . $method, $params);
+        $this->bus->dispatch($message);
+    }
+
+    public function process(): void
+    {
     }
 
 }

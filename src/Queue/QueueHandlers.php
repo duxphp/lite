@@ -8,6 +8,6 @@ class QueueHandlers
 {
     public function __invoke(QueueMessage $message): void
     {
-        // Message processing...
+        echo $message->getClass();
     }
 }
