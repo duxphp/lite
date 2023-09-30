@@ -153,25 +153,25 @@ class Route
             $group->get('', "$class:list", "$name.list", 100);
         }
         if (!$actions || in_array("show", $actions)) {
-            $group->get("/{id}", "$class:show", "$name.show", 100);
+            $group->get("/{id:[0-9]+}", "$class:show", "$name.show", 100);
         }
         if (!$actions || in_array("create", $actions)) {
             $group->post("", "$class:create", "$name.create", 100);
         }
         if (!$actions || in_array("edit", $actions)) {
-            $group->put("/{id}", "$class:edit", "$name.edit", 100);
+            $group->put("/{id:[0-9]+}", "$class:edit", "$name.edit", 100);
         }
         if (!$actions || in_array("store", $actions)) {
-            $group->patch("/{id}", "$class:store", "$name.store", 100);
+            $group->patch("/{id:[0-9]+}", "$class:store", "$name.store", 100);
         }
         if (!$actions || in_array("delete", $actions)) {
-            $group->delete("/{id}", "$class:delete", "$name.delete", 100);
+            $group->delete("/{id:[0-9]+}", "$class:delete", "$name.delete", 100);
         }
         if ($softDelete && in_array("trash", $actions)) {
-            $group->delete("/{id}/trash", "$class:trash", "$name.trash", 100);
+            $group->delete("/{id:[0-9]+}/trash", "$class:trash", "$name.trash", 100);
         }
         if ($softDelete && in_array("restore", $actions)) {
-            $group->put("/{id}/restore", "$class:restore", "$name.restore", 100);
+            $group->put("/{id:[0-9]+}/restore", "$class:restore", "$name.restore", 100);
         }
         return $group;
     }
