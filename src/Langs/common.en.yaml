@@ -17,3 +17,5 @@ resources:
   store: Store
   trash: Trash
   restore: Restore
+validate:
+  placeholder: Please enter

@@ -17,3 +17,5 @@ resources:
   store: 更新
   trash: 彻底删除
   restore: 恢复
+validate:
+  placeholder: 请输入

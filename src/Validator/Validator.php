@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Dux\Validator;
 
 // https://github.com/vlucas/valitron
+use Dux\Handlers\ExceptionBusiness;
 use Dux\Handlers\ExceptionValidator;
 
 class Validator
@@ -16,9 +17,9 @@ class Validator
      */
     public static function parser(array $data, array $rules): Data
     {
-//        $role = [
-//            "name" => ["rule", "message"]
-//        ];
+        //  $role = [
+        //      "name" => ["rule", "message"]
+        //  ];
         $v = new \Valitron\Validator($data);
         foreach ($rules as $key => $item) {
             if (empty($item)) {
@@ -45,6 +46,53 @@ class Validator
             $dataObj->$k = $v;
         }
         return $dataObj;
+    }
+
+
+    /**
+     * 数据规则
+     * @param array $fields
+     * @return array
+     */
+    public static function rule( array $fields): array
+    {
+        $validators = [];
+        foreach ($fields as $field) {
+            $rules = json_decode($field['setting']['rules'] ?: '', true);
+            if ($field['required']) {
+                $rules[] = ['required'=> true, '请输入'];
+            }
+            $ruleList = [];
+            foreach ($rules as $rule) {
+                foreach ($rule as $key => $vo) {
+                    $cover = match ($key) {
+                        'boolean' => 'boolean',
+                        'date' => 'date',
+                        'email' => 'email',
+                        'enum' => function($field, $value, array $params, array $fields) use ($rule) {
+                            return in_array($value, (array)$rule);
+                        },
+                        'idcard' => ['regex', '/^(\\d{18,18}|\\d{15,15}|\\d{17,17}x)$/i'],
+                        'length' => ['length', $vo],
+                        'min' => ['lengthMin', $vo],
+                        'max' => ['lengthMax', $vo],
+                        'number' => 'numeric',
+                        'pattern' => ['regex', $vo],
+                        'required' => ['required', $vo],
+                        'telnumber' => ['regex', '/^1[3-9]\d{9}$/'],
+                        'url' => 'url',
+                    };
+                    if ($cover) {
+                        $ruleList[] = is_array($cover) ? [...$cover, $rule['message']] : [$cover, $rule['message']];
+                    }
+                }
+            }
+            if ($ruleList) {
+                $validators[$field['name']] = $ruleList;
+            }
+        }
+
+        return $validators;
     }
 
 }
