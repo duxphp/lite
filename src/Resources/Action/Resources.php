@@ -247,7 +247,7 @@ abstract class Resources
         $lastPos = strrpos($name, '.');
         $name = $lastPos !== false ? substr($name, 0, $lastPos) : $name;
         return __("message.$action", [
-            "%name%" => __("$name.name", 'manage'),
+            "%name%" => $this->label ?: __("$name.name", 'manage'),
         ], "common");
     }
 
