@@ -95,7 +95,11 @@ class Bootstrap
         $this->route = new Route\Register();
 
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($di) {
-            $lang = $request->getHeaderLine('Accept-Language');
+            if (App::config('use')->get('lang')) {
+                $lang = App::config('use')->get('lang');
+            }else {
+                $lang = $request->getHeaderLine('Accept-Language');
+            }
             $di->set('language', $lang);
             return $handler->handle($request);
         });
