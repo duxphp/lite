@@ -74,7 +74,7 @@
     "orisai/scheduler": "^1.0",
     "symfony/messenger": "^6.3",
     "symfony/redis-messenger": "^6.3",
-    "ip2location/ip2location-php": "^9.7"
+    "geoip2/geoip2": "^2.13"
   },
   "require-dev": {
     "composer/composer": "^2.0",

@@ -27,8 +27,8 @@ use Dux\Storage\Storage;
 use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Dux\View\View;
+use GeoIp2\Database\Reader;
 use Illuminate\Database\Capsule\Manager;
-use IP2Location\Database;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
 use Monolog\Level;
@@ -437,11 +437,15 @@ class App
     public static function trans(): Translator
     {
         if (!self::$di->has("trans")) {
-            $lang = self::$di->get('language') ?: 'en';
+            $lang = self::$di->get('language') ?: 'en_US';
             $translator = new Translator($lang);
             $translator->addLoader('yaml', new YamlFileLoader());
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.en.yaml', 'en', 'common');
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh.yaml', 'zh', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.en_US.yaml', 'en_US', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'zh-CN', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'zh-TW', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ja_JP', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ko_KR', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ru_RU', 'common');
             self::$di->set(
                 "trans",
                 $translator
@@ -466,11 +470,11 @@ class App
         }
     }
 
-    public static function geo(): Translator
+    public static function geo(): Reader
     {
         if (!self::$di->has("geo")) {
             $db = self::config("geo")->get("db");
-            $reader = new Database($db, Database::FILE_IO);
+            $reader = new Reader($db);
             self::$di->set(
                 "geo",
                 $reader
