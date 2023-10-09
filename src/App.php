@@ -28,6 +28,7 @@ use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Dux\View\View;
 use Illuminate\Database\Capsule\Manager;
+use IP2Location\Database;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
 use Monolog\Level;
@@ -463,7 +464,18 @@ class App
             [$name, $lang] = $names;
             self::trans()->addResource('yaml', $file, $lang, $name);
         }
+    }
 
-
+    public static function geo(): Translator
+    {
+        if (!self::$di->has("geo")) {
+            $db = self::config("geo")->get("db");
+            $reader = new Database($db, Database::FILE_IO);
+            self::$di->set(
+                "geo",
+                $reader
+            );
+        }
+        return self::$di->get("geo");
     }
 }
