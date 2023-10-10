@@ -60,11 +60,14 @@ class Validator
         foreach ($fields as $field) {
             $rules = json_decode($field['setting']['rules'] ?: '', true);
             if ($field['required']) {
-                $rules[] = ['required'=> true, '请输入'];
+                $rules[] = ['required'=> true, 'message' => '请输入'];
             }
             $ruleList = [];
             foreach ($rules as $rule) {
                 foreach ($rule as $key => $vo) {
+                    if ($key == 'message') {
+                        continue;
+                    }
                     $cover = match ($key) {
                         'boolean' => 'boolean',
                         'date' => 'date',
@@ -81,6 +84,7 @@ class Validator
                         'required' => ['required', $vo],
                         'telnumber' => ['regex', '/^1[3-9]\d{9}$/'],
                         'url' => 'url',
+                        'default' => null
                     };
                     if ($cover) {
                         $ruleList[] = is_array($cover) ? [...$cover, $rule['message']] : [$cover, $rule['message']];
