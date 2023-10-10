@@ -31,6 +31,7 @@ use GeoIp2\Database\Reader;
 use Illuminate\Database\Capsule\Manager;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
+use MaxMind\Db\Reader\InvalidDatabaseException;
 use Monolog\Level;
 use Monolog\Logger;
 use Noodlehaus\Config;
@@ -437,15 +438,15 @@ class App
     public static function trans(): Translator
     {
         if (!self::$di->has("trans")) {
-            $lang = self::$di->get('language') ?: 'en_US';
+            $lang = self::$di->get('language') ?: 'en-US';
             $translator = new Translator($lang);
             $translator->addLoader('yaml', new YamlFileLoader());
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.en_US.yaml', 'en_US', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.en-US.yaml', 'en-US', 'common');
             $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'zh-CN', 'common');
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'zh-TW', 'common');
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ja_JP', 'common');
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ko_KR', 'common');
-            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-CN.yaml', 'ru_RU', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.zh-TW.yaml', 'zh-TW', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.ja-JP.yaml', 'ja-JP', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.ko-KR.yaml', 'ko-KR', 'common');
+            $translator->addResource('yaml', __DIR__ . '/Langs/common.ru-RU.yaml', 'ru-RU', 'common');
             self::$di->set(
                 "trans",
                 $translator
@@ -470,14 +471,26 @@ class App
         }
     }
 
-    public static function geo(): Reader
+    public static function geo(): Reader|null
     {
         if (!self::$di->has("geo")) {
             $db = self::config("geo")->get("db");
-            $reader = new Reader($db);
+            $lang = self::$di->get('language');
+            $maps = [
+                'en-US' => 'en',
+                'zh-CN' => 'zh-CN',
+                'zh-TW' => 'zh-CN',
+                'ja-JP' => 'ja',
+                'ko-KR' => 'en',
+                'ru-RU' => 'ru',
+            ];
+            try {
+                $reader = new Reader($db, [$maps[$lang]]);
+            } catch (InvalidDatabaseException $e) {
+            }
             self::$di->set(
                 "geo",
-                $reader
+                $reader ?: null
             );
         }
         return self::$di->get("geo");
