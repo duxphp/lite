@@ -5,6 +5,7 @@ namespace Dux\View;
 
 use Dux\App;
 use Latte\Engine;
+use Latte\Essential\TranslatorExtension;
 
 class View
 {
@@ -16,6 +17,12 @@ class View
             mkdir(App::$dataPath . '/tpl/', 0777, true);
         }
         $latte->setTempDirectory(App::$dataPath . '/tpl/' . $name);
+
+        $translator = new Translator();
+        $extension = new TranslatorExtension(
+            $translator->translate(...),
+        );
+        $latte->addExtension($extension);
         return $latte;
     }
 }
