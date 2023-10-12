@@ -75,7 +75,8 @@
     "symfony/messenger": "^6.3",
     "symfony/redis-messenger": "^6.3",
     "geoip2/geoip2": "^2.13",
-    "jaybizzle/crawler-detect": "^1.2"
+    "jaybizzle/crawler-detect": "^1.2",
+    "xantios/mimey": "^2.2"
   },
   "require-dev": {
     "composer/composer": "^2.0",
