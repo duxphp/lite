@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Dux\Validator;
 
 // https://github.com/vlucas/valitron
-use Dux\Handlers\ExceptionBusiness;
 use Dux\Handlers\ExceptionValidator;
 
 class Validator
@@ -54,13 +53,13 @@ class Validator
      * @param array $fields
      * @return array
      */
-    public static function rule( array $fields): array
+    public static function rule(array $fields): array
     {
         $validators = [];
         foreach ($fields as $field) {
             $rules = json_decode($field['setting']['rules'] ?: '', true);
             if ($field['required']) {
-                $rules[] = ['required'=> true, 'message' => '请输入'];
+                $rules[] = ['required' => true, 'message' => __('validate.placeholder')];
             }
             $ruleList = [];
             foreach ($rules as $rule) {
@@ -72,7 +71,7 @@ class Validator
                         'boolean' => 'boolean',
                         'date' => 'date',
                         'email' => 'email',
-                        'enum' => function($field, $value, array $params, array $fields) use ($rule) {
+                        'enum' => function ($field, $value, array $params, array $fields) use ($rule) {
                             return in_array($value, (array)$rule);
                         },
                         'idcard' => ['regex', '/^(\\d{18,18}|\\d{15,15}|\\d{17,17}x)$/i'],
