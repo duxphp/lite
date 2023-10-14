@@ -7,7 +7,6 @@ use Dux\Validator\Data;
 use Dux\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Routing\RouteContext;
 
 trait Create
 {
@@ -16,7 +15,7 @@ trait Create
     {
         $this->init($request, $response, $args);
 
-        $requestData = [...$request->getParsedBody(), ...$args];
+        $requestData = [...$request->getParsedBody()];
         $data = Validator::parser($requestData, $this->validator($requestData, $request, $args));
         App::db()->getConnection()->beginTransaction();
 
@@ -38,9 +37,12 @@ trait Create
         return send($response, $this->translation($request, 'create'));
     }
 
-    public function createBefore(Data $data): void {
+    public function createBefore(Data $data): void
+    {
     }
-    public function createAfter(Data $data, mixed $info): void {
+
+    public function createAfter(Data $data, mixed $info): void
+    {
     }
 
 }

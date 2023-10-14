@@ -19,8 +19,8 @@ trait Store
         $jsonData = $request->getParsedBody();
         $keys = array_keys($jsonData);
 
-        $requestData = [...$request->getParsedBody(), ...$args];
-        $validator = array_filter($this->validator($requestData, $request, $args), function ($item, $key) use($keys) {
+        $requestData = [...$request->getParsedBody()];
+        $validator = array_filter($this->validator($requestData, $request, $args), function ($item, $key) use ($keys) {
             if (in_array($key, $keys)) {
                 return true;
             }
@@ -64,10 +64,12 @@ trait Store
         return send($response, $this->translation($request, 'store'));
     }
 
-    public function storeBefore(Data $data, mixed $info): void {
+    public function storeBefore(Data $data, mixed $info): void
+    {
     }
 
-    public function storeAfter(Data $data, mixed $info): void {
+    public function storeAfter(Data $data, mixed $info): void
+    {
     }
 
 }
