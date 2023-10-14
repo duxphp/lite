@@ -29,6 +29,7 @@ use Dux\Helpers\AppCommand;
 use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
+use Dux\Package\CloudCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
@@ -38,6 +39,9 @@ use Dux\Server\WebCommand;
 use Dux\View\View;
 use Illuminate\Pagination\Paginator;
 use Latte\Engine;
+use Orisai\Scheduler\Command\RunCommand;
+use Orisai\Scheduler\Command\RunJobCommand;
+use Orisai\Scheduler\Command\WorkerCommand;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -97,7 +101,7 @@ class Bootstrap
         $this->web->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($di) {
             if (App::config('use')->get('lang')) {
                 $lang = App::config('use')->get('lang');
-            }else {
+            } else {
                 $lang = $request->getHeaderLine('Accept-Language');
             }
             $di->set('language', $lang);
@@ -174,16 +178,17 @@ class Bootstrap
         $commands[] = ListCommand::class;
         $commands[] = WebCommand::class;
         $commands[] = ServerCommand::class;
+        $commands[] = CloudCommand::class;
         $this->command = Command::init($commands);
 
 
         // Scheduler
-        $workerScheduler = new \Orisai\Scheduler\Command\WorkerCommand();
+        $workerScheduler = new WorkerCommand();
         $workerScheduler->setExecutable('dux');
         $this->command->addCommands([
             new \Orisai\Scheduler\Command\ListCommand($this->scheduler->scheduler),
-            new \Orisai\Scheduler\Command\RunCommand($this->scheduler->scheduler),
-            new \Orisai\Scheduler\Command\RunJobCommand($this->scheduler->scheduler),
+            new RunCommand($this->scheduler->scheduler),
+            new RunJobCommand($this->scheduler->scheduler),
             $workerScheduler,
         ]);
 
