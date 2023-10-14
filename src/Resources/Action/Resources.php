@@ -189,9 +189,11 @@ abstract class Resources
      */
     public function formatData(array $rule, Data $data): array
     {
-        return array_map(function ($item, $key) use ($data) {
-            return is_callable($item) ? $item($data[$key], $data) : $item;
-        }, $rule);
+        $datas = [];
+        foreach ($rule as $key => $item) {
+            $datas[$item] = is_callable($item) ? $item($data[$key], $data) : $item;
+        }
+        return $datas;
     }
 
 
