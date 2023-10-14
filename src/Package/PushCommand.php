@@ -18,7 +18,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use ZipStream\ZipStream;
 
-class CloudCommand extends Command
+class PushCommand extends Command
 {
 
     protected static $defaultName = 'app:push';
@@ -140,7 +140,7 @@ class CloudCommand extends Command
         $client = new Client();
 
         try {
-            $response = $client->post('https://www.dux.plus/v/package/version/' . $config['name'], [
+            $response = $client->post('http://dux-cloud.test/v/package/version/' . $config['name'], [
                 'headers' => [
                     'Accept' => 'application/json'
                 ],

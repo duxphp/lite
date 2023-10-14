@@ -29,7 +29,8 @@ use Dux\Helpers\AppCommand;
 use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
-use Dux\Package\CloudCommand;
+use Dux\Package\AddCommand;
+use Dux\Package\PushCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
@@ -178,7 +179,8 @@ class Bootstrap
         $commands[] = ListCommand::class;
         $commands[] = WebCommand::class;
         $commands[] = ServerCommand::class;
-        $commands[] = CloudCommand::class;
+        $commands[] = PushCommand::class;
+        $commands[] = AddCommand::class;
         $this->command = Command::init($commands);
 
 
