@@ -16,7 +16,7 @@ trait  Edit
         $this->init($request, $response, $args);
         $id = (int)$args["id"];
 
-        $requestData = [...$request->getParsedBody()];
+        $requestData = $request->getParsedBody() ?: [];
         $data = Validator::parser($requestData, $this->validator($requestData, $request, $args));
 
         $modelData = $this->formatData($this->format($data, $request, $args), $data);

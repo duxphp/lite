@@ -15,7 +15,7 @@ trait Create
     {
         $this->init($request, $response, $args);
 
-        $requestData = [...$request->getParsedBody()];
+        $requestData = $request->getParsedBody() ?: [];
         $data = Validator::parser($requestData, $this->validator($requestData, $request, $args));
         App::db()->getConnection()->beginTransaction();
 

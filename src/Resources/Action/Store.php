@@ -16,10 +16,9 @@ trait Store
         $this->init($request, $response, $args);
         $id = $args["id"];
 
-        $jsonData = $request->getParsedBody();
-        $keys = array_keys($jsonData);
+        $requestData = $request->getParsedBody() ?: [];
+        $keys = array_keys($requestData);
 
-        $requestData = [...$request->getParsedBody()];
         $validator = array_filter($this->validator($requestData, $request, $args), function ($item, $key) use ($keys) {
             if (in_array($key, $keys)) {
                 return true;
