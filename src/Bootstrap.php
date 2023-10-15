@@ -9,8 +9,6 @@ use Clockwork\Support\Slim\ClockworkMiddleware;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Dux\App\AppInstallCommand;
-use Dux\App\AppUninstallCommand;
 use Dux\App\Attribute;
 use Dux\Cache\Cache;
 use Dux\Command\Command;
@@ -31,6 +29,8 @@ use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Package\AddCommand;
 use Dux\Package\PushCommand;
+use Dux\Package\UninstallCommand;
+use Dux\Package\UpdateCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
@@ -173,14 +173,14 @@ class Bootstrap
         $commands[] = ManageCommand::class;
         $commands[] = CtrCommand::class;
         $commands[] = App\AppCommand::class;
-        $commands[] = AppInstallCommand::class;
-        $commands[] = AppUninstallCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
         $commands[] = WebCommand::class;
         $commands[] = ServerCommand::class;
         $commands[] = PushCommand::class;
         $commands[] = AddCommand::class;
+        $commands[] = UpdateCommand::class;
+        $commands[] = UninstallCommand::class;
         $this->command = Command::init($commands);
 
 

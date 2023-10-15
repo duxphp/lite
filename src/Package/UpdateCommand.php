@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Dux\Package;
 
-use Illuminate\Support\Collection;
 use Nette\Utils\FileSystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,17 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class AddCommand extends Command
+class UpdateCommand extends Command
 {
 
-    protected static $defaultName = 'install';
+    protected static $defaultName = 'update';
     protected static $defaultDescription = 'Install the application';
 
     protected function configure(): void
     {
         $this->addArgument(
             'name',
-            InputArgument::REQUIRED,
+            InputArgument::OPTIONAL,
             'please enter the app name'
         );
     }
@@ -31,8 +30,6 @@ class AddCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $name = $input->getArgument('name');
-
-        [$name, $verType] = explode(':', $name, 2);
 
         $helper = $this->getHelper('question');
         $question = new Question('Please enter username: ');
@@ -52,9 +49,9 @@ class AddCommand extends Command
         }
 
         try {
-            Install::main($input, $output, $io, $username, $password, [
-                $name => $verType ?: 'release'
-            ]);
+            Install::main($input, $output, $io, $username, $password,$name ? [
+                $name
+            ] : [], true);
         } finally {
             FileSystem::delete(data_path('package'));
         }

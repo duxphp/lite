@@ -21,7 +21,7 @@ use ZipStream\ZipStream;
 class PushCommand extends Command
 {
 
-    protected static $defaultName = 'app:push';
+    protected static $defaultName = 'push';
     protected static $defaultDescription = 'Release the application version';
 
     protected function configure(): void
@@ -43,7 +43,7 @@ class PushCommand extends Command
             $io->error('Configuration file does not exist');
             return Command::FAILURE;
         }
-        $config = json_decode(file_get_contents($configPath), true);
+        $config = Package::getJson($configPath);
         if (!$config) {
             $io->error('Configuration does not exist');
             return Command::FAILURE;
@@ -80,7 +80,7 @@ class PushCommand extends Command
         }
 
         $config['version'] = $version;
-        file_put_contents($configPath, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        Package::saveJson($configPath, $config);
 
         $tmpDir = data_path('cloud/app/' . $app);
         $tmpZip = data_path('cloud/app/' . $app . '.zip');
@@ -134,13 +134,13 @@ class PushCommand extends Command
 
         $fileSize = filesize($zipFile);
         $progressBar = new ProgressBar($output, $fileSize);
-        $progressBar->setFormat('Upload Code: %current%/%max% [%bar%] %percent:3s%%');
+        $progressBar->setFormat('Upload: %current%/%max% [%bar%] %percent:3s%%');
         $progressBar->start();
 
         $client = new Client();
 
         try {
-            $response = $client->post('http://dux-cloud.test/v/package/version/' . $config['name'], [
+            $response = $client->post('http://cloud.test/v/package/version/' . $config['name'], [
                 'headers' => [
                     'Accept' => 'application/json'
                 ],

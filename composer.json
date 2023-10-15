@@ -31,6 +31,7 @@
     "ext-redis": "*",
     "ext-fileinfo": "*",
     "ext-pdo": "*",
+    "ext-zip": "*",
     "composer-plugin-api": "^2.0",
     "slim/slim": "^4.11",
     "slim/psr7": "^1.6",
