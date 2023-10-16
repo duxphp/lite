@@ -16,7 +16,7 @@ use ZipArchive;
 
 class Package
 {
-    public static string $url = 'https://www.dux.plus';
+    public static string $url = 'https://dux.plus';
 
     public static function downloadPackages(InputInterface $input, OutputInterface $output, Collection $packages, Collection $apps, Collection $composers, Collection $node, Collection $files, array $data): void
     {
