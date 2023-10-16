@@ -44,6 +44,10 @@ class Install
                     $dependencies->put($name, $verType);
                 }
             }
+        }else {
+            if ($dependencies->isEmpty()) {
+                throw new Exception('Application not installed');
+            }
         }
 
         // 查询未安装依赖
