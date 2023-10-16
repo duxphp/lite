@@ -140,7 +140,7 @@ class PushCommand extends Command
         $client = new Client();
 
         try {
-            $response = $client->post('http://cloud.test/v/package/version/' . $config['name'], [
+            $response = $client->post(Package::$url . '/v/package/version/push', [
                 'headers' => [
                     'Accept' => 'application/json'
                 ],
@@ -157,6 +157,10 @@ class PushCommand extends Command
                     [
                         'name' => 'md5',
                         'contents' => md5_file($zipFile)
+                    ],
+                    [
+                        'name' => 'name',
+                        'contents' => $config['name']
                     ],
                     [
                         'name' => 'app',

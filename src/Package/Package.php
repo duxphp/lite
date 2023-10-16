@@ -314,7 +314,7 @@ class Package
     {
         $name = str_replace(base_path(), '', $file);
 
-        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if (!file_put_contents($file, $json)) {
             throw new Exception($name . ' No permission to edit');
         }
