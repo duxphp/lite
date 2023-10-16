@@ -18,7 +18,7 @@ class Package
 {
     public static string $url = 'https://dux.plus';
 
-    public static function downloadPackages(InputInterface $input, OutputInterface $output, Collection $packages, Collection $apps, Collection $composers, Collection $node, Collection $files, array $data): void
+    public static function downloadPackages(InputInterface $input, OutputInterface $output, Collection $packages, Collection $dependencies, Collection $apps, Collection $composers, Collection $node, Collection $files, array $data): void
     {
         foreach ($data as $item) {
             [$config, $appFiles] = self::download($input, $output, $item);
@@ -29,6 +29,10 @@ class Package
                 $packages->forget($key);
             }
             $packages->add($config);
+
+            if (!$dependencies->has($item['name'])) {
+                $dependencies->put($item['name'], $item['ver_type']);
+            }
             $apps->add($item['app']);
 
             foreach ($appFiles as $source => $target) {
@@ -261,7 +265,7 @@ class Package
         }
     }
 
-    public static function saveConfig(OutputInterface $output, array $apps): void
+    public static function saveConfig(OutputInterface $output, array $apps, bool $remove = false): void
     {
         if (!$apps) {
             return;
@@ -269,14 +273,27 @@ class Package
         $configFile = config_path('app.yaml');
         $conf = Config::load($configFile);
         $registers = $conf->get("registers", []);
-        foreach ($apps as $app) {
-            $app = ucfirst($app);
-            $name = "\\App\\$app\\App";
-            if (in_array($name, (array)$registers)) {
-                continue;
+        if (!$remove) {
+            foreach ($apps as $key => $app) {
+                $app = ucfirst($app);
+                $name = "\\App\\$app\\App";
+                if (in_array($name, (array)$registers)) {
+                    continue;
+                }
+                $registers[] = $name;
             }
-            $registers[] = $name;
+        } else {
+            foreach ($registers as $key => $vo) {
+                foreach ($apps as $app) {
+                    $app = ucfirst($app);
+                    $name = "\\App\\$app\\App";
+                    if ($name == $vo) {
+                        unset($registers[$key]);
+                    }
+                }
+            }
         }
+
         $output->writeln('Configuring Application Injection');
         $conf->set("registers", $registers);
         $conf->toFile($configFile);

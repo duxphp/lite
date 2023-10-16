@@ -87,11 +87,11 @@ class Install
         }
 
         $cloudPackages->map(function ($item) use ($output) {
-            $output->writeln('<info>find: '.$item['name'] . ' - ' . $item['ver'] .'</info>');
+            $output->writeln('<info>find: ' . $item['name'] . ' - ' . $item['ver'] . '</info>');
         });
 
         // download
-        Package::downloadPackages($input, $output, $packages, $apps, $composers, $node, $files, $cloudPackages->toArray());
+        Package::downloadPackages($input, $output, $packages, $dependencies, $apps, $composers, $node, $files, $cloudPackages->toArray());
 
         // composer install
         Package::composer($output, $composers->toArray());
