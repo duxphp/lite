@@ -8,14 +8,16 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Collection;
 use Nette\Utils\FileSystem;
 use Noodlehaus\Config;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use ZipArchive;
 
 class Package
 {
+    public static string $url = 'https://www.dux.plus';
+
     public static function downloadPackages(InputInterface $input, OutputInterface $output, Collection $packages, Collection $apps, Collection $composers, Collection $node, Collection $files, array $data): void
     {
         foreach ($data as $item) {
@@ -96,7 +98,7 @@ class Package
             throw new Exception('File verification failed');
         }
 
-        $zip = new \ZipArchive;
+        $zip = new ZipArchive;
         $res = $zip->open($packageFile);
         if (!$res) {
             throw new Exception('File cannot be opened');
@@ -127,7 +129,7 @@ class Package
     {
         $client = new Client();
         try {
-            $response = $client->post('http://cloud.test/v/package/version/query', [
+            $response = $client->post(self::$url . '/v/package/version/query', [
                 'query' => [
                     'type' => 'php',
                     'download' => true
@@ -148,23 +150,20 @@ class Package
             $content = $response->getBody()?->getContents();
         }
         if ($response->getStatusCode() == 401) {
-            $io->error('[CLOUD] Wrong username and password');
-            return Command::FAILURE;
+            throw new Exception('[CLOUD] Wrong username and password');
         }
         $responseData = json_decode($content ?: '', true);
         if ($response->getStatusCode() !== 200) {
-            $io->warning('[CLOUD] ' . $response->getStatusCode() . ' ' . ($responseData['message'] ?: 'Server connection failed'));
-            return Command::FAILURE;
+            throw new Exception('[CLOUD] ' . $response->getStatusCode() . ' ' . ($responseData['message'] ?: 'Server connection failed'));
         }
         $appData = $responseData['data'];
         if (!$appData) {
-            $io->warning('[CLOUD] Application data does not exist');
-            return Command::FAILURE;
+            throw new Exception('[CLOUD] Application data does not exist');
         }
         return $appData;
     }
 
-    public static function composer(OutputInterface $output, array $maps): void
+    public static function composer(OutputInterface $output, array $maps, $remove = false): void
     {
         if (!$maps) {
             return;
@@ -183,11 +182,20 @@ class Package
         }
         $requireNames = array_keys($require);
 
-        foreach ($maps as $key => $vo) {
-            if (in_array($key, $requireNames)) {
-                continue;
+        if (!$remove) {
+            foreach ($maps as $key => $vo) {
+                if (in_array($key, $requireNames)) {
+                    continue;
+                }
+                $require[$key] = $vo;
             }
-            $require[$key] = $vo;
+        } else {
+            foreach ($maps as $vo) {
+                if (!in_array($vo, $requireNames)) {
+                    continue;
+                }
+                unset($require[$vo]);
+            }
         }
 
         $fileData['require'] = $require;
@@ -195,14 +203,13 @@ class Package
         self::saveJson($file, $fileData);
     }
 
-    public static function node(OutputInterface $output, array $maps): void
+    public static function node(OutputInterface $output, array $maps, $remove = false): void
     {
         if (!$maps) {
             return;
         }
 
         $file = base_path('web/package.json');
-
         if (!is_file($file)) {
             throw new Exception('package.json file does not exist');
         }
@@ -214,11 +221,20 @@ class Package
         }
         $dependenciesNames = array_keys($dependencies);
 
-        foreach ($maps as $key => $vo) {
-            if (in_array($key, $dependenciesNames)) {
-                continue;
+        if (!$remove) {
+            foreach ($maps as $key => $vo) {
+                if (in_array($key, $dependenciesNames)) {
+                    continue;
+                }
+                $dependencies[$key] = $vo;
             }
-            $dependencies[$key] = $vo;
+        } else {
+            foreach ($maps as $vo) {
+                if (!in_array($vo, $dependenciesNames)) {
+                    continue;
+                }
+                unset($maps[$vo]);
+            }
         }
 
         $fileData['dependencies'] = $dependencies;
@@ -229,8 +245,16 @@ class Package
     public static function copy(OutputInterface $output, array $maps): void
     {
         foreach ($maps as $source => $target) {
-            $output->writeln('Copy: ' . str_replace(base_path(), '', $target));
+            $output->writeln('<info>Copy: ' . str_replace(base_path(), '', $target) . '</info>');
             FileSystem::copy($source, $target);
+        }
+    }
+
+    public static function del(OutputInterface $output, array $maps): void
+    {
+        foreach ($maps as $path) {
+            $output->writeln('<info>Delete: ' . str_replace(base_path(), '', $path) . '</info>');
+            FileSystem::delete($path);
         }
     }
 
@@ -268,10 +292,11 @@ class Package
 
     public static function saveJson(string $file, array $data): void
     {
+        $name = str_replace(base_path(), '', $file);
 
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         if (!file_put_contents($file, $json)) {
-            throw new Exception('composer.json No permission to edit');
+            throw new Exception($name . ' No permission to edit');
         }
     }
 
