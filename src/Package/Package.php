@@ -244,16 +244,18 @@ class Package
 
     public static function copy(OutputInterface $output, array $maps): void
     {
+        $output->writeln('<info>Copy target files:</info>');
         foreach ($maps as $source => $target) {
-            $output->writeln('<info>Copy: ' . str_replace(base_path(), '', $target) . '</info>');
+            $output->writeln(' - <info>' . str_replace(base_path(), '', $target) . '</info>');
             FileSystem::copy($source, $target);
         }
     }
 
     public static function del(OutputInterface $output, array $maps): void
     {
+        $output->writeln('<info>Delete target files:</info>');
         foreach ($maps as $path) {
-            $output->writeln('<info>Delete: ' . str_replace(base_path(), '', $path) . '</info>');
+            $output->writeln(' - <info>' . str_replace(base_path(), '', $path) . '</info>');
             FileSystem::delete($path);
         }
     }

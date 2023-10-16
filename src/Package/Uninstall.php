@@ -32,6 +32,14 @@ class Uninstall
         $phpDeps = self::findOtherDependencies('phpDependencies', $packagesDeps, $packages);
         $jsDeps = self::findOtherDependencies('jsDependencies', $packagesDeps, $packages);
 
+
+        $unPackages = $packages->filter(function ($item) use ($packagesDeps) {
+            if ($packagesDeps->contains($item['name'])) {
+                return true;
+            }
+            return false;
+        });
+
         $dependencies = $dependencies->except($packagesDeps->toArray());
         $appJson['dependencies'] = $dependencies->toArray();
 
@@ -43,12 +51,6 @@ class Uninstall
         });
         $appLockJson['packages'] = $packages->toArray();
 
-        $unPackages = $packages->filter(function ($item) use ($packagesDeps) {
-            if ($packagesDeps->contains($item['name'])) {
-                return true;
-            }
-            return false;
-        });
 
         if ($unPackages->isEmpty()) {
             $output->writeln('<fg=red>No uninstallable dependencies found</>');
@@ -58,7 +60,7 @@ class Uninstall
         $output->writeln('<info>Finding dependencies to uninstall:</info>');
 
         $unPackages->map(function ($item) use ($output) {
-            $output->writeln('<info>' . $item['name'] . '</info>');
+            $output->writeln(' - <info>' . $item['name'] . '</info>');
         });
 
         $question = new ConfirmationQuestion('Do you want to continue? [Y/n] ', true);
