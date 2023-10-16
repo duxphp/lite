@@ -108,6 +108,7 @@ class Package
         }
 
         $config = self::getJson($appConfigFile);
+        $config['app'] = $data['app'];
 
         $copyMaps = [
             $appDir => app_path(ucfirst($data['app'])),
