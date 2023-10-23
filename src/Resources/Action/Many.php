@@ -32,6 +32,11 @@ trait Many
             $query->where($this->key, $key);
         }
 
+        $keys = array_filter(explode(',', $queryParams['ids']));
+        if ($keys) {
+            $query->whereIn($this->key, $keys);
+        }
+
         $sorts = $this->getSorts($queryParams);
         foreach ($sorts as $key => $sort) {
             $query->orderBy($key, $sort);
