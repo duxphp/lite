@@ -13,6 +13,10 @@ trait Many
         $this->init($request, $response, $args);
         $queryParams = $request->getQueryParams();
 
+        if (!isset($queryParams["pageSize"])) {
+            $this->pagination['status'] = false;
+        }
+
         $limit = 0;
         if ($this->pagination['status']) {
             $limit = $queryParams["pageSize"] ?: $this->pagination['pageSize'];
