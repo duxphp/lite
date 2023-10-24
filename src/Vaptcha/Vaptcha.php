@@ -4,6 +4,7 @@ namespace Dux\Vaptcha;
 
 use Dux\App;
 use Dux\Handlers\Exception;
+use Dux\Handlers\ExceptionBusiness;
 use GuzzleHttp\Client;
 
 class Vaptcha
@@ -14,6 +15,9 @@ class Vaptcha
         $key = App::config('vaptcha')->get('key');
         if (!$id || !$key) {
             return;
+        }
+        if (!$server || !$token) {
+            throw new ExceptionBusiness('请先通过人机验证');
         }
         $client = new Client();
         $result = $client->post($server, [
