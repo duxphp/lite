@@ -13,6 +13,10 @@ trait Many
         $this->init($request, $response, $args);
         $queryParams = $request->getQueryParams();
 
+        if (!isset($queryParams["pageSize"])) {
+            $this->pagination['status'] = false;
+        }
+
         $limit = 0;
         if ($this->pagination['status']) {
             $limit = $queryParams["pageSize"] ?: $this->pagination['pageSize'];
@@ -26,6 +30,11 @@ trait Many
         $key = $queryParams['id'];
         if ($key) {
             $query->where($this->key, $key);
+        }
+
+        $keys = array_filter(explode(',', $queryParams['ids']));
+        if ($keys) {
+            $query->whereIn($this->key, $keys);
         }
 
         $sorts = $this->getSorts($queryParams);
