@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class Vaptcha
 {
-    static function Verify(string $server, string $token): void
+    static function Verify(?string $server, ?string $token): void
     {
         $id = App::config('vaptcha')->get('id');
         $key = App::config('vaptcha')->get('key');
