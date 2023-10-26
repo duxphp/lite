@@ -136,7 +136,7 @@ class Package
         try {
             $response = $client->get(self::$url . '/v/package/version/app', [
                 'query' => [
-                    'type' => 'php',
+                    'type' => 'duxLite',
                     'app' => $app,
                     'download' => true
                 ],
@@ -171,7 +171,7 @@ class Package
         try {
             $response = $client->post(self::$url . '/v/package/version/query', [
                 'query' => [
-                    'type' => 'php',
+                    'type' => 'duxLite',
                     'download' => true
                 ],
                 'json' => $queryData,

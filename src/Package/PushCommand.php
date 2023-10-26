@@ -152,7 +152,7 @@ class PushCommand extends Command
                     ],
                     [
                         'name' => 'type',
-                        'contents' => 'php'
+                        'contents' => 'duxLite'
                     ],
                     [
                         'name' => 'md5',
