@@ -58,6 +58,9 @@ class AddCommand extends Command
             FileSystem::delete(data_path('package'));
         }
 
+        $application = $this->getApplication();
+        Package::installOther($application, $output);
+
         return Command::SUCCESS;
     }
 

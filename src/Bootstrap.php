@@ -28,11 +28,13 @@ use Dux\Helpers\CtrCommand;
 use Dux\Helpers\ManageCommand;
 use Dux\Helpers\ModelCommand;
 use Dux\Package\AddCommand;
+use Dux\Package\ComposerCommand;
 use Dux\Package\DelCommand;
 use Dux\Package\InstallCommand;
 use Dux\Package\PushCommand;
 use Dux\Package\UninstallCommand;
 use Dux\Package\UpdateCommand;
+use Dux\Package\YarnCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
 use Dux\Route\RouteCommand;
@@ -186,6 +188,8 @@ class Bootstrap
         $commands[] = AddCommand::class;
         $commands[] = UpdateCommand::class;
         $commands[] = DelCommand::class;
+        $commands[] = YarnCommand::class;
+        $commands[] = ComposerCommand::class;
         $this->command = Command::init($commands);
 
 

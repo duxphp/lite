@@ -31,6 +31,9 @@ class DelCommand extends Command
 
         Del::main($input, $output, $io, [$name]);
 
+        $application = $this->getApplication();
+        Package::installOther($application, $output);
+
         return Command::SUCCESS;
     }
 

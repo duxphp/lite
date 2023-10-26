@@ -5,6 +5,7 @@ namespace Dux\Package;
 
 use Nette\Utils\FileSystem;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,6 +54,9 @@ class UpdateCommand extends Command
         } finally {
             FileSystem::delete(data_path('package'));
         }
+
+        $application = $this->getApplication();
+        Package::installOther($application, $output);
 
         return Command::SUCCESS;
     }

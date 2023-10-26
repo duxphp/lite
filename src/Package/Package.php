@@ -8,7 +8,9 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Collection;
 use Nette\Utils\FileSystem;
 use Noodlehaus\Config;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -350,6 +352,23 @@ class Package
         if (!file_put_contents($file, $json)) {
             throw new Exception($name . ' No permission to edit');
         }
+    }
+
+    public static function installOther(Application $application, OutputInterface $output): void
+    {
+        $output->writeln('<info>Composer installation</info>');
+        $childInput = new ArrayInput([
+            'command' => 'package:composer',
+            'cmd' => 'install',
+        ]);
+        $application->find('package:composer')->run($childInput, $output);
+
+        $output->writeln('<info>Yarn installation</info>');
+        $childInput = new ArrayInput([
+            'command' => 'package:yarn',
+            'cmd' => 'install',
+        ]);
+        $application->find('package:yarn')->run($childInput, $output);
     }
 
 
