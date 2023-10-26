@@ -55,7 +55,6 @@ class ComposerCommand extends Command
             throw new ProcessFailedException($process);
         }
 
-
         return Command::SUCCESS;
     }
 

@@ -361,14 +361,22 @@ class Package
             'command' => 'package:composer',
             'cmd' => 'install',
         ]);
-        $application->find('package:composer')->run($childInput, $output);
+        try {
+            $application->find('package:composer')->run($childInput, $output);
+        }catch (\Exception $e) {
+            $output->writeln('<fg=yellow>' . $e->getMessage() . '</>');
+        }
 
         $output->writeln('<info>Yarn installation</info>');
         $childInput = new ArrayInput([
             'command' => 'package:yarn',
             'cmd' => 'install',
         ]);
-        $application->find('package:yarn')->run($childInput, $output);
+        try {
+            $application->find('package:yarn')->run($childInput, $output);
+        } catch (\Exception $e) {
+            $output->writeln('<fg=yellow>' . $e->getMessage() . '</>');
+        }
     }
 
 
