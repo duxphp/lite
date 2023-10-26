@@ -15,7 +15,7 @@ class AddCommand extends Command
 {
 
     protected static $defaultName = 'add';
-    protected static $defaultDescription = 'add the module';
+    protected static $defaultDescription = 'Add module';
 
     protected function configure(): void
     {

@@ -13,7 +13,7 @@ class DelCommand extends Command
 {
 
     protected static $defaultName = 'del';
-    protected static $defaultDescription = 'Uninstallation Module';
+    protected static $defaultDescription = 'Del Module';
 
     protected function configure(): void
     {

@@ -15,7 +15,7 @@ class UpdateCommand extends Command
 {
 
     protected static $defaultName = 'update';
-    protected static $defaultDescription = 'Install the application';
+    protected static $defaultDescription = 'Update the application';
 
     protected function configure(): void
     {
