@@ -29,7 +29,7 @@ class UpdateCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $name = $input->getArgument('name');
+        $app = $input->getArgument('name');
 
         $helper = $this->getHelper('question');
         $question = new Question('Please enter username: ');
@@ -49,9 +49,7 @@ class UpdateCommand extends Command
         }
 
         try {
-            Add::main($input, $output, $io, $username, $password, $name ? [
-                $name
-            ] : [], true);
+            Update::main($input, $output, $io, $username, $password, $app);
         } finally {
             FileSystem::delete(data_path('package'));
         }
