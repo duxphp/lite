@@ -9,11 +9,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class UninstallCommand extends Command
+class DelCommand extends Command
 {
 
-    protected static $defaultName = 'uninstall';
-    protected static $defaultDescription = 'Install the application';
+    protected static $defaultName = 'del';
+    protected static $defaultDescription = 'Uninstallation Module';
 
     protected function configure(): void
     {
@@ -31,7 +31,7 @@ class UninstallCommand extends Command
 
         $helper = $this->getHelper('question');
 
-        Uninstall::main($input, $output, $helper, $io, $name);
+        Del::main($input, $output, $helper, $io, $name);
 
         return Command::SUCCESS;
     }

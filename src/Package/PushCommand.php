@@ -22,7 +22,7 @@ class PushCommand extends Command
 {
 
     protected static $defaultName = 'push';
-    protected static $defaultDescription = 'Release the application version';
+    protected static $defaultDescription = 'Release the module version';
 
     protected function configure(): void
     {

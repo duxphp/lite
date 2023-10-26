@@ -49,7 +49,7 @@ class UpdateCommand extends Command
         }
 
         try {
-            Install::main($input, $output, $io, $username, $password,$name ? [
+            Add::main($input, $output, $io, $username, $password, $name ? [
                 $name
             ] : [], true);
         } finally {

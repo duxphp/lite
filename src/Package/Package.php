@@ -130,6 +130,41 @@ class Package
         ];
     }
 
+    public static function app(string $username, string $password, string $app)
+    {
+        $client = new Client();
+        try {
+            $response = $client->get(self::$url . '/v/package/version/app', [
+                'query' => [
+                    'type' => 'php',
+                    'app' => $app,
+                    'download' => true
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'auth' => [$username, $password],
+            ]);
+            $content = $response->getBody()?->getContents();
+        } catch (RequestException $e) {
+            $response = $e->getResponse();
+            $content = $response->getBody()?->getContents();
+        }
+        if ($response->getStatusCode() == 401) {
+            throw new Exception('[CLOUD] Wrong username and password');
+        }
+        $responseData = json_decode($content ?: '', true);
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception('[CLOUD] ' . $response->getStatusCode() . ' ' . ($responseData['message'] ?: 'Server connection failed'));
+        }
+        $appData = $responseData['data'];
+        if (!$appData) {
+            throw new Exception('[CLOUD] Application data does not exist');
+        }
+        return $appData;
+    }
+
     public static function query(string $username, string $password, array $queryData, SymfonyStyle $io)
     {
         $client = new Client();
@@ -140,9 +175,6 @@ class Package
                     'download' => true
                 ],
                 'json' => $queryData,
-//                [
-//                    $name => $verType ?: 'release'
-//                ],
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',

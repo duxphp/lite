@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class Uninstall
+class Del
 {
     public static function main(InputInterface $input, OutputInterface $output, HelperInterface $helper, SymfonyStyle $io, string $packageName): void
     {
@@ -103,8 +103,6 @@ class Uninstall
         }
         return $currentDeps;
     }
-
-
 
 
 }

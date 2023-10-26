@@ -11,11 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class AddCommand extends Command
+class InstallCommand extends Command
 {
 
-    protected static $defaultName = 'add';
-    protected static $defaultDescription = 'add the module';
+    protected static $defaultName = 'install';
+    protected static $defaultDescription = 'Installation application';
 
     protected function configure(): void
     {
@@ -30,8 +30,6 @@ class AddCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $name = $input->getArgument('name');
-
-        [$name, $verType] = explode(':', $name, 2);
 
         $helper = $this->getHelper('question');
         $question = new Question('Please enter username: ');
@@ -51,9 +49,7 @@ class AddCommand extends Command
         }
 
         try {
-            Add::main($input, $output, $io, $username, $password, [
-                $name => $verType ?: 'release'
-            ]);
+            Install::main($input, $output, $io, $username, $password, $name);
         } finally {
             FileSystem::delete(data_path('package'));
         }
