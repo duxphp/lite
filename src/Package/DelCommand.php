@@ -29,9 +29,7 @@ class DelCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $name = $input->getArgument('name');
 
-        $helper = $this->getHelper('question');
-
-        Del::main($input, $output, $helper, $io, $name);
+        Del::main($input, $output, $io, [$name]);
 
         return Command::SUCCESS;
     }
