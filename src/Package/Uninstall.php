@@ -12,6 +12,18 @@ class Uninstall
     {
         $packages = Package::app($username, $password, $app);
         Del::main($input, $output, $io, $packages);
+
+        $configFile = base_path('app.json');
+        $appJson = [];
+        if (is_file($configFile)) {
+            $appJson = Package::getJson($configFile);
+        }
+        $apps = $appJson['apps'] ?: [];
+        if (in_array($app, $apps)) {
+            unset($apps[$app]);
+        }
+        $appJson['apps'] = array_values($apps);
+        Package::saveJson($configFile, $appJson);
     }
 
 }
