@@ -79,14 +79,12 @@
     "symfony/redis-messenger": "^6.3",
     "geoip2/geoip2": "^2.13",
     "jaybizzle/crawler-detect": "^1.2",
-    "xantios/mimey": "^2.2"
+    "xantios/mimey": "^2.2",
+    "maennchen/zipstream-php": "^3.1"
   },
   "require-dev": {
     "composer/composer": "^2.0",
     "phpunit/phpunit": "^9.5"
-  },
-  "extra": {
-    "class": "\\Dux\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
