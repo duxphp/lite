@@ -39,8 +39,6 @@ class ComposerCommand extends Command
         }
         $composerPath = trim($composerPathFinder->getOutput());
 
-        $process = new Process([$composerPath, 'config', 'repo.packagist', 'composer', 'https://mirrors.aliyun.com/composer/']);
-        $process->run();
 
         $command = array_merge([$composerPath], is_array($composerCommand) ? $composerCommand : [$composerCommand]);
         $workingDirectory = base_path();
