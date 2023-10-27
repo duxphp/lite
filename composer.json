@@ -1,6 +1,6 @@
 {
   "name": "duxphp/lite",
-  "type": "composer-plugin",
+  "type": "library",
   "description": "The lightweight framework based on slim php",
   "keywords": [
     "PHP framework",
