@@ -359,7 +359,7 @@ class Package
         $output->writeln('<info>Composer installation</info>');
         $childInput = new ArrayInput([
             'command' => 'package:composer',
-            'cmd' => 'install',
+            'cmd' => 'update',
         ]);
         try {
             $application->find('package:composer')->run($childInput, $output);
