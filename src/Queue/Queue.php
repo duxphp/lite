@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Dux\Queue;
 
-use Enqueue\Redis\RedisMessage;
+use Dux\App;
+use Enqueue\Consumption\QueueConsumer;
+use Enqueue\Redis\RedisConnectionFactory;
 use Redis;
 use RuntimeException;
-use Symfony\Component\Messenger\Handler\HandlersLocator;
-use Symfony\Component\Messenger\MessageBus;
-use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
 class Queue
 {
@@ -17,33 +16,46 @@ class Queue
     public array $config = [];
 
     public array $group = [];
-    private MessageBus $bus;
+    private RedisConnectionFactory $factory;
+    private \Interop\Queue\Context $context;
+    private \Interop\Queue\Queue $queue;
 
-    public function __construct(string $type, array $config)
+    public function __construct(string $type)
     {
         if ($type !== "redis") {
             throw new RuntimeException("Queue type not supported");
         }
-        $this->config = $config;
 
-        $handler = new QueueHandlers();
-        $bus = new MessageBus([
-            new HandleMessageMiddleware(new HandlersLocator([
-                QueueMessage::class => [$handler],
-            ])),
+        $driver = App::config('queue')->get('driver', 'default');
+        $config = App::config('database')->get($type . ".drivers." . $driver);
+
+        $this->factory = new RedisConnectionFactory([
+            'host' => $config['host'],
+            'port' => $config['port'],
+            'password' => $config['auth'],
+            'persistent' => $config['persistent'],
+            'scheme_extensions' => ['phpredis'],
         ]);
 
-        $this->bus = $bus;
+        $this->context = $this->factory->createContext();
+        $this->queue = $this->context->createQueue('queue');
+
+
     }
 
-    public function add(string $class, string $method = "", array $params = []): void
+    public function add(string $class, string $method = "", array $params = []): QueueMessage
     {
-        $message = new RedisMessage($class . ':' . $method, $params);
-        $this->bus->dispatch($message);
+        return new QueueMessage($this->context, $this->queue, $class, $method, $params);
     }
 
     public function process(): void
     {
+        $processor = new QueueProcessor();
+        $consumer = new QueueConsumer($this->context);
+        $consumer->bind($this->queue, $processor);
+
+        $consumer->consume();
+
     }
 
 }

@@ -10,11 +10,22 @@ use Phpfastcache\Helper\Psr16Adapter;
 class Cache
 {
 
-    public static function init(string $type, array $config): Psr16Adapter
+    public static function init(string $type): Psr16Adapter
     {
-        if ($type === "files") {
-            $config["path"] = App::$dataPath . "/cache";
+        $driverConfig = [];
+        if ($type != 'files') {
+            $driver = App::config('cache')->get('driver', 'default');
+            $driverConfig = App::config('database')->get($type . ".drivers." . $driver);
         }
+
+        $config = match ($type) {
+            'redis' => $driverConfig,
+            'files' => [
+                'path' => App::$dataPath . "/cache"
+            ]
+        };
+
+
         return new Psr16Adapter($type, new ConfigurationOption($config));
     }
 }

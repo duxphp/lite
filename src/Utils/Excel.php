@@ -6,7 +6,6 @@ namespace Dux\Utils;
 use Dux\Handlers\ExceptionBusiness;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class Excel

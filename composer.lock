@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e25023195560c1c5be845937428f8eb1",
+    "content-hash": "33afd76c5e429b498f23dbeaa921a2f1",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -154,75 +154,6 @@
                 }
             ],
             "time": "2023-01-15T23:15:59+00:00"
-        },
-        {
-            "name": "chubbyphp/chubbyphp-workerman-request-handler",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler.git",
-                "reference": "bc91031ca66d881f84762815afd35e9cbd3b484e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/chubbyphp/chubbyphp-workerman-request-handler/zipball/bc91031ca66d881f84762815afd35e9cbd3b484e",
-                "reference": "bc91031ca66d881f84762815afd35e9cbd3b484e",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.0",
-                "psr/http-factory": "^1.0.1",
-                "psr/http-message": "^1.0.1|^2.0",
-                "psr/http-server-handler": "^1.0.1",
-                "psr/log": "^1.1.4|^2.0|^3.0",
-                "workerman/workerman": "^4.0.30"
-            },
-            "require-dev": {
-                "blackfire/php-sdk": "^1.29",
-                "chubbyphp/chubbyphp-dev-helper": "dev-master",
-                "chubbyphp/chubbyphp-mock": "^1.6.1",
-                "infection/infection": "^0.26.5",
-                "php-coveralls/php-coveralls": "^2.5.2",
-                "phploc/phploc": "^7.0.2",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "^1.4.8",
-                "phpunit/phpunit": "^9.5.17"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Chubbyphp\\WorkermanRequestHandler\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dominik Zogg",
-                    "email": "dominik.zogg@gmail.com"
-                }
-            ],
-            "description": "A request handler adapter for workerman, using PSR-7, PSR-15 and PSR-17.",
-            "keywords": [
-                "chubbyphp",
-                "psr-15",
-                "psr-17",
-                "psr-7",
-                "requesthandler",
-                "workerman"
-            ],
-            "support": {
-                "issues": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler/issues",
-                "source": "https://github.com/chubbyphp/chubbyphp-workerman-request-handler/tree/2.0.1"
-            },
-            "time": "2023-10-18T05:02:50+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -3443,16 +3374,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "3.4.0",
+            "version": "3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "e2392369686d420ca32df3803de28b5d6f76867d"
+                "reference": "c915e2634718dbc8a4a15c61b0e62e7a44e14448"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/e2392369686d420ca32df3803de28b5d6f76867d",
-                "reference": "e2392369686d420ca32df3803de28b5d6f76867d",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/c915e2634718dbc8a4a15c61b0e62e7a44e14448",
+                "reference": "c915e2634718dbc8a4a15c61b0e62e7a44e14448",
                 "shasum": ""
             },
             "require": {
@@ -3528,7 +3459,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/3.4.0"
+                "source": "https://github.com/Seldaek/monolog/tree/3.5.0"
             },
             "funding": [
                 {
@@ -3540,7 +3471,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-21T08:46:11+00:00"
+            "time": "2023-10-27T15:32:31+00:00"
         },
         {
             "name": "myclabs/php-enum",
@@ -4446,6 +4377,65 @@
                 }
             ],
             "time": "2023-08-16T08:56:32+00:00"
+        },
+        {
+            "name": "peppeocchi/php-cron-scheduler",
+            "version": "v4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/peppeocchi/php-cron-scheduler.git",
+                "reference": "0acfa032e60f0ea22a27b96a6b15a673a31d3448"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/peppeocchi/php-cron-scheduler/zipball/0acfa032e60f0ea22a27b96a6b15a673a31d3448",
+                "reference": "0acfa032e60f0ea22a27b96a6b15a673a31d3448",
+                "shasum": ""
+            },
+            "require": {
+                "dragonmantank/cron-expression": "^3.0",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.4",
+                "phpunit/phpunit": "~9.5",
+                "swiftmailer/swiftmailer": "~5.4 || ^6.0"
+            },
+            "suggest": {
+                "swiftmailer/swiftmailer": "Required to send the output of a job to email address/es (~5.4 || ^6.0)."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GO\\": "src/GO/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Giuseppe Occhipinti",
+                    "email": "peppeocchi@gmail.com"
+                },
+                {
+                    "name": "Carsten Windler",
+                    "email": "carsten@carstenwindler.de",
+                    "homepage": "http://carstenwindler.de",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "PHP Cron Job Scheduler",
+            "keywords": [
+                "cron job",
+                "scheduler"
+            ],
+            "support": {
+                "issues": "https://github.com/peppeocchi/php-cron-scheduler/issues",
+                "source": "https://github.com/peppeocchi/php-cron-scheduler/tree/v4.0"
+            },
+            "time": "2021-04-22T21:32:03+00:00"
         },
         {
             "name": "php-di/invoker",
@@ -7097,73 +7087,6 @@
             "time": "2023-08-07T10:39:22+00:00"
         },
         {
-            "name": "symfony/redis-messenger",
-            "version": "v6.3.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/redis-messenger.git",
-                "reference": "d6b1b561054b4a04f54ff3aa10a6a4d49385ce6d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/redis-messenger/zipball/d6b1b561054b4a04f54ff3aa10a6a4d49385ce6d",
-                "reference": "d6b1b561054b4a04f54ff3aa10a6a4d49385ce6d",
-                "shasum": ""
-            },
-            "require": {
-                "ext-redis": "*",
-                "php": ">=8.1",
-                "symfony/messenger": "^6.1"
-            },
-            "require-dev": {
-                "symfony/property-access": "^5.4|^6.0",
-                "symfony/serializer": "^5.4|^6.0"
-            },
-            "type": "symfony-messenger-bridge",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Messenger\\Bridge\\Redis\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Redis extension Messenger Bridge",
-            "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/redis-messenger/tree/v6.3.5"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2023-09-26T15:48:55+00:00"
-        },
-        {
             "name": "symfony/service-contracts",
             "version": "v2.5.2",
             "source": {
@@ -8185,225 +8108,6 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
-        },
-        {
-            "name": "workerman/channel",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/channel.git",
-                "reference": "fbfb81c7ebc5858c4053f226cbb5d15fe670ff6e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/channel/zipball/fbfb81c7ebc5858c4053f226cbb5d15fe670ff6e",
-                "reference": "fbfb81c7ebc5858c4053f226cbb5d15fe670ff6e",
-                "shasum": ""
-            },
-            "require": {
-                "workerman/workerman": ">=4.0.12"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Channel\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "homepage": "http://www.workerman.net",
-            "support": {
-                "issues": "https://github.com/walkor/channel/issues",
-                "source": "https://github.com/walkor/channel/tree/v1.2.0"
-            },
-            "time": "2023-04-04T02:47:35+00:00"
-        },
-        {
-            "name": "workerman/crontab",
-            "version": "v1.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/crontab.git",
-                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/crontab/zipball/b78f1556f2977715b9cb5653129e6d9cf160d966",
-                "reference": "b78f1556f2977715b9cb5653129e6d9cf160d966",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0",
-                "workerman/workerman": ">=4.0.20"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Workerman\\Crontab\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "walkor",
-                    "email": "walkor@workerman.net",
-                    "homepage": "http://www.workerman.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A crontab written in PHP based on workerman",
-            "homepage": "http://www.workerman.net",
-            "keywords": [
-                "crontab"
-            ],
-            "support": {
-                "email": "walkor@workerman.net",
-                "forum": "http://wenda.workerman.net/",
-                "issues": "https://github.com/walkor/workerman/issues",
-                "source": "https://github.com/walkor/crontab",
-                "wiki": "http://doc.workerman.net/"
-            },
-            "time": "2022-10-17T01:59:19+00:00"
-        },
-        {
-            "name": "workerman/redis",
-            "version": "v2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/redis.git",
-                "reference": "542f10c243ba846f1f3b4c07a26136c5fa80d972"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/redis/zipball/542f10c243ba846f1f3b4c07a26136c5fa80d972",
-                "reference": "542f10c243ba846f1f3b4c07a26136c5fa80d972",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7",
-                "workerman/workerman": "^4.1.0||^5.0.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Workerman\\Redis\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "homepage": "http://www.workerman.net",
-            "support": {
-                "issues": "https://github.com/walkor/redis/issues",
-                "source": "https://github.com/walkor/redis/tree/v2.0.2"
-            },
-            "time": "2023-06-08T01:39:47+00:00"
-        },
-        {
-            "name": "workerman/redis-queue",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/redis-queue.git",
-                "reference": "e325f5b09cd170a327597876f1d659cd81510388"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/redis-queue/zipball/e325f5b09cd170a327597876f1d659cd81510388",
-                "reference": "e325f5b09cd170a327597876f1d659cd81510388",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "workerman/redis": "^1.0||^2.0",
-                "workerman/workerman": ">=4.0.20"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Workerman\\RedisQueue\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Message queue system written in PHP based on workerman and backed by Redis.",
-            "homepage": "http://www.workerman.net",
-            "support": {
-                "issues": "https://github.com/walkor/redis-queue/issues",
-                "source": "https://github.com/walkor/redis-queue/tree/v1.1.0"
-            },
-            "time": "2023-04-07T10:23:19+00:00"
-        },
-        {
-            "name": "workerman/workerman",
-            "version": "v4.1.13",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/walkor/workerman.git",
-                "reference": "807780ff672775fcd08f89e573a2824e939021ce"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/walkor/workerman/zipball/807780ff672775fcd08f89e573a2824e939021ce",
-                "reference": "807780ff672775fcd08f89e573a2824e939021ce",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "suggest": {
-                "ext-event": "For better performance. "
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Workerman\\": "./"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "walkor",
-                    "email": "walkor@workerman.net",
-                    "homepage": "http://www.workerman.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
-            "homepage": "http://www.workerman.net",
-            "keywords": [
-                "asynchronous",
-                "event-loop"
-            ],
-            "support": {
-                "email": "walkor@workerman.net",
-                "forum": "http://wenda.workerman.net/",
-                "issues": "https://github.com/walkor/workerman/issues",
-                "source": "https://github.com/walkor/workerman",
-                "wiki": "http://doc.workerman.net/"
-            },
-            "funding": [
-                {
-                    "url": "https://opencollective.com/workerman",
-                    "type": "open_collective"
-                },
-                {
-                    "url": "https://www.patreon.com/walkor",
-                    "type": "patreon"
-                }
-            ],
-            "time": "2023-07-31T05:57:25+00:00"
         },
         {
             "name": "xantios/mimey",
@@ -11301,9 +11005,8 @@
         "ext-redis": "*",
         "ext-fileinfo": "*",
         "ext-pdo": "*",
-        "ext-zip": "*",
-        "composer-plugin-api": "^2.0"
+        "ext-zip": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

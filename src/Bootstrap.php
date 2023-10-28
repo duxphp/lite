@@ -37,16 +37,12 @@ use Dux\Package\UpdateCommand;
 use Dux\Package\YarnCommand;
 use Dux\Permission\PermissionCommand;
 use Dux\Queue\QueueCommand;
+use Dux\Scheduler\SchedulerCommand;
 use Dux\Route\RouteCommand;
 use Dux\Scheduler\Scheduler;
-use Dux\Server\ServerCommand;
-use Dux\Server\WebCommand;
 use Dux\View\View;
 use Illuminate\Pagination\Paginator;
 use Latte\Engine;
-use Orisai\Scheduler\Command\RunCommand;
-use Orisai\Scheduler\Command\RunJobCommand;
-use Orisai\Scheduler\Command\WorkerCommand;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -155,7 +151,7 @@ class Bootstrap
     public function loadCache(): void
     {
         $type = App::config("cache")->get("type");
-        $this->cache = Cache::init($type, (array)App::config("cache")->get("drivers." . $type));
+        $this->cache = Cache::init($type);
     }
 
     /**
@@ -168,6 +164,7 @@ class Bootstrap
     {
         $commands = App::config("command")->get("registers", []);
         $commands[] = QueueCommand::class;
+        $commands[] = SchedulerCommand::class;
         $commands[] = RouteCommand::class;
         $commands[] = MigrateCommand::class;
         $commands[] = EventCommand::class;
@@ -179,8 +176,6 @@ class Bootstrap
         $commands[] = App\AppCommand::class;
         $commands[] = PermissionCommand::class;
         $commands[] = ListCommand::class;
-        $commands[] = WebCommand::class;
-        $commands[] = ServerCommand::class;
         $commands[] = InstallCommand::class;
         $commands[] = UninstallCommand::class;
         $commands[] = AddCommand::class;
@@ -193,15 +188,6 @@ class Bootstrap
         $this->command = Command::init($commands);
 
 
-        // Scheduler
-        $workerScheduler = new WorkerCommand();
-        $workerScheduler->setExecutable('dux');
-        $this->command->addCommands([
-            new \Orisai\Scheduler\Command\ListCommand($this->scheduler->scheduler),
-            new RunCommand($this->scheduler->scheduler),
-            new RunJobCommand($this->scheduler->scheduler),
-            $workerScheduler,
-        ]);
 
         // 注册模型迁移
         App::dbMigrate()->registerAttribute();
@@ -339,8 +325,6 @@ class Bootstrap
         foreach ($this->route->app as $route) {
             $route->run($this->web);
         }
-
-        $this->scheduler->expand();
 
         // 公共路由
         $this->web->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {

@@ -267,12 +267,9 @@ class App
             $type = self::config("queue")->get("type");
         }
         if (!self::$di->has("queue." . $type)) {
-            $config = self::config("queue")->get("drivers." . $type);
-            $queueType = $config["type"];
-            unset($config["type"]);
             self::$di->set(
                 "queue." . $type,
-                new Queue($queueType, $config)
+                new Queue($type)
             );
         }
         return self::$di->get("queue." . $type);

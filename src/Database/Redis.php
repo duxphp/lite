@@ -16,7 +16,7 @@ class Redis
     public function connect(): \Redis
     {
         $this->drive->connect($this->config["host"], (int)$this->config["port"], (float)$this->config["timeout"]);
-        if ($this->config["auth"]) {
+        if ($this->config["password"]) {
             $this->drive->auth($this->config["auth"]);
         }
         $database = (int)$this->config["database"] ?: 0;
