@@ -3,6 +3,7 @@
 namespace Dux\Scheduler;
 
 use Closure;
+use Dux\App;
 use Exception;
 use Workerman\Crontab\Crontab;
 
@@ -24,7 +25,11 @@ class Scheduler
             new Crontab($item['cron'], function () use ($item) {
                 $func = $item['func'];
                 if ($item['func'] instanceof Closure) {
-                    $func();
+                    try {
+                        $func();
+                    } catch (Exception $e) {
+                        App::log('scheduler')->error($e->getMessage());
+                    }
                     return;
                 }
                 [$class, $method] = $func;
@@ -34,7 +39,13 @@ class Scheduler
                 if (!method_exists($class, $method)) {
                     throw new Exception("Scheduler method [$class:$method] does not exist");
                 }
-                (new $class)->$method();
+
+                try {
+                    (new $class)->$method();
+                } catch (Exception $e) {
+                    App::log('scheduler')->error($e->getMessage());
+                }
+
             });
         }
     }
