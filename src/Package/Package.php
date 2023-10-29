@@ -2,6 +2,7 @@
 
 namespace Dux\Package;
 
+use Composer\Semver\Semver;
 use Dux\Handlers\Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -219,18 +220,14 @@ class Package
         if (!$require) {
             throw new Exception('composer require empty');
         }
-        $requireNames = array_keys($require);
 
         if (!$remove) {
             foreach ($maps as $key => $vo) {
-                if (in_array($key, $requireNames)) {
-                    continue;
-                }
                 $require[$key] = $vo;
             }
         } else {
             foreach ($maps as $vo) {
-                if (!in_array($vo, $requireNames)) {
+                if (!isset($require[$vo])) {
                     continue;
                 }
                 unset($require[$vo]);
@@ -258,21 +255,17 @@ class Package
         if (!$dependencies) {
             throw new Exception('package require empty');
         }
-        $dependenciesNames = array_keys($dependencies);
 
         if (!$remove) {
             foreach ($maps as $key => $vo) {
-                if (in_array($key, $dependenciesNames)) {
-                    continue;
-                }
                 $dependencies[$key] = $vo;
             }
         } else {
-            foreach ($maps as $vo) {
-                if (!in_array($vo, $dependenciesNames)) {
+            foreach ($maps as $key => $vo) {
+                if (!isset($dependencies[$vo])) {
                     continue;
                 }
-                unset($maps[$vo]);
+                unset($dependencies[$vo]);
             }
         }
 
