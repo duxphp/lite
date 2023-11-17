@@ -4,17 +4,30 @@ declare(strict_types=1);
 namespace Dux\Cache;
 
 use Dux\App;
-use Phpfastcache\CacheManager;
 use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Drivers\Redis\Config;
 use Phpfastcache\Helper\Psr16Adapter;
 
-class Cache {
+class Cache
+{
 
-    public static function init(string $type, array $config): Psr16Adapter {
+    public static function init(string $type, array $config): Psr16Adapter
+    {
         if ($type === "files") {
-            $config["path"] = App::$dataPath . "/cache";
+            $config = new ConfigurationOption([
+                'path' => App::$dataPath . "/cache"
+            ]);
         }
-        CacheManager::setDefaultConfig(new ConfigurationOption($config));
-        return new Psr16Adapter($type);
+        if ($type === "redis") {
+            $config = new Config([
+                'host' => $config['host'],
+                'port' => $config['port'],
+                'timeout' => (int)$config['timeout'],
+                'password' => $config['auth'] ?: '',
+                'database' => (int)$config['database'] ?: 0,
+                'optPrefix' => $config['optPrefix'] ?: '',
+            ]);
+        }
+        return new Psr16Adapter($type, $config);
     }
 }
