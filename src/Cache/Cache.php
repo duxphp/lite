@@ -21,7 +21,7 @@ class Cache
         if ($type === "redis") {
             $config = new Config([
                 'host' => $config['host'],
-                'port' => $config['port'],
+                'port' => (int)$config['port'],
                 'timeout' => (int)$config['timeout'],
                 'password' => $config['auth'] ?: '',
                 'database' => (int)$config['database'] ?: 0,
