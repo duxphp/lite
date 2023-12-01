@@ -33,7 +33,7 @@ class Queue
                 'auth' => $auth,
                 'max_attempts' => $config['retry'],
                 'prefix' => $config['prefix'],
-                'db' => $config['db'],
+                'db' => $config['db'] ?: 0,
             ]);
             $client->subscribe($group, function (?array $data) {
                 if (!$data) {
