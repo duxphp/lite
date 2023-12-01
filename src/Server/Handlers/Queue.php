@@ -31,7 +31,9 @@ class Queue
             $dsn = "redis://$host:$port";
             $client = new Client($dsn, [
                 'auth' => $auth,
-                'max_attempts' => $config['retry']
+                'max_attempts' => $config['retry'],
+                'prefix' => $config['prefix'],
+                'db' => $config['db'],
             ]);
             $client->subscribe($group, function (?array $data) {
                 if (!$data) {
