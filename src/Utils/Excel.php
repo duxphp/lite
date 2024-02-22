@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Dux\Utils;
 
+use Dux\App;
 use Dux\Handlers\ExceptionBusiness;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -143,6 +144,12 @@ class Excel
         unset($worksheet);
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        if(App::config('use')->get('app.debug')){
+            header('Access-Control-Allow-Origin:*');
+//        // 允许浏览器设置Headers中如下属性值
+            header('Access-Control-Expose-Headers: *');
+        }
 
         header('Content-Type:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition:attachment; filename=' . rawurlencode($title . '-' . date('YmdHis')) . '.xlsx');
