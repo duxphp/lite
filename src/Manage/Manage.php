@@ -74,10 +74,10 @@ class Manage
 
         $key = $queryParams['key'];
         if ($key) {
-            if (is_array($key)) {
-                $query->whereIn('id', $key);
-            }else {
+            if(!is_array($key)){
                 $query->where('id', $key);
+            }else{
+                $query->orderByRaw(sprintf('(case when id in (%s) then 0 else 1 end)',implode(',',$key)));
             }
         }
 
