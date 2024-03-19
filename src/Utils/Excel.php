@@ -133,7 +133,8 @@ class Excel
                     $content = $vo;
                     $callback = '';
                 }
-                $worksheet->setCellValueExplicit([$k + 1, $headRow], $content, DataType::TYPE_STRING);
+                $dataType = $label[$k]['type'] ?? DataType::TYPE_STRING;
+                $worksheet->setCellValueExplicit([$k + 1, $headRow], $content, $dataType);
                 $item = $worksheet->getStyle([$k + 1, $headRow])->applyFromArray($styleArray);
                 if (is_callable($callback)) {
                     $callback($item, $worksheet);
