@@ -31,7 +31,7 @@ class Menu
         return $menuApp;
     }
 
-    public function get(array $auth = []): array
+    public function get(array $auth = [],bool $isTopUrl = false): array
     {
         $menuData = [];
         foreach ($this->data as $name => $app) {
@@ -70,6 +70,9 @@ class Menu
                 continue;
             }
             $appData["children"] = $groupList;
+            if($isTopUrl && empty($appData['url'])){
+                $appData['url'] = $groupList[0]['children'][0]['url'] ?? '';
+            }
             $restData[] = $appData;
         }
         return collect($restData)->sortBy('order')->values()->toArray();
