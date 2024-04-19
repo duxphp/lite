@@ -74,8 +74,9 @@ class Excel
      * @param string $subtitle
      * @param array $label
      * @param array $data
+     * @param array $params
      */
-    public static function export(string $title, string $subtitle, array $label, array $data, ResponseInterface $response): ResponseInterface
+    public static function export(string $title, string $subtitle, array $label, array $data, ResponseInterface $response,array $params = []): ResponseInterface
     {
         $count = count($label);
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -118,10 +119,19 @@ class Excel
                 'size' => 12,
             ],
         ];
+        if($params['alignment']){
+            $styleArray['alignment'] = array_merge($styleArray['alignment'], $params['alignment']);
+        }
         $headRow = 3;
         foreach ($label as $key => $vo) {
             $worksheet->setCellValueExplicit([$key + 1, $headRow], $vo['name'], DataType::TYPE_STRING);
-            $worksheet->getStyle([$key + 1, $headRow])->applyFromArray($styleArray);
+            $item = $worksheet->getStyle([$key + 1, $headRow])->applyFromArray($styleArray);
+            if($vo['style']){
+                $item->applyFromArray($vo['style']);
+            }
+            if($vo['name_style']){
+                $item->applyFromArray($vo['name_style']);
+            }
         }
         foreach ($data as $list) {
             $headRow++;
@@ -134,8 +144,16 @@ class Excel
                     $callback = '';
                 }
                 $dataType = $label[$k]['type'] ?? DataType::TYPE_STRING;
+                $style = $label[$k]['style'] ?? null;
+                $valueStyle = $label[$k]['value_style'] ?? null;
                 $worksheet->setCellValueExplicit([$k + 1, $headRow], $content, $dataType);
                 $item = $worksheet->getStyle([$k + 1, $headRow])->applyFromArray($styleArray);
+                if($style){
+                    $item->applyFromArray($style);
+                }
+                if($valueStyle){
+                    $item->applyFromArray($valueStyle);
+                }
                 if (is_callable($callback)) {
                     $callback($item, $worksheet);
                 }
