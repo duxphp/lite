@@ -86,6 +86,7 @@ class Excel
         $styleCenter = [
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'wrapText' => true
             ],
             'font' => [
                 'size' => 16,
@@ -101,6 +102,7 @@ class Excel
         $worksheet->getStyle([1, 2])->applyFromArray([
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'wrapText' => true
             ],
         ]);
 
