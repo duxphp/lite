@@ -83,7 +83,7 @@ class Register
                     );
                     $groupClass[$className] = $group;
                     if ($params['permission']) {
-                        $permissionClass[$class] = $permission->get($params['permission'])->manage($params["title"], $name, 0, $params["ways"] ?? []);
+                        $permissionClass[$class] = $permission->get($params['permission'])->manage($params["title"], $params["name"] ?: $name, 0, $params["ways"] ?? []);
                     }
                 }
             }
