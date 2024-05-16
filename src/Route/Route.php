@@ -155,7 +155,7 @@ class Route {
             $group->get("/{id}", "$class:info", "$name.info", "{$title}详情");
         }
         if (!$ways || in_array("add", $ways)) {
-            $group->post("", "$class:save", "$name.add", "{$title}添加");
+            $group->post("[/0]", "$class:save", "$name.add", "{$title}添加");
         }
         if (!$ways || in_array("edit", $ways)) {
             $group->post("/{id}", "$class:save", "$name.edit", "{$title}编辑");
