@@ -26,13 +26,19 @@ class Excel
         if (!in_array($ext, $extArr)) {
             throw new ExceptionBusiness("File type error");
         }
-        $client = new \GuzzleHttp\Client();
-        $fileTmp = $client->request('GET', $url)->getBody()->getContents();
-        $tmpFile = tempnam(sys_get_temp_dir(), 'excel_');
-        $tmp = fopen($tmpFile, 'w');
-        fwrite($tmp, $fileTmp);
-        fclose($tmp);
-
+        $delFile = true;
+        if(str_starts_with($url,'http')){
+            $client = new \GuzzleHttp\Client();
+            $fileTmp = $client->request('GET', $url)->getBody()->getContents();
+            $tmpFile = tempnam(sys_get_temp_dir(), 'excel_');
+            $tmp = fopen($tmpFile, 'w');
+            fwrite($tmp, $fileTmp);
+            fclose($tmp);
+        }else{
+            //本地文件
+            $delFile = false;
+            $tmpFile = public_path($url);
+        }
         try {
             $objRead = \PhpOffice\PhpSpreadsheet\IOFactory::createReader(ucfirst($ext));
             $objRead->setReadDataOnly(true);
@@ -60,10 +66,14 @@ class Excel
             foreach ($data as $vo) {
                 $table[] = array_values($vo);
             }
-            unlink($tmpFile);
+            if($delFile){
+                unlink($tmpFile);
+            }
             return $table;
         } catch (Exception $e) {
-            unlink($tmpFile);
+            if($delFile){
+                unlink($tmpFile);
+            }
             throw $e;
         }
     }
